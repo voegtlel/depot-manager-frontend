@@ -1,0 +1,13 @@
+<nb-card *ngFor="let view of []">
+    <nb-card-header>
+        <a [routerLink]="['/list', view.key]">
+            {{view.title}}
+        </a>
+    </nb-card-header>
+    <nb-card-body>
+        <a [routerLink]="['/list', view.key]">
+            {{view.description}}
+            <i [class]="view.iconClasses"></i>
+        </a>
+    </nb-card-body>
+</nb-card>

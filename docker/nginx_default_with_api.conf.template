@@ -1,0 +1,29 @@
+upstream api {
+    server $PROXY_API_HOST;
+}
+
+server {
+    listen 80;
+    index index.html;
+    server_name _;
+    server_tokens off;
+    root /usr/share/nginx/html/client;
+
+    real_ip_header X-Real-IP;
+    real_ip_recursive on;
+
+    client_max_body_size 5m;
+
+    location ~ \.git {
+        deny all;
+        return 404;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /api/ {
+        proxy_pass http://api/;
+    }
+}

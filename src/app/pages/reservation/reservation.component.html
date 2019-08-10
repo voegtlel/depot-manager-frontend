@@ -1,0 +1,64 @@
+<nb-card [nbSpinner]="loading">
+    <nb-card-header>
+        Reservation
+        <nb-actions *ngIf="!isNew" size="small" class="float-right">
+            <nb-action icon="fa fa-refresh" (click)="reload$.next(null)"></nb-action>
+            <nb-action icon="fa fa-save" (click)="onSubmit()"></nb-action>
+        </nb-actions>
+    </nb-card-header>
+    <nb-card-body>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <app-form-element
+                [formControlRef]="form.get('type')"
+                [submitted]="submitted"
+                type="radio"
+                [choices]="[{value: 0, title: 'Private'}, {value: 1, title: 'Team'}]"
+                title="Type"
+            ></app-form-element>
+            <app-form-element
+                [formControlRef]="form.get('name')"
+                [submitted]="submitted"
+                type="text"
+                title="Name"
+            ></app-form-element>
+            <app-form-element
+                [formControlRef]="form.get('start')"
+                [formControlRefEnd]="form.get('end')"
+                [submitted]="submitted"
+                type="daterange"
+                title="Date Range"
+            ></app-form-element>
+            <app-form-element
+                [formControlRef]="form.get('user')"
+                [submitted]="submitted"
+                type="text"
+                title="User"
+                [readonly]="true"
+            ></app-form-element>
+            <app-form-element
+                [formControlRef]="form.get('team')"
+                [submitted]="submitted"
+                type="select"
+                [choices]="teams$ | async"
+                title="Team"
+            ></app-form-element>
+            <app-form-element
+                [formControlRef]="form.get('contact')"
+                [submitted]="submitted"
+                type="textarea"
+                title="Contact"
+            ></app-form-element>
+            <div class="form-group">
+                <button
+                    nbButton
+                    fullWidth
+                    status="primary"
+                    size="large"
+                    [disabled]="loading || !form.valid"
+                    type="submit"
+                    [class.btn-pulse]="submitted"
+                >Save</button>
+            </div>
+        </form>
+    </nb-card-body>
+</nb-card>
