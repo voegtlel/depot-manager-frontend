@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService, AuthService} from '../_services';
-import {NbMenuItem} from '@nebular/theme';
+import {NbMenuItem, NbSidebarService} from '@nebular/theme';
 
 @Component({
     selector: 'pages-root',
@@ -26,9 +26,18 @@ export class PagesComponent implements OnInit {
         }
     ];
 
+    public headerItems: NbMenuItem[] = [
+        {
+            title: '',
+            icon: 'menu',
+            //action: () => {this.sidebarService.toggle(false, 'left');}
+        }
+    ];
+
     constructor(
         public authService: AuthService,
         public api: ApiService,
+        private sidebarService: NbSidebarService,
     ) {
     }
 

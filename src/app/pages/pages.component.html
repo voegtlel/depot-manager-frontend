@@ -1,5 +1,8 @@
 <nb-layout>
-    <nb-layout-header fixed>Depot Management</nb-layout-header>
+    <nb-layout-header fixed>
+        <button nbButton ghost (click)="sidebarService.toggle(false, 'left')"><nb-icon icon="menu"></nb-icon></button>
+        Depot Management
+    </nb-layout-header>
     <nb-sidebar>
         Hello {{(authService.user$ | async)?.name}}!
         <nb-menu [items]="menuItems"></nb-menu>

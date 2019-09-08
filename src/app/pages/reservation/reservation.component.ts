@@ -9,24 +9,6 @@ import {shareLast} from "../../_helpers";
 import {map, switchMap} from "rxjs/operators";
 
 
-interface EditReservation {
-    id: string;
-    type: ReservationType;
-    name: string;
-
-    start: Date;
-    end: Date;
-
-    userId: string;
-
-    teamId: string;
-
-    contact: string;
-
-    items?: string[];
-}
-
-
 @Component({
     selector: 'app-reservation',
     templateUrl: './reservation.component.html',
@@ -41,7 +23,7 @@ export class ReservationComponent implements OnInit, OnDestroy {
 
     teams$: Observable<{value: string, title: string}[]>;
 
-    value: EditReservation = null;
+    value: Reservation = null;
 
     form: FormGroup = new FormGroup({
         name: new FormControl("", Validators.required),
@@ -62,8 +44,6 @@ export class ReservationComponent implements OnInit, OnDestroy {
         public activatedRoute: ActivatedRoute,
         private toastrService: NbToastrService,
     ) {
-        // TODO: Get initial reservation and assign to value.
-        //   Update form values by loaded reservation
     }
 
     ngOnInit() {

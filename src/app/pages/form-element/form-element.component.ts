@@ -11,8 +11,8 @@ export interface Choice<T> {
 
 @Component({
     selector: 'app-form-element',
-    templateUrl: './formElement.component.html',
-    styleUrls: ['./formElement.component.scss'],
+    templateUrl: './form-element.component.html',
+    styleUrls: ['./form-element.component.scss'],
 })
 export class FormElementComponent {
     @Input() formControlRef: FormControl;

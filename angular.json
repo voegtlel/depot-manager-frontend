@@ -30,9 +30,9 @@
             ],
             "styles": [
               "src/styles.scss",
+              "src/themes.scss",
               "./node_modules/font-awesome/css/font-awesome.css",
               "./node_modules/ionicons/dist/css/ionicons.css",
-              "./node_modules/@nebular/theme/styles/prebuilt/default.css",
             ],
             "scripts": [
                 "./node_modules/xregexp/xregexp-all.js"

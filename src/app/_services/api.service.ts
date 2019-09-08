@@ -42,8 +42,17 @@ export class ApiService {
         return this.http.patch<Item>(`${this.env.apiUrl}/items/${item.id}`, item);
     }
 
-    getReservations(): Observable<Reservation[]> {
-        return this.http.get<Reservation[]>(`${this.env.apiUrl}/reservations`);
+    getReservations(start?: Date, end?: Date): Observable<Reservation[]> {
+        let query = "";
+        if (start) {
+            query = "&start=" + start.toISOString().substring(0, 10);
+            if (end) {
+                query += "&end=" + end.toISOString().substring(0, 10);
+            }
+        }  else if (end) {
+            query = "&end=" + end.toISOString().substring(0, 10);
+        }
+        return this.http.get<Reservation[]>(`${this.env.apiUrl}/reservations${query}`);
     }
 
     createReservations(reservation: Reservation): Observable<Reservation> {
@@ -60,5 +69,13 @@ export class ApiService {
 
     deleteReservation(reservation: Reservation): Observable<Reservation> {
         return this.http.patch<Reservation>(`${this.env.apiUrl}/reservations/${reservation.id}`, reservation);
+    }
+
+    getPictureUrl(pictureId: string): string {
+        return `${this.env.apiUrl}/pictures/${pictureId}/large`
+    }
+
+    getPicturePreviewUrl(pictureId: string): string {
+        return `${this.env.apiUrl}/pictures/${pictureId}/preview`
     }
 }

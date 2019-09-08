@@ -2,8 +2,8 @@
     <nb-card-header>
         Reservation
         <nb-actions *ngIf="!isNew" size="small" class="float-right">
-            <nb-action icon="fa fa-refresh" (click)="reload$.next(null)"></nb-action>
-            <nb-action icon="fa fa-save" (click)="onSubmit()"></nb-action>
+            <nb-action icon="refresh" (click)="reload$.next(null)"></nb-action>
+            <nb-action icon="save" (click)="onSubmit()"></nb-action>
         </nb-actions>
     </nb-card-header>
     <nb-card-body>
@@ -62,3 +62,8 @@
         </form>
     </nb-card-body>
 </nb-card>
+<app-reservation-items
+    [reservationsStart]="form.get('start').value"
+    [reservationsEnd]="form.get('start').value"
+    [skipReservationId]="value?.id"
+></app-reservation-items>

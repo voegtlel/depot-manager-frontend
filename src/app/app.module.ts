@@ -18,6 +18,7 @@ import {
     NbContextMenuModule,
     NbDatepickerModule,
     NbDialogModule,
+    NbIconModule,
     NbInputModule,
     NbLayoutModule,
     NbListModule,
@@ -51,17 +52,19 @@ import {AppComponent} from './app.component';
 import {routing} from './app.routing';
 
 import {authModule, NbPasswordAuthStrategyEndpoint} from './auth/auth.module';
+import {
+    CalendarRangeComponent,
+    CalendarRangeDayCellComponent,
+    DateRangePickerComponent,
+} from './pages/date-range-picker/date-range-picker.component';
+
 import {LoginComponent} from './auth/login/login.component';
 
 import {PagesComponent} from './pages/pages.component';
 import {HomeComponent} from './pages/home/home.component';
 import {ReservationComponent} from './pages/reservation/reservation.component';
-import {FormElementComponent} from "./pages/formElement/formElement.component";
-import {
-    CalendarRangeComponent,
-    CalendarRangeDayCellComponent,
-    DateRangePickerComponent,
-} from './pages/dateRangePicker/dateRangePicker.component';
+import {FormElementComponent} from "./pages/form-element/form-element.component";
+import {ReservationItemsComponent} from "./pages/reservation-items/reservation-items.component";
 
 @NgModule({
     entryComponents: [
@@ -75,6 +78,7 @@ import {
         LoginComponent,
         FormElementComponent,
         ReservationComponent,
+        ReservationItemsComponent,
 
         CalendarRangeDayCellComponent,
         CalendarRangeComponent,
@@ -122,6 +126,7 @@ import {
         NbCalendarKitModule,
         NbEvaIconsModule,
         NbBaseCalendarModule,
+        NbIconModule,
         ReactiveFormsModule,
         FormsModule,
         HttpClientModule,

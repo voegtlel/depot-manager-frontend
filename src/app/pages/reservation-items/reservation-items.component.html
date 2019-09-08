@@ -1,0 +1,114 @@
+<nb-card [nbSpinner]="loading">
+    <nb-card-header>
+        Items
+        <nb-actions size="small" class="float-right">
+            <nb-action icon="refresh" (click)="reload$.next(null)"></nb-action>
+            <nb-action icon="save" (click)="onSubmit()" *ngIf="!isNew"></nb-action>
+        </nb-actions>
+    </nb-card-header>
+    <nb-card-body>
+        <nb-list *ngIf="!group">
+            <nb-list-item *ngFor="let item of items$ | async">
+                <nb-checkbox
+                    status="primary"
+                    [disabled]="!item.available"
+                    [checked]="isSelected(item.id)"
+                    (checkedChange)="setSelected(item.id, $event)"
+                >
+                    <ng-container *ngTemplateOutlet="itemTemplate; context: {item: item}"></ng-container>
+                </nb-checkbox>
+            </nb-list-item>
+        </nb-list>
+        <nb-list *ngIf="group">
+            <nb-list-item *ngFor="let items of itemGroups$ | async" class="item">
+                <nb-checkbox
+                    *ngIf="items.length == 1"
+                    status="primary"
+                    [disabled]="!items[0].available"
+                    [checked]="isSelected(items[0].id)"
+                    (checkedChange)="setSelected(items[0].id, $event)"
+                >
+                    <ng-container *ngTemplateOutlet="itemTemplate; context: {item: items[0]}"></ng-container>
+                </nb-checkbox>
+                <div
+                    class="item-counter-container"
+                    *ngIf="items.length > 1"
+                >
+                    <div class="item-numeric-info">
+                        <button
+                            nbButton
+                            size="tiny"
+                            shape="rectangle"
+                            ghost
+                            class="up"
+                            [disabled]="!itemGroupCanSelectMore(items)"
+                            (click)="addToGroup(items)"
+                        >
+                            <nb-icon icon="arrow-up"></nb-icon>
+                        </button>
+                        <span class="count">{{itemGroupSelectedCount(items)}}/{{itemGroupSelectableCount(items)}}</span>
+                        <button
+                            nbButton
+                            size="tiny"
+                            shape="rectangle"
+                            ghost
+                            class="down"
+                            [disabled]="itemGroupSelectedCount(items) == 0"
+                            (click)="removeFromGroup(items)"
+                        >
+                            <nb-icon icon="arrow-down"></nb-icon>
+                        </button>
+                    </div>
+                    <div
+                        class="item-numeric-info-text"
+                        (click)="itemGroupCanSelectMore(items)?addToGroup(items):setGroupCount(items, 0)"
+                    >
+                        <ng-container *ngTemplateOutlet="itemTemplate; context: {item: items[0]}"></ng-container>
+                    </div>
+                </div>
+            </nb-list-item>
+        </nb-list>
+    </nb-card-body>
+</nb-card>
+
+<ng-template #itemTemplate let-item="item">
+    <div class="item-info">
+        <a *ngIf="item.pictureId"
+           class="item-picture image"
+           (click)="openDialog($event, imageDialog, item)"
+           [attr.href]="getItemPictureUrl(item)"
+        >
+            <img [src]="getItemPicturePreviewUrl(item)" alt="Item Image" />
+        </a>
+        <div class="item-text">
+            <div class="item-name">{{item.name}}</div>
+            <div class="item-description">{{item.description}}</div>
+            <div class="item-tags">
+                <span class="item-tag" *ngFor="let tag of item.tags">{{tag}}</span>
+            </div>
+        </div>
+    </div>
+</ng-template>
+<ng-template #imageDialog let-data let-ref="dialogRef">
+    <div
+        [nbSpinner]="imageLoading"
+        nbSpinnerStatus="info"
+    >
+        <img
+            class="preview-large"
+            [src]="getItemPictureUrl(data)"
+            alt="Picture"
+            (click)="ref.close()"
+            (load)="imageLoading=false"
+        />
+    </div>
+    <!--<nb-card>
+        <nb-card-header>Picture of {{data.name}}</nb-card-header>
+        <nb-card-body class="no-padding">
+            <img class="preview-large" [src]="getItemPictureUrl(data)" alt="Picture" />
+        </nb-card-body>
+        <nb-card-footer>
+            <button nbButton (click)="ref.close()">Close</button>
+        </nb-card-footer>
+    </nb-card>-->
+</ng-template>
