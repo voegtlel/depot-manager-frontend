@@ -29,13 +29,13 @@
               "src/env.js"
             ],
             "styles": [
-              "src/styles.scss",
               "src/themes.scss",
+              "src/styles.scss",
               "./node_modules/font-awesome/css/font-awesome.css",
-              "./node_modules/ionicons/dist/css/ionicons.css",
+              "./node_modules/ionicons/dist/css/ionicons.css"
             ],
             "scripts": [
-                "./node_modules/xregexp/xregexp-all.js"
+              "./node_modules/xregexp/xregexp-all.js"
             ]
           },
           "configurations": {
@@ -118,7 +118,7 @@
           }
         }
       }
-    },
+    }
   },
   "defaultProject": "client"
 }

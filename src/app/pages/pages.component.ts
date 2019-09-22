@@ -8,7 +8,7 @@ import {NbMenuItem, NbSidebarService} from '@nebular/theme';
     styleUrls: ['./pages.component.css']
 })
 export class PagesComponent implements OnInit {
-    public menuItems: NbMenuItem[] = [
+    menuItems: NbMenuItem[] = [
         {
             title: 'Home',
             link: '/',
@@ -26,7 +26,7 @@ export class PagesComponent implements OnInit {
         }
     ];
 
-    public headerItems: NbMenuItem[] = [
+    headerItems: NbMenuItem[] = [
         {
             title: '',
             icon: 'menu',
@@ -37,7 +37,7 @@ export class PagesComponent implements OnInit {
     constructor(
         public authService: AuthService,
         public api: ApiService,
-        private sidebarService: NbSidebarService,
+        public sidebarService: NbSidebarService,
     ) {
     }
 

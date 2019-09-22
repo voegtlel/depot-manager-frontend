@@ -2,13 +2,14 @@
     <nb-card-header>
         Items
         <nb-actions size="small" class="float-right">
+            <input type="text" nbInput placeholder="Filter" [(ngModel)]="filter" />
             <nb-action icon="refresh" (click)="reload$.next(null)"></nb-action>
             <nb-action icon="save" (click)="onSubmit()" *ngIf="!isNew"></nb-action>
         </nb-actions>
     </nb-card-header>
     <nb-card-body>
-        <nb-list *ngIf="!group">
-            <nb-list-item *ngFor="let item of items$ | async">
+        <!--<nb-list *ngIf="!group">
+            <nb-list-item *ngFor="let item of items$ | async | itemFilter:filter">
                 <nb-checkbox
                     status="primary"
                     [disabled]="!item.available"
@@ -18,9 +19,9 @@
                     <ng-container *ngTemplateOutlet="itemTemplate; context: {item: item}"></ng-container>
                 </nb-checkbox>
             </nb-list-item>
-        </nb-list>
+        </nb-list>-->
         <nb-list *ngIf="group">
-            <nb-list-item *ngFor="let items of itemGroups$ | async" class="item">
+            <nb-list-item *ngFor="let items of itemGroups$ | async | itemFilter:filter" class="item">
                 <nb-checkbox
                     *ngIf="items.length == 1"
                     status="primary"

@@ -33,7 +33,7 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
     private _selected: string[] = [];
     private _selectedLookup: {[id: string]: boolean} = {};
 
-    protected imageLoading: boolean;
+    imageLoading: boolean;
 
     _reservationsStart$: BehaviorSubject<Date> = new BehaviorSubject(null);
 
@@ -56,6 +56,8 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
     propagateChange: ((any) => void) = () => {};
 
     group: boolean = true;
+    filter: string;
+    isNew: boolean = true;
 
     constructor(
         public api: ApiService,
@@ -259,5 +261,9 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
         } else if (count < currentCount) {
             this.removeFromGroup(items, currentCount - count);
         }
+    }
+
+    onSubmit() {
+        console.log("Not implemented");
     }
 }

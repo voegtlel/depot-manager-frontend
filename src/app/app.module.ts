@@ -51,20 +51,19 @@ import {HttpErrorHandler} from './_services';
 import {AppComponent} from './app.component';
 import {routing} from './app.routing';
 
-import {authModule, NbPasswordAuthStrategyEndpoint} from './auth/auth.module';
+import {DepotManAuthModule, NbPasswordAuthStrategyEndpoint} from './auth/auth.module';
 import {
     CalendarRangeComponent,
     CalendarRangeDayCellComponent,
     DateRangePickerComponent,
 } from './pages/date-range-picker/date-range-picker.component';
 
-import {LoginComponent} from './auth/login/login.component';
-
 import {PagesComponent} from './pages/pages.component';
 import {HomeComponent} from './pages/home/home.component';
 import {ReservationComponent} from './pages/reservation/reservation.component';
 import {FormElementComponent} from "./pages/form-element/form-element.component";
 import {ReservationItemsComponent} from "./pages/reservation-items/reservation-items.component";
+import {ItemFilterPipe} from "./_pipes";
 
 @NgModule({
     entryComponents: [
@@ -75,7 +74,6 @@ import {ReservationItemsComponent} from "./pages/reservation-items/reservation-i
         AppComponent,
         PagesComponent,
         HomeComponent,
-        LoginComponent,
         FormElementComponent,
         ReservationComponent,
         ReservationItemsComponent,
@@ -83,6 +81,8 @@ import {ReservationItemsComponent} from "./pages/reservation-items/reservation-i
         CalendarRangeDayCellComponent,
         CalendarRangeComponent,
         DateRangePickerComponent,
+
+        ItemFilterPipe,
     ],
     imports: [
         BrowserModule,
@@ -92,16 +92,14 @@ import {ReservationItemsComponent} from "./pages/reservation-items/reservation-i
         NbToastrModule.forRoot(),
         NbDialogModule.forRoot(),
         NbDatepickerModule.forRoot(),
-        authModule,
+        DepotManAuthModule,
         NbActionsModule,
         NbCardModule,
         NbLayoutModule,
-        NbMenuModule,
         NbRouteTabsetModule,
         NbSearchModule,
         NbSidebarModule,
         NbTabsetModule,
-        NbThemeModule,
         NbUserModule,
         NbCheckboxModule,
         NbPopoverModule,
@@ -113,10 +111,8 @@ import {ReservationItemsComponent} from "./pages/reservation-items/reservation-i
         NbButtonModule,
         NbInputModule,
         NbAccordionModule,
-        NbDialogModule,
         NbWindowModule,
         NbListModule,
-        NbToastrModule,
         NbAlertModule,
         NbSpinnerModule,
         NbRadioModule,
