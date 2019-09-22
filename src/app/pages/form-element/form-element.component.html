@@ -44,7 +44,7 @@
             [status]="formControlRef.dirty ? (formControlRef.invalid  ? 'danger' : 'success') : ''"
             required
             [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
-            [formControl]="formControlRef"
+            [(ngModel)]="dateValue"
             [readOnly]="readonly"
             [nbDatepicker]="datepicker"
             #formControlEl
@@ -62,7 +62,7 @@
                 [status]="formControlRef.dirty ? (formControlRef.invalid  ? 'danger' : 'success') : ''"
                 required
                 [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
-                [formControl]="formControlRef"
+                [(ngModel)]="dateValue"
                 [readOnly]="readonly"
                 [nbDatepicker]="daterangepickerStart"
                 #formControlEl
@@ -74,13 +74,13 @@
                 [status]="formControlRefEnd.dirty ? (formControlRefEnd.invalid  ? 'danger' : 'success') : ''"
                 required
                 [attr.aria-invalid]="formControlRefEnd.invalid && formControlRefEnd.touched ? true : null"
-                [formControl]="formControlRefEnd"
+                [(ngModel)]="dateValueEnd"
                 [readOnly]="readonly"
                 [nbDatepicker]="daterangepickerEnd"
             />
         </div>
-        <app-date-range-picker [selectingStart]="true" [max]="formControlRefEnd.value" [otherDate]="formControlRefEnd.value" #daterangepickerStart></app-date-range-picker>
-        <app-date-range-picker [selectingStart]="false" [min]="formControlRef.value" [otherDate]="formControlRef.value" #daterangepickerEnd></app-date-range-picker>
+        <app-date-range-picker [selectingStart]="true" [max]="dateValueEnd" [otherDate]="dateValueEnd" #daterangepickerStart></app-date-range-picker>
+        <app-date-range-picker [selectingStart]="false" [min]="dateValue" [otherDate]="dateValue" #daterangepickerEnd></app-date-range-picker>
     </div>
     <div *ngSwitchCase="'radio'" class="form-control-group">
         <label class="label" [for]="formControlEl">{{title}}{{formControlRef.dirty ? ' *' : ''}}</label>

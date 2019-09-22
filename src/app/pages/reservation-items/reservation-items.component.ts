@@ -1,15 +1,16 @@
 import {Component, forwardRef, Input, OnDestroy, OnInit, TemplateRef} from '@angular/core';
 import {ApiService} from '../../_services';
-import {BehaviorSubject, Observable, of, Subscription} from "rxjs";
+import {BehaviorSubject, Observable, of, Subject} from "rxjs";
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {Item} from "../../_models";
 import {NbDialogService, NbToastrService} from "@nebular/theme";
 import {shareLast} from "../../_helpers";
-import {map, switchMap} from "rxjs/operators";
+import {map, switchMap, takeUntil, tap} from "rxjs/operators";
 import {combineLatest} from "rxjs";
+import {Filterable} from "../../_pipes";
 
 
-interface ItemWithAvailability extends Item {
+interface ItemWithAvailability extends Item, Filterable {
     available: boolean;
 }
 
@@ -23,27 +24,29 @@ interface ItemWithAvailability extends Item {
     styleUrls: ['./reservation-items.component.scss'],
 })
 export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValueAccessor {
-    loading: boolean;
+    private stop$ = new Subject<void>();
 
+    loading: boolean;
     reload$: BehaviorSubject<any> = new BehaviorSubject(null);
     items$: Observable<ItemWithAvailability[]>;
     itemGroups$: Observable<ItemWithAvailability[][]>;
-    private subscriptions: Subscription[] = [];
 
     private _selected: string[] = [];
     private _selectedLookup: {[id: string]: boolean} = {};
 
     imageLoading: boolean;
 
-    _reservationsStart$: BehaviorSubject<Date> = new BehaviorSubject(null);
+    _reservationsStart$: BehaviorSubject<string> = new BehaviorSubject(null);
 
-    @Input() set reservationsStart(value: Date) {
+    @Input() set reservationsStart(value: string) {
+        console.log("Set reservation start", value);
         this._reservationsStart$.next(value);
     }
 
-    _reservationsEnd$: BehaviorSubject<Date> = new BehaviorSubject(null);
+    _reservationsEnd$: BehaviorSubject<string> = new BehaviorSubject(null);
 
-    @Input() set reservationsEnd(value: Date) {
+    @Input() set reservationsEnd(value: string) {
+        console.log("Set reservation end", value);
         this._reservationsEnd$.next(value);
     }
 
@@ -57,7 +60,6 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
 
     group: boolean = true;
     filter: string;
-    isNew: boolean = true;
 
     constructor(
         public api: ApiService,
@@ -83,7 +85,8 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
                 map(reservations => reservations.filter(
                     reservation => reservation.id != skipReservationId
                 ))
-            ))
+            )),
+            tap(x => console.log("Reservations", x)),
         );
         const items$ = shareLast(this.reload$.pipe(
             switchMap(() => this.api.getItems()),
@@ -93,10 +96,12 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
                 return items.map(item => {
                     return {
                         ...item,
-                        available: !reservations.some(reservation => ~reservation.items.indexOf(item.id))
+                        available: !reservations.some(reservation => ~reservation.items.indexOf(item.id)),
+                        filterLookup: (item.name + '\0' + item.description + '\0' + item.externalId + '\0' + item.tags.join('\0')).toLowerCase()
                     };
                 });
-            })
+            }),
+            takeUntil(this.stop$),
         );
 
         this.items$.subscribe(items => {
@@ -146,10 +151,7 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
     }
 
     ngOnDestroy(): void {
-        this.subscriptions.forEach(subscription => {
-            subscription.unsubscribe();
-        });
-        this.subscriptions = []
+        this.stop$.next();
     }
 
     select(id: string) {
@@ -261,9 +263,5 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
         } else if (count < currentCount) {
             this.removeFromGroup(items, currentCount - count);
         }
-    }
-
-    onSubmit() {
-        console.log("Not implemented");
     }
 }

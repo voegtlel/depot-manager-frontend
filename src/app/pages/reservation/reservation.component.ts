@@ -1,12 +1,12 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ApiService, AuthService} from '../../_services';
-import {BehaviorSubject, Observable, of, Subscription} from "rxjs";
+import {BehaviorSubject, Observable, of, Subject} from "rxjs";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Reservation, ReservationType} from "../../_models";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {NbToastrService} from "@nebular/theme";
 import {shareLast} from "../../_helpers";
-import {map, switchMap} from "rxjs/operators";
+import {map, switchMap, takeUntil} from "rxjs/operators";
 
 
 @Component({
@@ -14,6 +14,8 @@ import {map, switchMap} from "rxjs/operators";
     templateUrl: './reservation.component.html',
 })
 export class ReservationComponent implements OnInit, OnDestroy {
+    private stop$ = new Subject<void>();
+
     loading: boolean;
     submitted: boolean;
 
@@ -30,18 +32,22 @@ export class ReservationComponent implements OnInit, OnDestroy {
         type: new FormControl("", Validators.required),
         start: new FormControl("", Validators.required),
         end: new FormControl("", Validators.required),
-        user: new FormControl(""),
-        team: new FormControl(""),
+        teamId: new FormControl(""),
         contact: new FormControl("", Validators.required),
         items: new FormControl([]),
     });
+    private userId = new FormControl("");
 
-    private subscriptions: Subscription[] = [];
+    reservationChoices = {
+        Private: ReservationType.Private,
+        Team: ReservationType.Team,
+    };
 
     constructor(
         public api: ApiService,
         public authService: AuthService,
         public activatedRoute: ActivatedRoute,
+        public router: Router,
         private toastrService: NbToastrService,
     ) {
     }
@@ -55,12 +61,13 @@ export class ReservationComponent implements OnInit, OnDestroy {
                     return this.api.getReservation(reservationId);
                 }
                 return of(null);
-            })
+            }),
+            takeUntil(this.stop$),
         ));
 
         this.teams$ = this.authService.user$.pipe(map(user => user.teams.map(team => { return {value: team, title: team}; })));
 
-        this.subscriptions.push(loadedReservation$.subscribe((reservation) => {
+        loadedReservation$.subscribe((reservation) => {
             if (reservation !== null) {
                 this.value = {
                     id: reservation.id,
@@ -68,10 +75,11 @@ export class ReservationComponent implements OnInit, OnDestroy {
                     name: reservation.name,
                     start: new Date(reservation.start),
                     end: new Date(reservation.end),
-                    userId: reservation.userId,
+
                     teamId: reservation.teamId,
                     contact: reservation.contact,
                 };
+                this.userId.reset(reservation.userId);
                 this.isNew = false;
                 this.form.reset(this.value);
             } else {
@@ -80,35 +88,53 @@ export class ReservationComponent implements OnInit, OnDestroy {
             }
             this.submitted = false;
             this.loading = false;
-        }));
+        });
 
-        this.subscriptions.push(loadedReservation$.pipe(
+        loadedReservation$.pipe(
             switchMap(reservation => reservation?this.api.getUser(reservation.userId):this.authService.user$),
-            map(user => user.name)
+            map(user => user.name),
+            takeUntil(this.stop$),
         ).subscribe(username => {
-            this.form.get('user').reset(username)
-        }));
+            this.userId.reset(username)
+        });
 
-        this.subscriptions.push(loadedReservation$.pipe(
+        loadedReservation$.pipe(
             switchMap(reservation => reservation?of(null):this.authService.user$),
+            takeUntil(this.stop$),
         ).subscribe(user => {
             if (user !== null) {
                 this.form.get('contact').reset(`${user.name} (${user.mail}, ${user.mobile})`)
             }
-        }));
+        });
     }
 
     ngOnDestroy(): void {
-        this.subscriptions.forEach(subscription => {
-            subscription.unsubscribe();
-        });
-        this.subscriptions = []
+        this.stop$.next();
     }
 
     onSubmit() {
-        console.log("Submit:", this.form.value);
+        console.log("Submit:", this.form.getRawValue());
         if (!this.form.valid) {
             return;
+        }
+        if (this.isNew) {
+            this.api.createReservation(this.form.getRawValue()).subscribe(
+                (reservation) => {
+                    this.form.reset(reservation);
+                    this.form.markAsPristine();
+                    this.form.markAsUntouched();
+                    this.router.navigate([reservation.id], {
+                        replaceUrl: true, skipLocationChange: true, relativeTo: this.activatedRoute.parent
+                    });
+                    this.toastrService.success("Reservation was saved", "Reservation Created");
+                },
+                (error) => {
+                    console.log(error);
+                    this.toastrService.danger(error, "Failed");
+                }
+            );
+        } else {
+
         }
         // TODO: Decide if form is new --> create
         // TODO: Otherwise --> differential update

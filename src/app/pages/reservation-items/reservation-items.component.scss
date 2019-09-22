@@ -1,5 +1,11 @@
 @import '../../../themes';
 
+.header-flex {
+    display: flex;
+    place-content: space-between;
+    flex-flow: wrap;
+}
+
 .item {
     display: flex;
 }

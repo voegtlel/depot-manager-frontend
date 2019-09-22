@@ -63,7 +63,7 @@ import {HomeComponent} from './pages/home/home.component';
 import {ReservationComponent} from './pages/reservation/reservation.component';
 import {FormElementComponent} from "./pages/form-element/form-element.component";
 import {ReservationItemsComponent} from "./pages/reservation-items/reservation-items.component";
-import {ItemFilterPipe} from "./_pipes";
+import {ItemFilterPipe, ItemGroupFilterPipe} from "./_pipes";
 
 @NgModule({
     entryComponents: [
@@ -83,6 +83,7 @@ import {ItemFilterPipe} from "./_pipes";
         DateRangePickerComponent,
 
         ItemFilterPipe,
+        ItemGroupFilterPipe,
     ],
     imports: [
         BrowserModule,

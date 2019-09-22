@@ -265,7 +265,7 @@ export class DateRangePickerComponent<D> extends NbDatepickerComponent<D> {
             end: this.selectingStart ? this.otherDate : value,
             selectingStart: this.selectingStart,
         };
-        console.log("Setting picker range", this.picker.range);
+        console.debug("Setting picker range", this.picker.range);
     }
 
     protected get pickerValueChange(): Observable<D> {

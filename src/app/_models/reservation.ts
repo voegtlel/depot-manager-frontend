@@ -10,7 +10,7 @@ export interface Reservation {
 
     start: Date|string;
     end: Date|string;
-    userId: string;
+    userId?: string;
 
     teamId: string;
 

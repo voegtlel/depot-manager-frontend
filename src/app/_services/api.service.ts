@@ -42,20 +42,20 @@ export class ApiService {
         return this.http.patch<Item>(`${this.env.apiUrl}/items/${item.id}`, item);
     }
 
-    getReservations(start?: Date, end?: Date): Observable<Reservation[]> {
+    getReservations(start?: string, end?: string): Observable<Reservation[]> {
         let query = "";
         if (start) {
-            query = "&start=" + start.toISOString().substring(0, 10);
+            query = "?start=" + start;
             if (end) {
-                query += "&end=" + end.toISOString().substring(0, 10);
+                query += "&end=" + end;
             }
         }  else if (end) {
-            query = "&end=" + end.toISOString().substring(0, 10);
+            query = "?end=" + end;
         }
         return this.http.get<Reservation[]>(`${this.env.apiUrl}/reservations${query}`);
     }
 
-    createReservations(reservation: Reservation): Observable<Reservation> {
+    createReservation(reservation: Reservation): Observable<Reservation> {
         return this.http.post<Reservation>(`${this.env.apiUrl}/reservations`, reservation);
     }
 

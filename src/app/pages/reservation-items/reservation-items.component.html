@@ -1,14 +1,16 @@
 <nb-card [nbSpinner]="loading">
-    <nb-card-header>
-        Items
+    <nb-card-header class="header-flex">
+        <span>Items</span>
+        <div class="filter">
+            <label class="label" [for]="filterInput"><nb-icon icon="funnel"></nb-icon> Filter: </label>
+            <input type="text" nbInput [status]="filter?'success':''" fieldSize="small" [(ngModel)]="filter" #filterInput />
+        </div>
         <nb-actions size="small" class="float-right">
-            <input type="text" nbInput placeholder="Filter" [(ngModel)]="filter" />
             <nb-action icon="refresh" (click)="reload$.next(null)"></nb-action>
-            <nb-action icon="save" (click)="onSubmit()" *ngIf="!isNew"></nb-action>
         </nb-actions>
     </nb-card-header>
     <nb-card-body>
-        <!--<nb-list *ngIf="!group">
+        <nb-list *ngIf="!group">
             <nb-list-item *ngFor="let item of items$ | async | itemFilter:filter">
                 <nb-checkbox
                     status="primary"
@@ -19,9 +21,9 @@
                     <ng-container *ngTemplateOutlet="itemTemplate; context: {item: item}"></ng-container>
                 </nb-checkbox>
             </nb-list-item>
-        </nb-list>-->
+        </nb-list>
         <nb-list *ngIf="group">
-            <nb-list-item *ngFor="let items of itemGroups$ | async | itemFilter:filter" class="item">
+            <nb-list-item *ngFor="let items of itemGroups$ | async | itemGroupFilter:filter" class="item">
                 <nb-checkbox
                     *ngIf="items.length == 1"
                     status="primary"

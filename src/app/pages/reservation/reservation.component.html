@@ -11,8 +11,8 @@
             <app-form-element
                 [formControlRef]="form.get('type')"
                 [submitted]="submitted"
+                [choices]="[{value: reservationChoices.Private, title: 'Private'}, {value: reservationChoices.Team, title: 'Team'}]"
                 type="radio"
-                [choices]="[{value: 0, title: 'Private'}, {value: 1, title: 'Team'}]"
                 title="Type"
             ></app-form-element>
             <app-form-element
@@ -29,17 +29,17 @@
                 title="Date Range"
             ></app-form-element>
             <app-form-element
-                [formControlRef]="form.get('user')"
+                [formControlRef]="userId"
                 [submitted]="submitted"
                 type="text"
                 title="User"
                 [readonly]="true"
             ></app-form-element>
             <app-form-element
-                [formControlRef]="form.get('team')"
+                [formControlRef]="form.get('teamId')"
                 [submitted]="submitted"
-                type="select"
                 [choices]="teams$ | async"
+                type="select"
                 title="Team"
             ></app-form-element>
             <app-form-element
@@ -64,7 +64,7 @@
 </nb-card>
 <app-reservation-items
     [reservationsStart]="form.get('start').value"
-    [reservationsEnd]="form.get('start').value"
+    [reservationsEnd]="form.get('end').value"
     [skipReservationId]="value?.id"
     [formControl]="form.get('items')"
 ></app-reservation-items>
