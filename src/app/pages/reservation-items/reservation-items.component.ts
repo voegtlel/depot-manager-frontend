@@ -69,34 +69,34 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
     }
 
     ngOnInit() {
-        const reservations$ = shareLast(this.reload$.pipe(
+        const filteredItemIds$ = shareLast(this.reload$.pipe(
             switchMap(() => combineLatest([
-                this._reservationsStart$, this._reservationsEnd$
+                this._reservationsStart$, this._reservationsEnd$, this._skipReservationId$,
             ])),
-            switchMap(([reservationStart, reservationEnd]) => {
+            switchMap(([reservationStart, reservationEnd, skipReservationId]) => {
                 if (reservationStart && reservationEnd) {
-                    return this.api.getReservations(reservationStart, reservationEnd);
+                    return this.api.getReservationItems(reservationStart, reservationEnd, skipReservationId);
                 }
                 return of([]);
             }),
+            map(filteredItemIds => {
+                let mapping: {[id: string]: boolean} = {};
+                filteredItemIds.forEach(itemId => {
+                    mapping[itemId] = true;
+                });
+                return mapping;
+            }),
+            tap(x => console.log("filteredItemIds$", x))
         ));
-        const filteredReservations$ = this._skipReservationId$.pipe(
-            switchMap(skipReservationId => reservations$.pipe(
-                map(reservations => reservations.filter(
-                    reservation => reservation.id != skipReservationId
-                ))
-            )),
-            tap(x => console.log("Reservations", x)),
-        );
         const items$ = shareLast(this.reload$.pipe(
             switchMap(() => this.api.getItems()),
         ));
-        this.items$ = combineLatest([filteredReservations$, items$]).pipe(
-            map(([reservations, items]) => {
+        this.items$ = combineLatest([filteredItemIds$, items$]).pipe(
+            map(([filteredItemIds, items]) => {
                 return items.map(item => {
                     return {
                         ...item,
-                        available: !reservations.some(reservation => ~reservation.items.indexOf(item.id)),
+                        available: !filteredItemIds[item.id],
                         filterLookup: (item.name + '\0' + item.description + '\0' + item.externalId + '\0' + item.tags.join('\0')).toLowerCase()
                     };
                 });

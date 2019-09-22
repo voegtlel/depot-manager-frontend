@@ -12,6 +12,7 @@
                 [formControlRef]="form.get('type')"
                 [submitted]="submitted"
                 [choices]="[{value: reservationChoices.Private, title: 'Private'}, {value: reservationChoices.Team, title: 'Team'}]"
+                (change)="onTypeChange()"
                 type="radio"
                 title="Type"
             ></app-form-element>
@@ -41,6 +42,7 @@
                 [choices]="teams$ | async"
                 type="select"
                 title="Team"
+                [readonly]="form.get('type').value !== reservationChoices.Team"
             ></app-form-element>
             <app-form-element
                 [formControlRef]="form.get('contact')"

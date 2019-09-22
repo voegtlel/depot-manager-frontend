@@ -55,6 +55,14 @@ export class ApiService {
         return this.http.get<Reservation[]>(`${this.env.apiUrl}/reservations${query}`);
     }
 
+    getReservationItems(start: string, end: string, skipReservationId?: string): Observable<string[]> {
+        let query = "?start=" + start + "&end=" + end;
+        if (skipReservationId) {
+            query += "&skipReservationId=" + skipReservationId;
+        }
+        return this.http.get<string[]>(`${this.env.apiUrl}/reservations/items${query}`);
+    }
+
     createReservation(reservation: Reservation): Observable<Reservation> {
         return this.http.post<Reservation>(`${this.env.apiUrl}/reservations`, reservation);
     }

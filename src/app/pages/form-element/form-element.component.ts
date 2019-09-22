@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {fromIsoDate, toIsoDate} from "../../_helpers";
 
@@ -26,6 +26,8 @@ export class FormElementComponent {
     @Input() submitted = false;
 
     @Input() choices: Choice<any>[] = [];
+
+    @Output() change: EventEmitter<void> = new EventEmitter();
 
     private _storedDateValue: Date = null;
 

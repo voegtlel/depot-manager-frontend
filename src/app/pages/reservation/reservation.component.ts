@@ -36,7 +36,7 @@ export class ReservationComponent implements OnInit, OnDestroy {
         contact: new FormControl("", Validators.required),
         items: new FormControl([]),
     });
-    private userId = new FormControl("");
+    userId = new FormControl("");
 
     reservationChoices = {
         Private: ReservationType.Private,
@@ -78,13 +78,28 @@ export class ReservationComponent implements OnInit, OnDestroy {
 
                     teamId: reservation.teamId,
                     contact: reservation.contact,
+
+                    items: reservation.items,
                 };
                 this.userId.reset(reservation.userId);
                 this.isNew = false;
                 this.form.reset(this.value);
             } else {
+                this.value = {
+                    id: null,
+                    type: null,
+                    name: "",
+                    start: null,
+                    end: null,
+
+                    teamId: null,
+                    contact: "",
+
+                    items: [],
+                };
                 this.isNew = true;
-                this.form.reset();
+                this.userId.reset(null);
+                this.form.reset(this.value);
             }
             this.submitted = false;
             this.loading = false;
@@ -110,6 +125,10 @@ export class ReservationComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.stop$.next();
+    }
+
+    onTypeChange() {
+        this.form.get('teamId').setValue(null);
     }
 
     onSubmit() {

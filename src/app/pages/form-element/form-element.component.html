@@ -2,6 +2,7 @@
     <div *ngSwitchCase="'checkbox'" class="form-control-group">
         <nb-checkbox [formControl]="formControlRef" [disabled]="readonly"
                      [status]="submitted && formControlRef.errors ? 'danger':''"
+                     (valueChange)="change.emit(undefined)"
         >{{title}}{{formControlRef.dirty ? ' *' : ''}}</nb-checkbox>
     </div>
     <div *ngSwitchCase="'text'" class="form-control-group">
@@ -15,6 +16,7 @@
             required
             [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
             [formControl]="formControlRef"
+            (change)="change.emit(undefined)"
             [readOnly]="readonly"
             #formControlEl
         />
@@ -31,6 +33,7 @@
             [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
             [formControl]="formControlRef"
             [readOnly]="readonly"
+            (change)="change.emit(undefined)"
             #formControlEl
         ></textarea>
     </div>
@@ -45,6 +48,7 @@
             required
             [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
             [(ngModel)]="dateValue"
+            (change)="change.emit(undefined)"
             [readOnly]="readonly"
             [nbDatepicker]="datepicker"
             #formControlEl
@@ -63,6 +67,7 @@
                 required
                 [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
                 [(ngModel)]="dateValue"
+                (change)="change.emit(undefined)"
                 [readOnly]="readonly"
                 [nbDatepicker]="daterangepickerStart"
                 #formControlEl
@@ -75,6 +80,7 @@
                 required
                 [attr.aria-invalid]="formControlRefEnd.invalid && formControlRefEnd.touched ? true : null"
                 [(ngModel)]="dateValueEnd"
+                (change)="change.emit(undefined)"
                 [readOnly]="readonly"
                 [nbDatepicker]="daterangepickerEnd"
             />
@@ -86,6 +92,7 @@
         <label class="label" [for]="formControlEl">{{title}}{{formControlRef.dirty ? ' *' : ''}}</label>
         <nb-radio-group
             [formControl]="formControlRef"
+            (valueChange)="change.emit(undefined)"
             [status]="formControlRef.dirty ? (formControlRef.invalid  ? 'danger' : 'success') : ''"
             [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
             [disabled]="readonly"
@@ -102,6 +109,7 @@
                 [status]="formControlRef.dirty ? (formControlRef.invalid  ? 'danger' : 'success') : ''"
                 [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
                 [disabled]="readonly"
+                (selectedChange)="change.emit(undefined)"
                 [placeholder]="title"
                 #formControlEl
             >

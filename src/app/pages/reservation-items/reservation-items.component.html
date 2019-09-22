@@ -36,6 +36,7 @@
                 <div
                     class="item-counter-container"
                     *ngIf="items.length > 1"
+                    [class.disabled]="itemGroupSelectableCount(items) === 0"
                 >
                     <div class="item-numeric-info">
                         <button
