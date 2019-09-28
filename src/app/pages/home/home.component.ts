@@ -3,7 +3,7 @@ import {ApiService} from '../../_services';
 
 
 @Component({
-    selector: 'app-home',
+    selector: 'depot-home',
     templateUrl: './home.component.html',
 })
 export class HomeComponent {

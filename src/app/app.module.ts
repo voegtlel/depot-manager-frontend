@@ -64,6 +64,8 @@ import {ReservationComponent} from './pages/reservation/reservation.component';
 import {FormElementComponent} from "./pages/form-element/form-element.component";
 import {ReservationItemsComponent} from "./pages/reservation-items/reservation-items.component";
 import {ItemFilterPipe, ItemGroupFilterPipe} from "./_pipes";
+import { ReservationsComponent } from './pages/reservations/reservations.component';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
 
 @NgModule({
     entryComponents: [
@@ -84,6 +86,8 @@ import {ItemFilterPipe, ItemGroupFilterPipe} from "./_pipes";
 
         ItemFilterPipe,
         ItemGroupFilterPipe,
+        ReservationsComponent,
+        NotFoundComponent,
     ],
     imports: [
         BrowserModule,

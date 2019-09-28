@@ -4,7 +4,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 
 
 @Component({
-    selector: 'app-login',
+    selector: 'depot-login',
     templateUrl: './login.component.html',
 })
 export class LoginComponent {

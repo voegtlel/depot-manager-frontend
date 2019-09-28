@@ -6,6 +6,8 @@ import {NbAuthComponent, NbLogoutComponent} from '@nebular/auth';
 import {PagesComponent} from './pages/pages.component';
 import {LoginComponent} from './auth/login/login.component';
 import {ReservationComponent} from "./pages/reservation/reservation.component";
+import {ReservationsComponent} from "./pages/reservations/reservations.component";
+import {NotFoundComponent} from "./pages/not-found/not-found.component";
 
 
 const appRoutes: Routes = [
@@ -19,11 +21,11 @@ const appRoutes: Routes = [
                 component: HomeComponent,
             },
             {
-                path: 'reservation',
-                component: ReservationComponent,
+                path: 'reservations',
+                component: ReservationsComponent,
             },
             {
-                path: 'reservation/:reservationId',
+                path: 'reservations/:reservationId',
                 component: ReservationComponent,
             },
         ]
@@ -51,7 +53,8 @@ const appRoutes: Routes = [
     // otherwise redirect to home
     {
         path: '**',
-        redirectTo: ''
+        component: NotFoundComponent,
+        //redirectTo: ''
     }
 ];
 

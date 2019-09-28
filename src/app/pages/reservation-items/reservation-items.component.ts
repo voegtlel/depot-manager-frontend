@@ -1,11 +1,10 @@
 import {Component, forwardRef, Input, OnDestroy, OnInit, TemplateRef} from '@angular/core';
 import {ApiService} from '../../_services';
-import {BehaviorSubject, Observable, of, Subject} from "rxjs";
+import {BehaviorSubject, Observable, of, ReplaySubject, Subject} from "rxjs";
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {Item} from "../../_models";
 import {NbDialogService, NbToastrService} from "@nebular/theme";
-import {shareLast} from "../../_helpers";
-import {map, switchMap, takeUntil, tap} from "rxjs/operators";
+import {map, shareReplay, switchMap, takeUntil, tap} from "rxjs/operators";
 import {combineLatest} from "rxjs";
 import {Filterable} from "../../_pipes";
 
@@ -16,7 +15,7 @@ interface ItemWithAvailability extends Item, Filterable {
 
 
 @Component({
-    selector: 'app-reservation-items',
+    selector: 'depot-reservation-items',
     templateUrl: './reservation-items.component.html',
     providers: [
         {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ReservationItemsComponent), multi: true},
@@ -36,21 +35,21 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
 
     imageLoading: boolean;
 
-    _reservationsStart$: BehaviorSubject<string> = new BehaviorSubject(null);
+    _reservationsStart$: ReplaySubject<string> = new ReplaySubject(1);
 
     @Input() set reservationsStart(value: string) {
         console.log("Set reservation start", value);
         this._reservationsStart$.next(value);
     }
 
-    _reservationsEnd$: BehaviorSubject<string> = new BehaviorSubject(null);
+    _reservationsEnd$: ReplaySubject<string> = new ReplaySubject(1);
 
     @Input() set reservationsEnd(value: string) {
         console.log("Set reservation end", value);
         this._reservationsEnd$.next(value);
     }
 
-    _skipReservationId$: BehaviorSubject<string> = new BehaviorSubject(null);
+    _skipReservationId$: ReplaySubject<string> = new ReplaySubject(1);
 
     @Input() set skipReservationId(value: string) {
         this._skipReservationId$.next(value);
@@ -69,7 +68,7 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
     }
 
     ngOnInit() {
-        const filteredItemIds$ = shareLast(this.reload$.pipe(
+        const filteredItemIds$ = this.reload$.pipe(
             switchMap(() => combineLatest([
                 this._reservationsStart$, this._reservationsEnd$, this._skipReservationId$,
             ])),
@@ -86,11 +85,13 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
                 });
                 return mapping;
             }),
-            tap(x => console.log("filteredItemIds$", x))
-        ));
-        const items$ = shareLast(this.reload$.pipe(
+            tap(x => console.log("filteredItemIds$", x)),
+            shareReplay(1),
+        );
+        const items$ = this.reload$.pipe(
             switchMap(() => this.api.getItems()),
-        ));
+            shareReplay(1),
+        );
         this.items$ = combineLatest([filteredItemIds$, items$]).pipe(
             map(([filteredItemIds, items]) => {
                 return items.map(item => {
@@ -106,7 +107,7 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
 
         this.items$.subscribe(items => {
             const itemsById: {[id: string]: ItemWithAvailability} = items.reduce((obj, item) => {
-                obj[item.id] = true;
+                obj[item.id] = item;
                 return obj;
             }, {});
             const foundItems = this._selected.filter(selectedId => itemsById.hasOwnProperty(selectedId));
@@ -123,6 +124,15 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
                     item =>`${item.name} (${item.externalId})`
                 ).join(', ');
                 this.toastrService.danger(`${foundItems.length - availableItems.length} items were removed from your reservation, because they are not available: ${removedItems}`)
+            }
+
+            if (this._selected.length != availableItems.length) {
+                this._selected = availableItems;
+                this._selectedLookup = availableItems.reduce((obj, item) => {
+                    obj[item] = true;
+                    return obj;
+                }, {});
+                this.propagateChange(this._selected);
             }
         });
 
@@ -194,6 +204,7 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
                 obj[item] = true;
                 return obj;
             }, {});
+            console.log("selected", this._selected);
         } else {
             this._selected = [];
             this._selectedLookup = {};

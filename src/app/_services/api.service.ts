@@ -38,21 +38,29 @@ export class ApiService {
         return this.http.get<Item>(`${this.env.apiUrl}/items/${itemId}`);
     }
 
-    saveItem(item: Item): Observable<Item> {
-        return this.http.patch<Item>(`${this.env.apiUrl}/items/${item.id}`, item);
+    saveItem(itemId: string, item: Item): Observable<Item> {
+        return this.http.patch<Item>(`${this.env.apiUrl}/items/${itemId}`, item);
     }
 
-    getReservations(start?: string, end?: string): Observable<Reservation[]> {
-        let query = "";
+    getReservations(start?: string, end?: string, offset?: number, count?: number): Observable<Reservation[]> {
+        const query = [];
         if (start) {
-            query = "?start=" + start;
-            if (end) {
-                query += "&end=" + end;
-            }
-        }  else if (end) {
-            query = "?end=" + end;
+            query.push("start=" + start);
         }
-        return this.http.get<Reservation[]>(`${this.env.apiUrl}/reservations${query}`);
+        if (end) {
+            query.push("end=" + end);
+        }
+        if (offset) {
+            query.push("offset=" + offset);
+        }
+        if (count) {
+            query.push("count=" + count);
+        }
+        let queryStr = "";
+        if (query.length > 0) {
+            queryStr = "?" + query.join('&')
+        }
+        return this.http.get<Reservation[]>(`${this.env.apiUrl}/reservations${queryStr}`);
     }
 
     getReservationItems(start: string, end: string, skipReservationId?: string): Observable<string[]> {
@@ -71,12 +79,12 @@ export class ApiService {
         return this.http.get<Reservation>(`${this.env.apiUrl}/reservations/${reservationId}`);
     }
 
-    saveReservation(reservation: Reservation): Observable<Reservation> {
-        return this.http.patch<Reservation>(`${this.env.apiUrl}/reservations/${reservation.id}`, reservation);
+    saveReservation(reservationId: string, reservation: Reservation): Observable<Reservation> {
+        return this.http.patch<Reservation>(`${this.env.apiUrl}/reservations/${reservationId}`, reservation);
     }
 
-    deleteReservation(reservation: Reservation): Observable<Reservation> {
-        return this.http.patch<Reservation>(`${this.env.apiUrl}/reservations/${reservation.id}`, reservation);
+    deleteReservation(reservationId: string, reservation: Reservation): Observable<Reservation> {
+        return this.http.patch<Reservation>(`${this.env.apiUrl}/reservations/${reservationId}`, reservation);
     }
 
     getPictureUrl(pictureId: string): string {

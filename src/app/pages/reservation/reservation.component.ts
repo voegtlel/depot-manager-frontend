@@ -1,16 +1,15 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ApiService, AuthService} from '../../_services';
-import {BehaviorSubject, Observable, of, Subject} from "rxjs";
+import {BehaviorSubject, Observable, ObservedValuesFromArray, of, Subject} from "rxjs";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Reservation, ReservationType} from "../../_models";
 import {ActivatedRoute, Router} from "@angular/router";
 import {NbToastrService} from "@nebular/theme";
-import {shareLast} from "../../_helpers";
-import {map, switchMap, takeUntil} from "rxjs/operators";
+import {map, shareReplay, switchMap, takeUntil} from "rxjs/operators";
 
 
 @Component({
-    selector: 'app-reservation',
+    selector: 'depot-reservation',
     templateUrl: './reservation.component.html',
 })
 export class ReservationComponent implements OnInit, OnDestroy {
@@ -21,22 +20,22 @@ export class ReservationComponent implements OnInit, OnDestroy {
 
     isNew: boolean;
 
-    reload$: BehaviorSubject<any> = new BehaviorSubject(null);
+    reload$: BehaviorSubject<void> = new BehaviorSubject(undefined);
 
     teams$: Observable<{value: string, title: string}[]>;
 
-    value: Reservation = null;
+    reservationId: string = null;
 
-    form: FormGroup = new FormGroup({
+    readonly form: FormGroup = new FormGroup({
         name: new FormControl("", Validators.required),
-        type: new FormControl("", Validators.required),
-        start: new FormControl("", Validators.required),
-        end: new FormControl("", Validators.required),
-        teamId: new FormControl(""),
+        type: new FormControl(null, Validators.required),
+        start: new FormControl(null, Validators.required),
+        end: new FormControl(null, Validators.required),
+        teamId: new FormControl(null),
         contact: new FormControl("", Validators.required),
         items: new FormControl([]),
     });
-    userId = new FormControl("");
+    readonly userId = new FormControl("");
 
     reservationChoices = {
         Private: ReservationType.Private,
@@ -54,38 +53,31 @@ export class ReservationComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         const reservationId$ = this.activatedRoute.paramMap.pipe(map(params => params.get('reservationId')));
-        const loadedReservation$ = shareLast(this.reload$.pipe(
+        const loadedReservation$ = this.reload$.pipe(
             switchMap(() => reservationId$),
             switchMap(reservationId => {
-                if (reservationId) {
+                if (reservationId && reservationId !== 'new') {
                     return this.api.getReservation(reservationId);
                 }
                 return of(null);
             }),
+            shareReplay(1),
             takeUntil(this.stop$),
-        ));
+        );
 
         this.teams$ = this.authService.user$.pipe(map(user => user.teams.map(team => { return {value: team, title: team}; })));
 
         loadedReservation$.subscribe((reservation) => {
             if (reservation !== null) {
-                this.value = {
-                    id: reservation.id,
-                    type: reservation.type,
-                    name: reservation.name,
-                    start: new Date(reservation.start),
-                    end: new Date(reservation.end),
-
-                    teamId: reservation.teamId,
-                    contact: reservation.contact,
-
-                    items: reservation.items,
-                };
+                this.reservationId = reservation.id;
                 this.userId.reset(reservation.userId);
                 this.isNew = false;
-                this.form.reset(this.value);
+                this.form.reset(reservation);
             } else {
-                this.value = {
+                this.reservationId = null;
+                this.isNew = true;
+                this.userId.reset(null);
+                this.form.reset({
                     id: null,
                     type: null,
                     name: "",
@@ -96,10 +88,7 @@ export class ReservationComponent implements OnInit, OnDestroy {
                     contact: "",
 
                     items: [],
-                };
-                this.isNew = true;
-                this.userId.reset(null);
-                this.form.reset(this.value);
+                });
             }
             this.submitted = false;
             this.loading = false;
@@ -136,25 +125,28 @@ export class ReservationComponent implements OnInit, OnDestroy {
         if (!this.form.valid) {
             return;
         }
+        let apiCall: Observable<Reservation>;
         if (this.isNew) {
-            this.api.createReservation(this.form.getRawValue()).subscribe(
-                (reservation) => {
-                    this.form.reset(reservation);
-                    this.form.markAsPristine();
-                    this.form.markAsUntouched();
-                    this.router.navigate([reservation.id], {
-                        replaceUrl: true, skipLocationChange: true, relativeTo: this.activatedRoute.parent
-                    });
-                    this.toastrService.success("Reservation was saved", "Reservation Created");
-                },
-                (error) => {
-                    console.log(error);
-                    this.toastrService.danger(error, "Failed");
-                }
-            );
+            apiCall = this.api.createReservation(this.form.getRawValue());
         } else {
-
+            apiCall = this.api.saveReservation(this.reservationId, this.form.getRawValue());
         }
+        apiCall.subscribe(
+            (reservation) => {
+                console.log("Saved", reservation)
+                this.form.reset(reservation);
+                this.form.markAsPristine();
+                this.form.markAsUntouched();
+                this.router.navigate(['..', reservation.id], {
+                    replaceUrl: true, relativeTo: this.activatedRoute
+                });
+                this.toastrService.success("Reservation was saved", "Reservation Saved");
+            },
+            (error) => {
+                console.log(error);
+                this.toastrService.danger(error, "Failed");
+            }
+        );
         // TODO: Decide if form is new --> create
         // TODO: Otherwise --> differential update
     }

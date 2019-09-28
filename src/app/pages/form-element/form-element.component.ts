@@ -11,7 +11,7 @@ export interface Choice<T> {
 
 
 @Component({
-    selector: 'app-form-element',
+    selector: 'depot-form-element',
     templateUrl: './form-element.component.html',
     styleUrls: ['./form-element.component.scss'],
 })
@@ -41,6 +41,7 @@ export class FormElementComponent {
         ) {
             return this._storedDateValue;
         }
+        this._storedDateValue = parsedValue;
         return parsedValue;
     }
 
@@ -61,6 +62,7 @@ export class FormElementComponent {
         ) {
             return this._storedDateValueEnd;
         }
+        this._storedDateValueEnd = parsedValue;
         return parsedValue;
     }
 

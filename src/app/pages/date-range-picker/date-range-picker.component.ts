@@ -23,7 +23,7 @@ interface NbCalendarRangeWithStartEnd<D> extends NbCalendarRange<D> {
 
 
 @Component({
-    selector: 'app-calendar-range-day-cell',
+    selector: 'depot-calendar-range-day-cell',
     template: `
         <div
             class="day-cell"
@@ -132,7 +132,7 @@ export class CalendarRangeDayCellComponent<D> implements NbCalendarCell<D, NbCal
 
 
 @Component({
-    selector: 'app-calendar-range',
+    selector: 'depot-calendar-range',
     template: `
         <nb-base-calendar
             [date]="range"
@@ -239,7 +239,7 @@ export class CalendarRangeComponent<D> {
 
 
 @Component({
-    selector: 'app-date-range-picker',
+    selector: 'depot-date-range-picker',
     template: '',
 })
 export class DateRangePickerComponent<D> extends NbDatepickerComponent<D> {

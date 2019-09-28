@@ -15,8 +15,8 @@ export class PagesComponent implements OnInit {
             icon: 'home'
         },
         {
-            title: 'Create Reservation',
-            link: '/reservation',
+            title: 'Reservations',
+            link: '/reservations',
             icon: 'file-add'
         },
         {
