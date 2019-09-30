@@ -20,6 +20,11 @@ export class PagesComponent implements OnInit {
             icon: 'file-add'
         },
         {
+            title: 'Items',
+            link: '/items',
+            icon: 'file-add'
+        },
+        {
             title: 'Logout',
             link: '/auth/logout',
             icon: 'log-out'

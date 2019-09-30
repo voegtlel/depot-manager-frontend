@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ApiService, AuthService} from '../../_services';
-import {BehaviorSubject, Observable, ObservedValuesFromArray, of, Subject} from "rxjs";
+import {BehaviorSubject, Observable, of, Subject} from "rxjs";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Reservation, ReservationType} from "../../_models";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -147,7 +147,5 @@ export class ReservationComponent implements OnInit, OnDestroy {
                 this.toastrService.danger(error, "Failed");
             }
         );
-        // TODO: Decide if form is new --> create
-        // TODO: Otherwise --> differential update
     }
 }

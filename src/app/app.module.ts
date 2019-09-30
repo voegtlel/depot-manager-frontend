@@ -36,7 +36,7 @@ import {
     NbTabsetModule,
     NbThemeModule,
     NbToastrModule,
-    NbTooltipModule,
+    NbTooltipModule, NbTreeGridModule,
     NbUserModule,
     NbWindowModule,
 } from '@nebular/theme';
@@ -66,6 +66,7 @@ import {ReservationItemsComponent} from "./pages/reservation-items/reservation-i
 import {ItemFilterPipe, ItemGroupFilterPipe} from "./_pipes";
 import { ReservationsComponent } from './pages/reservations/reservations.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { ItemsComponent } from './pages/items/items.component';
 
 @NgModule({
     entryComponents: [
@@ -88,6 +89,7 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
         ItemGroupFilterPipe,
         ReservationsComponent,
         NotFoundComponent,
+        ItemsComponent,
     ],
     imports: [
         BrowserModule,
@@ -128,6 +130,7 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
         NbEvaIconsModule,
         NbBaseCalendarModule,
         NbIconModule,
+        NbTreeGridModule,
         ReactiveFormsModule,
         FormsModule,
         HttpClientModule,

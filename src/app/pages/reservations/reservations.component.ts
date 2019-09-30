@@ -1,10 +1,10 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {BehaviorSubject, Observable, of, ReplaySubject, Subject} from "rxjs";
-import {ApiService, AuthService} from "../../_services";
+import {ApiService} from "../../_services";
 import {ActivatedRoute, Router} from "@angular/router";
-import {NbMenuItem, NbToastrService} from "@nebular/theme";
+import {NbMenuItem} from "@nebular/theme";
 import {Reservation} from "../../_models";
-import {map, shareReplay, switchMap, takeUntil, tap} from "rxjs/operators";
+import {map, shareReplay, switchMap, takeUntil} from "rxjs/operators";
 
 @Component({
     selector: 'depot-reservations',
@@ -20,14 +20,11 @@ export class ReservationsComponent implements OnInit, OnDestroy {
 
     limit$ = new BehaviorSubject<number>(30);
     placeholders$ = new ReplaySubject<void[]>(1);
-    reservationItems$: Observable<NbMenuItem[]>;
 
     constructor(
         public api: ApiService,
-        public authService: AuthService,
         public activatedRoute: ActivatedRoute,
         public router: Router,
-        private toastrService: NbToastrService,
     ) { }
 
     ngOnInit() {
@@ -63,15 +60,6 @@ export class ReservationsComponent implements OnInit, OnDestroy {
             shareReplay(1),
             takeUntil(this.stop$),
         ).subscribe(this.reservations$);
-
-        this.reservationItems$ = this.reservations$.pipe(
-            map(reservations => reservations.map(reservation => {
-                return {
-                    title: reservation.name,
-                    link: reservation.id,
-                };
-            }))
-        );
     }
 
     ngOnDestroy() {

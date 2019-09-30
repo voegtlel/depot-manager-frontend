@@ -8,6 +8,7 @@ import {LoginComponent} from './auth/login/login.component';
 import {ReservationComponent} from "./pages/reservation/reservation.component";
 import {ReservationsComponent} from "./pages/reservations/reservations.component";
 import {NotFoundComponent} from "./pages/not-found/not-found.component";
+import {ItemsComponent} from "./pages/items/items.component";
 
 
 const appRoutes: Routes = [
@@ -27,6 +28,14 @@ const appRoutes: Routes = [
             {
                 path: 'reservations/:reservationId',
                 component: ReservationComponent,
+            },
+            {
+                path: 'items',
+                component: ItemsComponent,
+            },
+            {
+                path: 'items/:itemId',
+                component: ItemsComponent,
             },
         ]
     },
