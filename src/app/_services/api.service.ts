@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { AuthUserModel, Item, Reservation, UserModel, ItemWithComment } from '../_models';
+import { AuthUserModel, Item, Reservation, UserModel, ItemWithComment, Picture } from '../_models';
 import { NbAuthService } from '@nebular/auth';
 import { EnvService } from './env.service';
 
@@ -79,6 +79,17 @@ export class ApiService {
 
     deleteReservation(reservationId: string, reservation: Reservation): Observable<Reservation> {
         return this.http.patch<Reservation>(`${this.env.apiUrl}/reservations/${reservationId}`, reservation);
+    }
+
+    getPictures(): Observable<Picture[]> {
+        return this.http.get<Picture[]>(`${this.env.apiUrl}/pictures`);
+    }
+
+    createPicture(data: Blob): Observable<string> {
+        const originalFilename = data instanceof File ? data.name : null;
+        return this.http.post<string>(`${this.env.apiUrl}/pictures`, data, {
+            headers: { 'Content-Type': data.type, 'X-Original-Filename': originalFilename },
+        });
     }
 
     getPictureUrl(pictureId: string): string {

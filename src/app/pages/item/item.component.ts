@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, TemplateRef } from '@angular/core';
-import { ApiService, AuthService } from '../../_services';
+import { ApiService, AuthService, ItemsService } from '../../_services';
 import { BehaviorSubject, Observable, of, Subject, combineLatest } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Item } from '../../_models';
@@ -59,7 +59,8 @@ export class ItemComponent implements OnInit, OnDestroy {
         public activatedRoute: ActivatedRoute,
         public router: Router,
         private toastrService: NbToastrService,
-        private dialogService: NbDialogService
+        private dialogService: NbDialogService,
+        private itemsService: ItemsService
     ) {}
 
     ngOnInit() {
@@ -159,6 +160,7 @@ export class ItemComponent implements OnInit, OnDestroy {
                 });
                 this.toastrService.success('Item was saved', 'Item Saved');
                 dialogRef.close();
+                this.itemsService.reload();
             },
             error => {
                 console.log(error);

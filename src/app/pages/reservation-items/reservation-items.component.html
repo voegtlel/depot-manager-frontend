@@ -85,22 +85,27 @@
 </nb-card>
 
 <ng-template #itemTemplate let-item="item">
-    <div class="item-info">
-        <a
-            *ngIf="item.pictureId"
-            class="item-picture image"
-            (click)="openDialog($event, imageDialog, item)"
-            [attr.href]="getItemPictureUrl(item)"
-        >
-            <img [src]="getItemPicturePreviewUrl(item)" alt="Item Image" />
-        </a>
-        <div class="item-text">
-            <div class="item-name">{{ item.name }}</div>
-            <div class="item-description">{{ item.description }}</div>
-            <div class="item-tags">
-                <span class="item-tag" *ngFor="let tag of item.tags">{{ tag }}</span>
+    <div class="item">
+        <div class="item-info">
+            <a
+                *ngIf="item.pictureId"
+                class="item-picture image"
+                (click)="openDialog($event, imageDialog, item)"
+                [attr.href]="getItemPictureUrl(item)"
+            >
+                <img [src]="getItemPicturePreviewUrl(item)" alt="Item Image" />
+            </a>
+            <div class="item-text">
+                <div class="item-name">{{ item.name }}</div>
+                <div class="item-description">{{ item.description }}</div>
+                <div class="item-tags">
+                    <span class="item-tag" *ngFor="let tag of item.tags">{{ tag }}</span>
+                </div>
             </div>
         </div>
+        <nb-actions size="small" class="item-actions">
+            <nb-action icon="search-outline" (click)="openDialog($event, itemDialog, item)"></nb-action>
+        </nb-actions>
     </div>
 </ng-template>
 <ng-template #imageDialog let-data let-ref="dialogRef">
@@ -122,4 +127,16 @@
             <button nbButton (click)="ref.close()">Close</button>
         </nb-card-footer>
     </nb-card>-->
+</ng-template>
+
+<ng-template #itemDialog let-data let-ref="dialogRef">
+    <nb-card>
+        <nb-card-header>Details of {{ data.name }}</nb-card-header>
+        <nb-card-body class="no-padding">
+            <depot-item-details (item)="(data)"></depot-item-details>
+        </nb-card-body>
+        <nb-card-footer>
+            <button nbButton (click)="ref.close()">Close</button>
+        </nb-card-footer>
+    </nb-card>
 </ng-template>

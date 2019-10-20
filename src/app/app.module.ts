@@ -54,6 +54,7 @@ import { AppComponent } from './app.component';
 import { routing } from './app.routing';
 
 import { TagInputModule } from 'ngx-chips';
+import { NgxFileDropModule } from 'ngx-file-drop';
 
 import { DepotManAuthModule, NbPasswordAuthStrategyEndpoint } from './auth/auth.module';
 import {
@@ -73,6 +74,7 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { ItemsComponent } from './pages/items/items.component';
 import { PictureListComponent } from './pages/picture-list/picture-list.component';
 import { ItemComponent } from './pages/item/item.component';
+import { ItemDetailsComponent } from './pages/item-details/item-details.component';
 
 @NgModule({
     entryComponents: [CalendarRangeDayCellComponent, CalendarRangeComponent],
@@ -95,6 +97,7 @@ import { ItemComponent } from './pages/item/item.component';
         ItemsComponent,
         PictureListComponent,
         ItemComponent,
+        ItemDetailsComponent,
     ],
     imports: [
         BrowserModule,
@@ -137,6 +140,7 @@ import { ItemComponent } from './pages/item/item.component';
         NbIconModule,
         NbTreeGridModule,
         TagInputModule,
+        NgxFileDropModule,
         ReactiveFormsModule,
         FormsModule,
         HttpClientModule,
