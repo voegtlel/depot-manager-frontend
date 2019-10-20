@@ -28,10 +28,6 @@ export class ApiService {
         return this.http.post<Item>(`${this.env.apiUrl}/items`, item);
     }
 
-    getItemTags(): Observable<string[]> {
-        return this.http.get<string[]>(`${this.env.apiUrl}/items/tags`);
-    }
-
     getItem(itemId: string): Observable<Item> {
         return this.http.get<Item>(`${this.env.apiUrl}/items/${itemId}`);
     }

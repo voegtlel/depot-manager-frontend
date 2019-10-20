@@ -1,10 +1,10 @@
 import { Component, forwardRef, Input, OnDestroy, OnInit, TemplateRef } from '@angular/core';
-import { ApiService } from '../../_services';
+import { ApiService, ItemsService } from '../../_services';
 import { BehaviorSubject, Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Item } from '../../_models';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
-import { map, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { map, shareReplay, switchMap, takeUntil, tap, skip } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
 import { Filterable } from '../../_pipes';
 
@@ -60,6 +60,7 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
 
     constructor(
         public api: ApiService,
+        private itemsService: ItemsService,
         private toastrService: NbToastrService,
         private dialogService: NbDialogService
     ) {}
@@ -83,11 +84,13 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
             tap(x => console.log('filteredItemIds$', x)),
             shareReplay(1)
         );
-        const items$ = this.reload$.pipe(
-            switchMap(() => this.api.getItems()),
-            shareReplay(1)
-        );
-        this.items$ = combineLatest([filteredItemIds$, items$]).pipe(
+        this.reload$
+            .pipe(
+                skip(1),
+                takeUntil(this.destroyed$)
+            )
+            .subscribe(() => this.itemsService.reload());
+        this.items$ = combineLatest([filteredItemIds$, this.itemsService.items$]).pipe(
             map(([filteredItemIds, items]) => {
                 return items.map(item => {
                     return {

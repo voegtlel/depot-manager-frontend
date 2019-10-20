@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { Item, Reservation } from '../../_models';
-import { ApiService } from '../../_services';
+import { ApiService, ItemsService } from '../../_services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
 import { NbSortDirection, NbSortRequest, NbTreeGridDataSource, NbTreeGridDataSourceBuilder } from '@nebular/theme';
@@ -26,7 +26,6 @@ interface ItemEntry {
     styleUrls: ['./items.component.scss'],
 })
 export class ItemsComponent implements OnInit, OnDestroy {
-    reload$: BehaviorSubject<void> = new BehaviorSubject(undefined);
     loading: boolean;
     items$: Observable<ItemWithConditionText[]>;
     items: Reservation[] = [];
@@ -82,14 +81,14 @@ export class ItemsComponent implements OnInit, OnDestroy {
 
     constructor(
         public api: ApiService,
+        public itemsService: ItemsService,
         public activatedRoute: ActivatedRoute,
         public router: Router,
         private dataSourceBuilder: NbTreeGridDataSourceBuilder<ItemEntry>
     ) {}
 
     ngOnInit() {
-        this.items$ = this.reload$.pipe(
-            switchMap(() => this.api.getItems()),
+        this.items$ = this.itemsService.items$.pipe(
             map(items =>
                 items.map(item => {
                     return {

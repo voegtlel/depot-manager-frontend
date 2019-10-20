@@ -80,19 +80,21 @@
     </nb-card-body>
 </nb-card>
 
-<ng-template #submitDialog let-data let-ref="dialogRef">
-    <nb-card>
-        <nb-card-header>Change Comment</nb-card-header>
-        <nb-card-body class="no-padding">
-            <depot-form-element
-                [formControlRef]="data.comment"
-                type="textarea"
-                title="Submit Comment"
-            ></depot-form-element>
-        </nb-card-body>
-        <nb-card-footer>
-            <button nbButton (click)="ref.close()">Cancel</button>
-            <button nbButton (click)="onSubmit(data.comment.value); ref.close()">Submit</button>
-        </nb-card-footer>
-    </nb-card>
+<ng-template #submitDialog let-ref="dialogRef">
+    <form [formGroup]="form" (ngSubmit)="onSubmit(ref)">
+        <nb-card>
+            <nb-card-header>Change Comment</nb-card-header>
+            <nb-card-body class="no-padding">
+                <depot-form-element
+                    [formControlRef]="form.get('comment')"
+                    type="text"
+                    title="Submit Comment"
+                ></depot-form-element>
+            </nb-card-body>
+            <nb-card-footer>
+                <button nbButton (click)="ref.close()">Cancel</button>
+                <button nbButton type="submit">Submit</button>
+            </nb-card-footer>
+        </nb-card>
+    </form>
 </ng-template>

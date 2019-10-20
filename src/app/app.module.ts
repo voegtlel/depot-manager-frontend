@@ -53,6 +53,8 @@ import { HttpErrorHandler } from './_services';
 import { AppComponent } from './app.component';
 import { routing } from './app.routing';
 
+import { TagInputModule } from 'ngx-chips';
+
 import { DepotManAuthModule, NbPasswordAuthStrategyEndpoint } from './auth/auth.module';
 import {
     CalendarRangeComponent,
@@ -134,6 +136,7 @@ import { ItemComponent } from './pages/item/item.component';
         NbBaseCalendarModule,
         NbIconModule,
         NbTreeGridModule,
+        TagInputModule,
         ReactiveFormsModule,
         FormsModule,
         HttpClientModule,

@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, of, Subject, combineLatest } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Item } from '../../_models';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NbToastrService, NbDialogService } from '@nebular/theme';
+import { NbToastrService, NbDialogService, NbDialogRef } from '@nebular/theme';
 import { map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
 import { Choice } from '../form-element/form-element.component';
 
@@ -50,6 +50,7 @@ export class ItemComponent implements OnInit, OnDestroy {
         lastService: new FormControl(null),
         pictureId: new FormControl(null),
         tags: new FormControl([]),
+        comment: new FormControl(''),
     });
 
     constructor(
@@ -101,6 +102,8 @@ export class ItemComponent implements OnInit, OnDestroy {
                         groupId: null,
 
                         tags: [],
+
+                        comment: '',
                     });
                 }
                 if (user.groups.includes('admin')) {
@@ -129,12 +132,11 @@ export class ItemComponent implements OnInit, OnDestroy {
             closeOnBackdropClick: false,
             hasScroll: false,
             autoFocus: true,
-            context: { comment: new FormControl('') },
         });
     }
 
-    onSubmit(comment: string) {
-        console.log('Submit:', comment, this.form.getRawValue());
+    onSubmit(dialogRef: NbDialogRef<any>) {
+        console.log('Submit:', this.form.getRawValue());
         this.submitted = true;
         if (!this.form.valid) {
             return;
@@ -143,7 +145,7 @@ export class ItemComponent implements OnInit, OnDestroy {
         if (this.isNew) {
             apiCall = this.api.createItem(this.form.getRawValue());
         } else {
-            apiCall = this.api.saveItem(this.itemId, { comment, ...this.form.getRawValue() });
+            apiCall = this.api.saveItem(this.itemId, this.form.getRawValue());
         }
         apiCall.subscribe(
             item => {
@@ -156,6 +158,7 @@ export class ItemComponent implements OnInit, OnDestroy {
                     relativeTo: this.activatedRoute,
                 });
                 this.toastrService.success('Item was saved', 'Item Saved');
+                dialogRef.close();
             },
             error => {
                 console.log(error);

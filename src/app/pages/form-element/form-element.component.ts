@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output, TemplateRef } from '@angular/co
 import { FormControl } from '@angular/forms';
 import { DateHelper } from '../../_helpers';
 import { NbDialogService } from '@nebular/theme';
-import { ApiService, ItemTagsService } from '../../_services';
+import { ApiService, ItemsService } from '../../_services';
 import { Observable } from 'rxjs';
 
 export interface Choice<T> {
@@ -38,9 +38,11 @@ export class FormElementComponent {
     });
 
     readonly itemTags$: Observable<string[]>;
+    readonly getItemTags: () => Observable<string[]>;
 
-    constructor(private dialogService: NbDialogService, private api: ApiService, private itemTags: ItemTagsService) {
+    constructor(private dialogService: NbDialogService, private api: ApiService, private itemTags: ItemsService) {
         this.itemTags$ = itemTags.itemTags$;
+        this.getItemTags = () => itemTags.itemTags$;
     }
 
     get error(): string {
