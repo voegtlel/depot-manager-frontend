@@ -57,7 +57,7 @@ export class CalendarRangeDayCellComponent<D> implements NbCalendarCell<D, NbCal
 
     @Input() filter: (D) => boolean;
 
-    @Output() select: EventEmitter<D> = new EventEmitter(true);
+    @Output() select: EventEmitter<D> = new EventEmitter(true); // tslint:disable-line
 
     @HostBinding('class') cssClass = 'range-cell';
 

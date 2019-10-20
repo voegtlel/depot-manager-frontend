@@ -1,8 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, Observable, of, ReplaySubject, Subject } from 'rxjs';
+import { BehaviorSubject, of, ReplaySubject, Subject } from 'rxjs';
 import { ApiService } from '../../_services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NbMenuItem } from '@nebular/theme';
 import { Reservation } from '../../_models';
 import { map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
 

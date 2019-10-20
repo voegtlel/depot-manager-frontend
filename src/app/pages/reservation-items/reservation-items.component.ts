@@ -26,37 +26,37 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
     items$: Observable<ItemWithAvailability[]>;
     itemGroups$: Observable<ItemWithAvailability[][]>;
 
-    private _selected: string[] = [];
-    private _selectedLookup: { [id: string]: boolean } = {};
+    private selected: string[] = [];
+    private selectedLookup: { [id: string]: boolean } = {};
 
-    _disabled = false;
+    disabled = false;
 
     imageLoading: boolean;
 
-    _reservationsStart$: ReplaySubject<string> = new ReplaySubject(1);
+    reservationsStart$: ReplaySubject<string> = new ReplaySubject(1);
 
     @Input() set reservationsStart(value: string) {
         console.log('Set reservation start', value);
-        this._reservationsStart$.next(value);
+        this.reservationsStart$.next(value);
     }
 
-    _reservationsEnd$: ReplaySubject<string> = new ReplaySubject(1);
+    reservationsEnd$: ReplaySubject<string> = new ReplaySubject(1);
 
     @Input() set reservationsEnd(value: string) {
         console.log('Set reservation end', value);
-        this._reservationsEnd$.next(value);
+        this.reservationsEnd$.next(value);
     }
 
-    _skipReservationId$: ReplaySubject<string> = new ReplaySubject(1);
+    skipReservationId$: ReplaySubject<string> = new ReplaySubject(1);
 
     @Input() set skipReservationId(value: string) {
-        this._skipReservationId$.next(value);
+        this.skipReservationId$.next(value);
     }
 
-    propagateChange: (any) => void = () => {};
-
-    group: boolean = true;
+    group = true;
     filter: string;
+
+    propagateChange: (val: any) => void = () => {};
 
     constructor(
         public api: ApiService,
@@ -66,9 +66,7 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
 
     ngOnInit() {
         const filteredItemIds$ = this.reload$.pipe(
-            switchMap(() =>
-                combineLatest([this._reservationsStart$, this._reservationsEnd$, this._skipReservationId$])
-            ),
+            switchMap(() => combineLatest([this.reservationsStart$, this.reservationsEnd$, this.skipReservationId$])),
             switchMap(([reservationStart, reservationEnd, skipReservationId]) => {
                 if (reservationStart && reservationEnd) {
                     return this.api.getReservationItems(reservationStart, reservationEnd, skipReservationId);
@@ -115,10 +113,10 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
                 obj[item.id] = item;
                 return obj;
             }, {});
-            const foundItems = this._selected.filter(selectedId => itemsById.hasOwnProperty(selectedId));
-            if (foundItems.length !== this._selected.length) {
+            const foundItems = this.selected.filter(selectedId => itemsById.hasOwnProperty(selectedId));
+            if (foundItems.length !== this.selected.length) {
                 this.toastrService.danger(
-                    `${this._selected.length -
+                    `${this.selected.length -
                         foundItems.length} items were removed from your reservation, because they do not exist any more`
                 );
             }
@@ -135,13 +133,13 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
                 );
             }
 
-            if (this._selected.length !== availableItems.length) {
-                this._selected = availableItems;
-                this._selectedLookup = availableItems.reduce((obj, item) => {
+            if (this.selected.length !== availableItems.length) {
+                this.selected = availableItems;
+                this.selectedLookup = availableItems.reduce((obj, item) => {
                     obj[item] = true;
                     return obj;
                 }, {});
-                this.propagateChange(this._selected);
+                this.propagateChange(this.selected);
             }
         });
 
@@ -174,30 +172,30 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
     }
 
     select(id: string) {
-        if (this._disabled) {
+        if (this.disabled) {
             return;
         }
-        this._selected.push(id);
-        this._selectedLookup[id] = true;
+        this.selected.push(id);
+        this.selectedLookup[id] = true;
         console.log('select', id);
-        this.propagateChange(this._selected);
+        this.propagateChange(this.selected);
     }
 
     deselect(id: string) {
-        if (this._disabled) {
+        if (this.disabled) {
             return;
         }
         console.log('deselect', id);
-        const idx = this._selected.indexOf(id);
+        const idx = this.selected.indexOf(id);
         if (~idx) {
-            this._selected.splice(idx, 1);
-            delete this._selectedLookup[id];
+            this.selected.splice(idx, 1);
+            delete this.selectedLookup[id];
         }
-        this.propagateChange(this._selected);
+        this.propagateChange(this.selected);
     }
 
     setSelected(id: string, selected: boolean) {
-        if (this._disabled) {
+        if (this.disabled) {
             return;
         }
         console.log(id, selected);
@@ -209,7 +207,7 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
     }
 
     isSelected(id: string): boolean {
-        return this._selectedLookup[id];
+        return this.selectedLookup[id];
     }
 
     writeValue(value) {
@@ -217,15 +215,15 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
             if (!(value instanceof Array)) {
                 throw Error('Invalid value for reservation items');
             }
-            this._selected = value;
-            this._selectedLookup = value.reduce((obj, item) => {
+            this.selected = value;
+            this.selectedLookup = value.reduce((obj, item) => {
                 obj[item] = true;
                 return obj;
             }, {});
-            console.log('selected', this._selected);
+            console.log('selected', this.selected);
         } else {
-            this._selected = [];
-            this._selectedLookup = {};
+            this.selected = [];
+            this.selectedLookup = {};
         }
     }
 
@@ -236,7 +234,7 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
     registerOnTouched() {}
 
     setDisabledState(isDisabled: boolean) {
-        this._disabled = isDisabled;
+        this.disabled = isDisabled;
     }
 
     getItemPicturePreviewUrl(item: ItemWithAvailability): string {
@@ -261,7 +259,7 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
     }
 
     itemGroupSelectedCount(items: ItemWithAvailability[]): number {
-        return items.reduce((val, item) => val + (this._selectedLookup[item.id] ? 1 : 0), 0);
+        return items.reduce((val, item) => val + (this.selectedLookup[item.id] ? 1 : 0), 0);
     }
 
     itemGroupSelectableCount(items: ItemWithAvailability[]): number {
@@ -269,16 +267,16 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
     }
 
     itemGroupCanSelectMore(items: ItemWithAvailability[]): boolean {
-        return items.some(item => item.available && !this._selectedLookup[item.id]);
+        return items.some(item => item.available && !this.selectedLookup[item.id]);
     }
 
     addToGroup(items: ItemWithAvailability[], count: number = 1) {
-        if (this._disabled) {
+        if (this.disabled) {
             return;
         }
         items.forEach(item => {
             if (count > 0) {
-                if (item.available && !this._selectedLookup[item.id]) {
+                if (item.available && !this.selectedLookup[item.id]) {
                     this.select(item.id);
                     count -= 1;
                 }
@@ -287,12 +285,12 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
     }
 
     removeFromGroup(items: ItemWithAvailability[], count: number = 1) {
-        if (this._disabled) {
+        if (this.disabled) {
             return;
         }
         items.forEach(item => {
             if (count > 0) {
-                if (this._selectedLookup[item.id]) {
+                if (this.selectedLookup[item.id]) {
                     this.deselect(item.id);
                     count -= 1;
                 }
@@ -301,7 +299,7 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
     }
 
     setGroupCount(items: ItemWithAvailability[], count: number) {
-        if (this._disabled) {
+        if (this.disabled) {
             return;
         }
         const currentCount = this.itemGroupSelectedCount(items);
