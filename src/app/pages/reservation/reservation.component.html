@@ -11,11 +11,8 @@
             <depot-form-element
                 [formControlRef]="form.get('type')"
                 [submitted]="submitted"
-                [choices]="[
-                    { value: reservationChoices.Private, title: 'Private' },
-                    { value: reservationChoices.Team, title: 'Team' }
-                ]"
-                (change)="onTypeChange()"
+                [choices]="reservationChoices"
+                (change)="onTypeChange($event)"
                 type="radio"
                 title="Type"
             ></depot-form-element>

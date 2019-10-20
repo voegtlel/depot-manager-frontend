@@ -36,10 +36,10 @@ export class ReservationComponent implements OnInit, OnDestroy {
     });
     readonly userId = new FormControl({ value: '', disabled: true });
 
-    reservationChoices = {
-        Private: ReservationType.Private,
-        Team: ReservationType.Team,
-    };
+    reservationChoices = [
+        { value: ReservationType.Private, title: 'Private' },
+        { value: ReservationType.Team, title: 'Team' },
+    ];
 
     constructor(
         public api: ApiService,
@@ -73,6 +73,12 @@ export class ReservationComponent implements OnInit, OnDestroy {
                     this.userId.reset(reservation.userId);
                     this.isNew = false;
                     this.form.reset(reservation);
+
+                    if (reservation.userId === user.uid || user.teams.includes(reservation.teamId)) {
+                        this.form.enable();
+                    } else {
+                        this.form.disable();
+                    }
                 } else {
                     this.reservationId = null;
                     this.isNew = true;
@@ -90,11 +96,7 @@ export class ReservationComponent implements OnInit, OnDestroy {
                         items: [],
                     });
                 }
-                if (reservation.userId === user.uid || user.teams.includes(reservation.teamId)) {
-                    this.form.enable();
-                } else {
-                    this.form.disable();
-                }
+                this.onTypeChange(this.form.get('type').value);
                 this.submitted = false;
                 this.loading = false;
             });
@@ -125,8 +127,8 @@ export class ReservationComponent implements OnInit, OnDestroy {
         this.destroyed$.next();
     }
 
-    onTypeChange() {
-        if (this.form.get('type').value === ReservationType.Team) {
+    onTypeChange($event) {
+        if ($event === ReservationType.Team) {
             this.form.get('teamId').enable();
         } else {
             this.form.get('teamId').setValue(null);

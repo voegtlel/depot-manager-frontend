@@ -27,7 +27,7 @@ export class FormElementComponent {
 
     @Input() choices: Choice<any>[] = [];
 
-    @Output() change: EventEmitter<void> = new EventEmitter();
+    @Output() change: EventEmitter<Event> = new EventEmitter(); // tslint:disable-line
     dateValue = new DateHelper({
         getValue: () => this.formControlRef.value,
         setValue: (val: string) => this.formControlRef.setValue(val),

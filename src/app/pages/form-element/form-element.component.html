@@ -3,7 +3,7 @@
         <nb-checkbox
             [formControl]="formControlRef"
             [status]="submitted && formControlRef.errors ? 'danger' : ''"
-            (valueChange)="change.emit(undefined)"
+            (valueChange)="change.emit($event)"
             >{{ title }}</nb-checkbox
         >
     </div>
@@ -17,7 +17,7 @@
             [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : ''"
             [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
             [formControl]="formControlRef"
-            (change)="change.emit(undefined)"
+            (change)="change.emit($event)"
             #formControlEl
         />
     </div>
@@ -32,7 +32,7 @@
             [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : ''"
             [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
             [formControl]="formControlRef"
-            (change)="change.emit(undefined)"
+            (change)="change.emit($event)"
             #formControlEl
         ></textarea>
     </div>
@@ -46,7 +46,7 @@
             [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : ''"
             [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
             [(ngModel)]="dateValue.dateValue"
-            (change)="change.emit(undefined)"
+            (change)="change.emit($event)"
             [disabled]="formControlRef.disabled"
             [nbDatepicker]="datepicker"
             #formControlEl
@@ -64,7 +64,7 @@
                 [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : ''"
                 [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
                 [(ngModel)]="dateValue.dateValue"
-                (change)="change.emit(undefined)"
+                (change)="change.emit($event)"
                 [disabled]="formControlRef.disabled"
                 [nbDatepicker]="daterangepickerStart"
                 #formControlEl
@@ -78,7 +78,7 @@
                 [status]="formControlRefEnd.dirty ? (formControlRefEnd.invalid ? 'danger' : 'success') : ''"
                 [attr.aria-invalid]="formControlRefEnd.invalid && formControlRefEnd.touched ? true : null"
                 [(ngModel)]="dateValueEnd.dateValue"
-                (change)="change.emit(undefined)"
+                (change)="change.emit($event)"
                 [disabled]="formControlRefEnd.disabled"
                 [nbDatepicker]="daterangepickerEnd"
             />
@@ -100,7 +100,7 @@
         <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
         <nb-radio-group
             [formControl]="formControlRef"
-            (valueChange)="change.emit(undefined)"
+            (valueChange)="change.emit($event)"
             [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : ''"
             [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
             #formControlEl
@@ -121,7 +121,7 @@
                 [formControl]="formControlRef"
                 [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : ''"
                 [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
-                (selectedChange)="change.emit(undefined)"
+                (selectedChange)="change.emit($event)"
                 [placeholder]="title"
                 #formControlEl
             >
@@ -138,11 +138,11 @@
             [modelAsStrings]="true"
             [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
             [formControl]="formControlRef"
-            (change)="change.emit(undefined)"
+            (change)="change.emit($event)"
             #formControlEl
         >
-            <tag-input-dropdown [autocompleteItems]="itemTags$ | async"></tag-input-dropdown
-        ></tag-input>
+            <tag-input-dropdown [autocompleteItems]="itemTags$ | async"></tag-input-dropdown>
+        </tag-input>
     </div>
     <ng-container *ngSwitchCase="'picture'">
         <button nbButton fullWidth ghost class="label" (click)="openDialog($event, selectImageDialog)">
