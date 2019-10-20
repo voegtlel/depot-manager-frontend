@@ -1,19 +1,18 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ApiService, AuthService} from '../../_services';
-import {BehaviorSubject, Observable, of, Subject} from "rxjs";
-import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {Reservation, ReservationType} from "../../_models";
-import {ActivatedRoute, Router} from "@angular/router";
-import {NbToastrService} from "@nebular/theme";
-import {map, shareReplay, switchMap, takeUntil} from "rxjs/operators";
-
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ApiService, AuthService } from '../../_services';
+import { BehaviorSubject, Observable, of, Subject, combineLatest } from 'rxjs';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Reservation, ReservationType } from '../../_models';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NbToastrService } from '@nebular/theme';
+import { map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'depot-reservation',
     templateUrl: './reservation.component.html',
 })
 export class ReservationComponent implements OnInit, OnDestroy {
-    private stop$ = new Subject<void>();
+    private destroyed$ = new Subject<void>();
 
     loading: boolean;
     submitted: boolean;
@@ -22,20 +21,20 @@ export class ReservationComponent implements OnInit, OnDestroy {
 
     reload$: BehaviorSubject<void> = new BehaviorSubject(undefined);
 
-    teams$: Observable<{value: string, title: string}[]>;
+    teams$: Observable<{ value: string; title: string }[]>;
 
     reservationId: string = null;
 
     readonly form: FormGroup = new FormGroup({
-        name: new FormControl("", Validators.required),
+        name: new FormControl('', Validators.required),
         type: new FormControl(null, Validators.required),
         start: new FormControl(null, Validators.required),
         end: new FormControl(null, Validators.required),
-        teamId: new FormControl(null),
-        contact: new FormControl("", Validators.required),
+        teamId: new FormControl({ value: null, disabled: true }),
+        contact: new FormControl('', Validators.required),
         items: new FormControl([]),
     });
-    readonly userId = new FormControl("");
+    readonly userId = new FormControl({ value: '', disabled: true });
 
     reservationChoices = {
         Private: ReservationType.Private,
@@ -47,9 +46,8 @@ export class ReservationComponent implements OnInit, OnDestroy {
         public authService: AuthService,
         public activatedRoute: ActivatedRoute,
         public router: Router,
-        private toastrService: NbToastrService,
-    ) {
-    }
+        private toastrService: NbToastrService
+    ) {}
 
     ngOnInit() {
         const reservationId$ = this.activatedRoute.paramMap.pipe(map(params => params.get('reservationId')));
@@ -62,66 +60,83 @@ export class ReservationComponent implements OnInit, OnDestroy {
                 return of(null);
             }),
             shareReplay(1),
-            takeUntil(this.stop$),
+            takeUntil(this.destroyed$)
         );
 
-        this.teams$ = this.authService.user$.pipe(map(user => user.teams.map(team => { return {value: team, title: team}; })));
+        this.teams$ = this.authService.user$.pipe(map(user => user.teams.map(team => ({ value: team, title: team }))));
 
-        loadedReservation$.subscribe((reservation) => {
-            if (reservation !== null) {
-                this.reservationId = reservation.id;
-                this.userId.reset(reservation.userId);
-                this.isNew = false;
-                this.form.reset(reservation);
-            } else {
-                this.reservationId = null;
-                this.isNew = true;
-                this.userId.reset(null);
-                this.form.reset({
-                    id: null,
-                    type: null,
-                    name: "",
-                    start: null,
-                    end: null,
+        combineLatest([loadedReservation$, this.authService.user$])
+            .pipe(takeUntil(this.destroyed$))
+            .subscribe(([reservation, user]) => {
+                if (reservation !== null) {
+                    this.reservationId = reservation.id;
+                    this.userId.reset(reservation.userId);
+                    this.isNew = false;
+                    this.form.reset(reservation);
+                } else {
+                    this.reservationId = null;
+                    this.isNew = true;
+                    this.userId.reset(null);
+                    this.form.reset({
+                        id: null,
+                        type: null,
+                        name: '',
+                        start: null,
+                        end: null,
 
-                    teamId: null,
-                    contact: "",
+                        teamId: null,
+                        contact: '',
 
-                    items: [],
-                });
-            }
-            this.submitted = false;
-            this.loading = false;
-        });
+                        items: [],
+                    });
+                }
+                if (reservation.userId === user.uid || user.teams.includes(reservation.teamId)) {
+                    this.form.enable();
+                } else {
+                    this.form.disable();
+                }
+                this.submitted = false;
+                this.loading = false;
+            });
 
-        loadedReservation$.pipe(
-            switchMap(reservation => reservation?this.api.getUser(reservation.userId):this.authService.user$),
-            map(user => user.name),
-            takeUntil(this.stop$),
-        ).subscribe(username => {
-            this.userId.reset(username)
-        });
+        loadedReservation$
+            .pipe(
+                switchMap(reservation => (reservation ? this.api.getUser(reservation.userId) : this.authService.user$)),
+                map(user => user.name),
+                takeUntil(this.destroyed$)
+            )
+            .subscribe(username => {
+                this.userId.reset(username);
+            });
 
-        loadedReservation$.pipe(
-            switchMap(reservation => reservation?of(null):this.authService.user$),
-            takeUntil(this.stop$),
-        ).subscribe(user => {
-            if (user !== null) {
-                this.form.get('contact').reset(`${user.name} (${user.mail}, ${user.mobile})`)
-            }
-        });
+        loadedReservation$
+            .pipe(
+                switchMap(reservation => (reservation ? of(null) : this.authService.user$)),
+                takeUntil(this.destroyed$)
+            )
+            .subscribe(user => {
+                if (user !== null) {
+                    this.form.get('contact').reset(`${user.name} (${user.mail}, ${user.mobile})`);
+                }
+            });
     }
 
     ngOnDestroy(): void {
-        this.stop$.next();
+        this.destroyed$.next();
     }
 
     onTypeChange() {
-        this.form.get('teamId').setValue(null);
+        if (this.form.get('type').value === ReservationType.Team) {
+            this.form.get('teamId').enable();
+        } else {
+            this.form.get('teamId').setValue(null);
+            this.form.get('teamId').disable();
+        }
     }
 
     onSubmit() {
-        console.log("Submit:", this.form.getRawValue());
+        console.log('Submit:', this.form.getRawValue());
+        this.submitted = true;
         if (!this.form.valid) {
             return;
         }
@@ -132,19 +147,20 @@ export class ReservationComponent implements OnInit, OnDestroy {
             apiCall = this.api.saveReservation(this.reservationId, this.form.getRawValue());
         }
         apiCall.subscribe(
-            (reservation) => {
-                console.log("Saved", reservation)
+            reservation => {
+                console.log('Saved', reservation);
                 this.form.reset(reservation);
                 this.form.markAsPristine();
                 this.form.markAsUntouched();
                 this.router.navigate(['..', reservation.id], {
-                    replaceUrl: true, relativeTo: this.activatedRoute
+                    replaceUrl: true,
+                    relativeTo: this.activatedRoute,
                 });
-                this.toastrService.success("Reservation was saved", "Reservation Saved");
+                this.toastrService.success('Reservation was saved', 'Reservation Saved');
             },
-            (error) => {
+            error => {
                 console.log(error);
-                this.toastrService.danger(error, "Failed");
+                this.toastrService.danger(error, 'Failed');
             }
         );
     }

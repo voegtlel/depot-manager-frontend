@@ -7,3 +7,9 @@
     place-content: space-between;
     flex-flow: wrap;
 }
+
+td > .table-fill {
+    //display: flex;
+    height: 100%;
+    width: 100%;
+}

@@ -1,6 +1,6 @@
 export enum ReservationType {
     Private = 1,
-    Team = 2
+    Team = 2,
 }
 
 export interface Reservation {
@@ -8,8 +8,8 @@ export interface Reservation {
     type: ReservationType;
     name: string;
 
-    start: Date|string;
-    end: Date|string;
+    start: Date | string;
+    end: Date | string;
     userId?: string;
 
     teamId: string;

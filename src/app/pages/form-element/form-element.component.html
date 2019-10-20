@@ -1,123 +1,169 @@
 <ng-container [ngSwitch]="type">
     <div *ngSwitchCase="'checkbox'" class="form-control-group">
-        <nb-checkbox [formControl]="formControlRef" [disabled]="readonly"
-                     [status]="submitted && formControlRef.errors ? 'danger':''"
-                     (valueChange)="change.emit(undefined)"
-        >{{title}}{{formControlRef.dirty ? ' *' : ''}}</nb-checkbox>
+        <nb-checkbox
+            [formControl]="formControlRef"
+            [status]="submitted && formControlRef.errors ? 'danger' : ''"
+            (valueChange)="change.emit(undefined)"
+            >{{ title }}</nb-checkbox
+        >
     </div>
     <div *ngSwitchCase="'text'" class="form-control-group">
-        <label class="label" [for]="formControlEl">{{title}}{{formControlRef.dirty ? ' *' : ''}}</label>
+        <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
         <input
             nbInput
             [placeholder]="title"
             fullWidth
             fieldSize="medium"
-            [status]="formControlRef.dirty ? (formControlRef.invalid  ? 'danger' : 'success') : ''"
-            required
+            [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : ''"
             [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
             [formControl]="formControlRef"
             (change)="change.emit(undefined)"
-            [readOnly]="readonly"
             #formControlEl
         />
     </div>
     <div *ngSwitchCase="'textarea'" class="form-control-group">
-        <label class="label" [for]="formControlEl">{{title}}{{formControlRef.dirty ? ' *' : ''}}</label>
+        <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
         <textarea
             nbInput
             [placeholder]="title"
             fullWidth
             fieldSize="medium"
-            [status]="formControlRef.dirty ? (formControlRef.invalid  ? 'danger' : 'success') : ''"
-            required
+            style="resize: vertical; min-height: 40px; height: 40px;"
+            [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : ''"
             [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
             [formControl]="formControlRef"
-            [readOnly]="readonly"
             (change)="change.emit(undefined)"
             #formControlEl
         ></textarea>
     </div>
     <div *ngSwitchCase="'date'" class="form-control-group">
-        <label class="label" [for]="formControlEl">{{title}}{{formControlRef.dirty ? ' *' : ''}}</label>
+        <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
         <input
             nbInput
             [placeholder]="title"
             fullWidth
             fieldSize="medium"
-            [status]="formControlRef.dirty ? (formControlRef.invalid  ? 'danger' : 'success') : ''"
-            required
+            [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : ''"
             [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
-            [(ngModel)]="dateValue"
+            [(ngModel)]="dateValue.dateValue"
             (change)="change.emit(undefined)"
-            [readOnly]="readonly"
+            [disabled]="formControlRef.disabled"
             [nbDatepicker]="datepicker"
             #formControlEl
         />
         <nb-datepicker #datepicker></nb-datepicker>
     </div>
     <div *ngSwitchCase="'daterange'" class="form-control-group">
-        <label class="label" [for]="formControlEl">{{title}}{{formControlRef.dirty ? ' *' : ''}}</label>
+        <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
         <div class="date-range">
             <input
                 nbInput
                 [placeholder]="title + ' Start'"
                 fullWidth
                 fieldSize="medium"
-                [status]="formControlRef.dirty ? (formControlRef.invalid  ? 'danger' : 'success') : ''"
-                required
+                [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : ''"
                 [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
-                [(ngModel)]="dateValue"
+                [(ngModel)]="dateValue.dateValue"
                 (change)="change.emit(undefined)"
-                [readOnly]="readonly"
+                [disabled]="formControlRef.disabled"
                 [nbDatepicker]="daterangepickerStart"
                 #formControlEl
-            /><div class="date-range-center"> - </div><input
+            />
+            <div class="date-range-center">-</div>
+            <input
                 nbInput
                 [placeholder]="title + ' End'"
                 fullWidth
                 fieldSize="medium"
-                [status]="formControlRefEnd.dirty ? (formControlRefEnd.invalid  ? 'danger' : 'success') : ''"
-                required
+                [status]="formControlRefEnd.dirty ? (formControlRefEnd.invalid ? 'danger' : 'success') : ''"
                 [attr.aria-invalid]="formControlRefEnd.invalid && formControlRefEnd.touched ? true : null"
-                [(ngModel)]="dateValueEnd"
+                [(ngModel)]="dateValueEnd.dateValue"
                 (change)="change.emit(undefined)"
-                [readOnly]="readonly"
+                [disabled]="formControlRefEnd.disabled"
                 [nbDatepicker]="daterangepickerEnd"
             />
         </div>
-        <depot-date-range-picker [selectingStart]="true" [max]="dateValueEnd" [otherDate]="dateValueEnd" #daterangepickerStart></depot-date-range-picker>
-        <depot-date-range-picker [selectingStart]="false" [min]="dateValue" [otherDate]="dateValue" #daterangepickerEnd></depot-date-range-picker>
+        <depot-date-range-picker
+            [selectingStart]="true"
+            [max]="dateValueEnd.dateValue"
+            [otherDate]="dateValueEnd.dateValue"
+            #daterangepickerStart
+        ></depot-date-range-picker>
+        <depot-date-range-picker
+            [selectingStart]="false"
+            [min]="dateValue.dateValue"
+            [otherDate]="dateValue.dateValue"
+            #daterangepickerEnd
+        ></depot-date-range-picker>
     </div>
     <div *ngSwitchCase="'radio'" class="form-control-group">
-        <label class="label" [for]="formControlEl">{{title}}{{formControlRef.dirty ? ' *' : ''}}</label>
+        <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
         <nb-radio-group
             [formControl]="formControlRef"
             (valueChange)="change.emit(undefined)"
-            [status]="formControlRef.dirty ? (formControlRef.invalid  ? 'danger' : 'success') : ''"
+            [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : ''"
             [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
-            [disabled]="readonly"
             #formControlEl
         >
-            <nb-radio *ngFor="let choice of choices" [value]="choice.value" [disabled]="choice.disabled">{{choice.title}}</nb-radio>
+            <nb-radio
+                *ngFor="let choice of choices"
+                [value]="choice.value"
+                [disabled]="choice.disabled || formControlRef.disabled"
+                >{{ choice.title }}</nb-radio
+            >
         </nb-radio-group>
     </div>
     <div *ngSwitchCase="'select'" class="form-control-group">
-        <label class="label" [for]="formControlEl">{{title}}{{formControlRef.dirty ? ' *' : ''}}</label>
+        <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
         <div>
             <nb-select
+                fullWidth
                 [formControl]="formControlRef"
-                [status]="formControlRef.dirty ? (formControlRef.invalid  ? 'danger' : 'success') : ''"
+                [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : ''"
                 [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
-                [disabled]="readonly"
                 (selectedChange)="change.emit(undefined)"
                 [placeholder]="title"
                 #formControlEl
             >
-                <nb-option *ngFor="let choice of choices" [value]="choice.value" [disabled]="choice.disabled">{{choice.title}}</nb-option>
+                <nb-option *ngFor="let choice of choices" [value]="choice.value" [disabled]="choice.disabled">{{
+                    choice.title
+                }}</nb-option>
             </nb-select>
         </div>
     </div>
+    <div *ngSwitchCase="'tags'" class="form-control-group">
+        <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
+        <input
+            nbInput
+            [placeholder]="title"
+            fullWidth
+            fieldSize="medium"
+            [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : ''"
+            [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
+            [formControl]="formControlRef"
+            (change)="change.emit(undefined)"
+            #formControlEl
+        />
+    </div>
+    <ng-container *ngSwitchCase="'picture'">
+        <button nbButton fullWidth ghost class="label" (click)="openDialog($event, selectImageDialog)">
+            <span *ngIf="!formControlRef.value">{{ title || 'Choose Picture' }}</span>
+            <img *ngIf="formControlRef.value" [src]="itemPicturePreviewUrl" alt="Item Image" />
+        </button>
+    </ng-container>
     <nb-alert *ngIf="error" status="danger" closable (close)="formControlRef.updateValueAndValidity()">
-      {{error}}
+        {{ error }}
     </nb-alert>
 </ng-container>
+
+<ng-template #selectImageDialog let-data let-ref="dialogRef">
+    <nb-card>
+        <nb-card-header>Select Picture</nb-card-header>
+        <nb-card-body class="no-padding">
+            <depot-picture-list></depot-picture-list>
+        </nb-card-body>
+        <nb-card-footer>
+            <button nbButton (click)="ref.close()">Close</button>
+        </nb-card-footer>
+    </nb-card>
+</ng-template>

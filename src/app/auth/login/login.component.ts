@@ -1,7 +1,6 @@
-import {ChangeDetectorRef, Component, Inject} from '@angular/core';
-import {NB_AUTH_OPTIONS, NbAuthResult, NbAuthService, NbAuthSocialLink, getDeepFromObject} from '@nebular/auth';
-import {ActivatedRoute, Router} from '@angular/router';
-
+import { ChangeDetectorRef, Component, Inject } from '@angular/core';
+import { NB_AUTH_OPTIONS, NbAuthResult, NbAuthService, NbAuthSocialLink, getDeepFromObject } from '@nebular/auth';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'depot-login',
@@ -21,13 +20,13 @@ export class LoginComponent {
 
     returnUrl = '/';
 
-    constructor(protected service: NbAuthService,
-                @Inject(NB_AUTH_OPTIONS) protected options = {},
-                protected cd: ChangeDetectorRef,
-                protected router: Router,
-                private route: ActivatedRoute
+    constructor(
+        protected service: NbAuthService,
+        @Inject(NB_AUTH_OPTIONS) protected options = {},
+        protected cd: ChangeDetectorRef,
+        protected router: Router,
+        private route: ActivatedRoute
     ) {
-
         this.redirectDelay = this.getConfigValue('forms.login.redirectDelay');
         this.showMessages = this.getConfigValue('forms.login.showMessages');
         this.strategy = this.getConfigValue('forms.login.strategy');
@@ -36,7 +35,7 @@ export class LoginComponent {
 
         route.queryParams.subscribe(params => {
             if (params.hasOwnProperty('returnUrl')) {
-                this.returnUrl = params['returnUrl'];
+                this.returnUrl = params.returnUrl;
             }
         });
     }

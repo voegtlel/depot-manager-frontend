@@ -16,3 +16,7 @@ export interface Item {
 
     tags: string[];
 }
+
+export interface ItemWithComment extends Item {
+    comment: string;
+}

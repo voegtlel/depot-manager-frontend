@@ -1,18 +1,18 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {BehaviorSubject, Observable, of, ReplaySubject, Subject} from "rxjs";
-import {ApiService} from "../../_services";
-import {ActivatedRoute, Router} from "@angular/router";
-import {NbMenuItem} from "@nebular/theme";
-import {Reservation} from "../../_models";
-import {map, shareReplay, switchMap, takeUntil} from "rxjs/operators";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, Observable, of, ReplaySubject, Subject } from 'rxjs';
+import { ApiService } from '../../_services';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NbMenuItem } from '@nebular/theme';
+import { Reservation } from '../../_models';
+import { map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'depot-reservations',
     templateUrl: './reservations.component.html',
-    styleUrls: ['./reservations.component.scss']
+    styleUrls: ['./reservations.component.scss'],
 })
 export class ReservationsComponent implements OnInit, OnDestroy {
-    private stop$ = new Subject<void>();
+    private destroyed$ = new Subject<void>();
     reload$: BehaviorSubject<void> = new BehaviorSubject(undefined);
     loading: boolean;
     reservations$ = new ReplaySubject<Reservation[]>(1);
@@ -21,11 +21,7 @@ export class ReservationsComponent implements OnInit, OnDestroy {
     limit$ = new BehaviorSubject<number>(30);
     placeholders$ = new ReplaySubject<void[]>(1);
 
-    constructor(
-        public api: ApiService,
-        public activatedRoute: ActivatedRoute,
-        public router: Router,
-    ) { }
+    constructor(public api: ApiService, public activatedRoute: ActivatedRoute, public router: Router) {}
 
     ngOnInit() {
         let end = false;
@@ -40,45 +36,45 @@ export class ReservationsComponent implements OnInit, OnDestroy {
                 this.placeholders$.next(new Array(limit - this.reservations.length));
             }
         });
-        this.limit$.pipe(
-            switchMap(
-                limit => {
+        this.limit$
+            .pipe(
+                switchMap(limit => {
                     if (!end) {
-                        return this.api.getReservations(undefined, undefined, this.reservations.length, limit)
+                        return this.api.getReservations(undefined, undefined, this.reservations.length, limit);
                     }
                     return of([]);
-                }
-            ),
-            map(nextReservations => {
-                if (nextReservations.length < 10) {
-                    end = true;
-                }
-                this.reservations.push(...nextReservations);
-                this.placeholders$.next([]);
-                return this.reservations;
-            }),
-            shareReplay(1),
-            takeUntil(this.stop$),
-        ).subscribe(this.reservations$);
+                }),
+                map(nextReservations => {
+                    if (nextReservations.length < 10) {
+                        end = true;
+                    }
+                    this.reservations.push(...nextReservations);
+                    this.placeholders$.next([]);
+                    return this.reservations;
+                }),
+                shareReplay(1),
+                takeUntil(this.destroyed$)
+            )
+            .subscribe(this.reservations$);
     }
 
     ngOnDestroy() {
-        this.stop$.next();
+        this.destroyed$.next();
     }
 
     onCreate() {
-        this.router.navigate(['new'], {relativeTo: this.activatedRoute});
+        this.router.navigate(['new'], { relativeTo: this.activatedRoute });
     }
 
     onLoadNext() {
-        let nextValue = this.limit$.value + 10;
+        const nextValue = this.limit$.value + 10;
         if (nextValue <= this.reservations.length + 10) {
-            console.log("loadNext:", nextValue);
+            console.log('loadNext:', nextValue);
             this.limit$.next(nextValue);
         }
     }
 
     onClickReservation(reservation: Reservation) {
-        this.router.navigate([reservation.id], {relativeTo: this.activatedRoute});
+        this.router.navigate([reservation.id], { relativeTo: this.activatedRoute });
     }
 }

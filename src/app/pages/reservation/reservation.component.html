@@ -11,7 +11,10 @@
             <depot-form-element
                 [formControlRef]="form.get('type')"
                 [submitted]="submitted"
-                [choices]="[{value: reservationChoices.Private, title: 'Private'}, {value: reservationChoices.Team, title: 'Team'}]"
+                [choices]="[
+                    { value: reservationChoices.Private, title: 'Private' },
+                    { value: reservationChoices.Team, title: 'Team' }
+                ]"
                 (change)="onTypeChange()"
                 type="radio"
                 title="Type"
@@ -34,7 +37,6 @@
                 [submitted]="submitted"
                 type="text"
                 title="User"
-                [readonly]="true"
             ></depot-form-element>
             <depot-form-element
                 [formControlRef]="form.get('teamId')"
@@ -42,7 +44,6 @@
                 [choices]="teams$ | async"
                 type="select"
                 title="Team"
-                [readonly]="form.get('type').value !== reservationChoices.Team"
             ></depot-form-element>
             <depot-form-element
                 [formControlRef]="form.get('contact')"

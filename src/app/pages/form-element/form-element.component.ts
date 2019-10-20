@@ -1,14 +1,15 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormControl} from '@angular/forms';
-import {fromIsoDate, toIsoDate} from "../../_helpers";
-
+import { Component, EventEmitter, Input, Output, TemplateRef } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { DateHelper } from '../../_helpers';
+import { NbDialogService } from '@nebular/theme';
+import { ApiService, ItemTagsService } from '../../_services';
+import { Observable } from 'rxjs';
 
 export interface Choice<T> {
     value: T;
     title: string;
     disabled?: boolean;
 }
-
 
 @Component({
     selector: 'depot-form-element',
@@ -19,56 +20,27 @@ export class FormElementComponent {
     @Input() formControlRef: FormControl;
     @Input() formControlRefEnd: FormControl;
 
-    @Input() type = 'text';
-    @Input() title = "";
-    @Input() readonly = false;
+    @Input() type: 'text' | 'textarea' | 'date' | 'daterange' | 'radio' | 'select' | 'tags' = 'text';
+    @Input() title = '';
 
     @Input() submitted = false;
 
     @Input() choices: Choice<any>[] = [];
 
     @Output() change: EventEmitter<void> = new EventEmitter();
+    dateValue = new DateHelper({
+        getValue: () => this.formControlRef.value,
+        setValue: (val: string) => this.formControlRef.setValue(val),
+    });
+    dateValueEnd = new DateHelper({
+        getValue: () => this.formControlRefEnd.value,
+        setValue: (val: string) => this.formControlRefEnd.setValue(val),
+    });
 
-    private _storedDateValue: Date = null;
+    readonly itemTags$: Observable<string[]>;
 
-    get dateValue(): Date {
-        const parsedValue = fromIsoDate(this.formControlRef.value);
-        if (
-            parsedValue && this._storedDateValue &&
-            this._storedDateValue.getFullYear() === parsedValue.getFullYear() &&
-            this._storedDateValue.getMonth() === parsedValue.getMonth() &&
-            this._storedDateValue.getDate() === parsedValue.getDate()
-        ) {
-            return this._storedDateValue;
-        }
-        this._storedDateValue = parsedValue;
-        return parsedValue;
-    }
-
-    set dateValue(val: Date) {
-        this._storedDateValue = val;
-        this.formControlRef.setValue(toIsoDate(val));
-    }
-
-    private _storedDateValueEnd: Date = null;
-
-    get dateValueEnd(): Date {
-        const parsedValue = fromIsoDate(this.formControlRefEnd.value);
-        if (
-            parsedValue && this._storedDateValueEnd &&
-            this._storedDateValueEnd.getFullYear() === parsedValue.getFullYear() &&
-            this._storedDateValueEnd.getMonth() === parsedValue.getMonth() &&
-            this._storedDateValueEnd.getDate() === parsedValue.getDate()
-        ) {
-            return this._storedDateValueEnd;
-        }
-        this._storedDateValueEnd = parsedValue;
-        return parsedValue;
-    }
-
-    set dateValueEnd(val: Date) {
-        this._storedDateValueEnd = val;
-        this.formControlRefEnd.setValue(toIsoDate(val));
+    constructor(private dialogService: NbDialogService, private api: ApiService, private itemTags: ItemTagsService) {
+        this.itemTags$ = itemTags.itemTags$;
     }
 
     get error(): string {
@@ -84,5 +56,21 @@ export class FormElementComponent {
             }
         }
         return null;
+    }
+
+    openDialog($event: MouseEvent, dialog: TemplateRef<any>, context?: any) {
+        $event.preventDefault();
+        $event.stopPropagation();
+        this.dialogService.open(dialog, {
+            hasBackdrop: true,
+            closeOnBackdropClick: true,
+            hasScroll: false,
+            autoFocus: true,
+            context,
+        });
+    }
+
+    get itemPicturePreviewUrl(): string {
+        return this.api.getPicturePreviewUrl(this.formControlRef.value);
     }
 }

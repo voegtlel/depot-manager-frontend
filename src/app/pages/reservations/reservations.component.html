@@ -8,8 +8,13 @@
     </nb-card-header>
     <nb-card-body>
         <nb-list nbInfiniteList [threshold]="500" (bottomThreshold)="onLoadNext()" [listenWindowScroll]="true">
-            <nb-list-item nbButton *ngFor="let reservation of reservations$ | async" (click)="onClickReservation(reservation)" class="clickable-item">
-                {{reservation.name}}
+            <nb-list-item
+                nbButton
+                *ngFor="let reservation of reservations$ | async"
+                (click)="onClickReservation(reservation)"
+                class="clickable-item"
+            >
+                {{ reservation.name }}
             </nb-list-item>
             <nb-list-item nbButton *ngFor="let _ of placeholders$ | async">
                 <div class="text-placeholder"></div>

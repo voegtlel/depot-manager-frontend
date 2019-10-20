@@ -1,15 +1,15 @@
-import {RouterModule, Routes} from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
-import {HomeComponent} from './pages/home/home.component';
-import {AuthGuard} from './_guards';
-import {NbAuthComponent, NbLogoutComponent} from '@nebular/auth';
-import {PagesComponent} from './pages/pages.component';
-import {LoginComponent} from './auth/login/login.component';
-import {ReservationComponent} from "./pages/reservation/reservation.component";
-import {ReservationsComponent} from "./pages/reservations/reservations.component";
-import {NotFoundComponent} from "./pages/not-found/not-found.component";
-import {ItemsComponent} from "./pages/items/items.component";
-
+import { HomeComponent } from './pages/home/home.component';
+import { AuthGuard } from './_guards';
+import { NbAuthComponent, NbLogoutComponent } from '@nebular/auth';
+import { PagesComponent } from './pages/pages.component';
+import { LoginComponent } from './auth/login/login.component';
+import { ReservationComponent } from './pages/reservation/reservation.component';
+import { ReservationsComponent } from './pages/reservations/reservations.component';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { ItemsComponent } from './pages/items/items.component';
+import { ItemComponent } from './pages/item/item.component';
 
 const appRoutes: Routes = [
     {
@@ -23,21 +23,31 @@ const appRoutes: Routes = [
             },
             {
                 path: 'reservations',
-                component: ReservationsComponent,
-            },
-            {
-                path: 'reservations/:reservationId',
-                component: ReservationComponent,
+                children: [
+                    {
+                        path: '',
+                        component: ReservationsComponent,
+                    },
+                    {
+                        path: ':reservationId',
+                        component: ReservationComponent,
+                    },
+                ],
             },
             {
                 path: 'items',
-                component: ItemsComponent,
+                children: [
+                    {
+                        path: '',
+                        component: ItemsComponent,
+                    },
+                    {
+                        path: ':itemId',
+                        component: ItemComponent,
+                    },
+                ],
             },
-            {
-                path: 'items/:itemId',
-                component: ItemsComponent,
-            },
-        ]
+        ],
     },
 
     {
@@ -63,8 +73,8 @@ const appRoutes: Routes = [
     {
         path: '**',
         component: NotFoundComponent,
-        //redirectTo: ''
-    }
+        // redirectTo: ''
+    },
 ];
 
 export const routing = RouterModule.forRoot(appRoutes);

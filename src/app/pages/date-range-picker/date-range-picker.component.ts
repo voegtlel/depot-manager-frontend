@@ -1,26 +1,30 @@
-/**
- * The RangeDatePicker components itself.
- * Provides a proxy to `NbCalendarRange` options as well as custom picker options.
- */
-import {ChangeDetectionStrategy, Component, EventEmitter, HostBinding, Input, Output, Type} from "@angular/core";
+import {
+    ChangeDetectionStrategy,
+    Component,
+    EventEmitter,
+    HostBinding,
+    Input,
+    Output,
+    Type,
+    HostListener,
+} from '@angular/core';
 import {
     NbCalendarCell,
-    NbCalendarComponent, NbCalendarMonthCellComponent,
+    NbCalendarComponent,
+    NbCalendarMonthCellComponent,
     NbCalendarRange,
     NbCalendarRangeYearCellComponent,
     NbCalendarSize,
     NbCalendarViewMode,
     NbDatepickerComponent,
-    NbDateService
-} from "@nebular/theme";
-import {Observable} from "rxjs";
-import {map} from "rxjs/operators";
-
+    NbDateService,
+} from '@nebular/theme';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 interface NbCalendarRangeWithStartEnd<D> extends NbCalendarRange<D> {
     selectingStart: boolean;
 }
-
 
 @Component({
     selector: 'depot-calendar-range-day-cell',
@@ -33,15 +37,12 @@ interface NbCalendarRangeWithStartEnd<D> extends NbCalendarRange<D> {
             [class.start]="start"
             [class.end]="end"
             [class.in-range]="inRange"
-            [class.disabled]="disabled">
+            [class.disabled]="disabled"
+        >
             {{ day }}
         </div>
     `,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    host: {
-        '(click)': 'onClick()',
-        'class': 'range-cell'
-    },
 })
 export class CalendarRangeDayCellComponent<D> implements NbCalendarCell<D, NbCalendarRangeWithStartEnd<D>> {
     @Input() date: D;
@@ -58,23 +59,33 @@ export class CalendarRangeDayCellComponent<D> implements NbCalendarCell<D, NbCal
 
     @Output() select: EventEmitter<D> = new EventEmitter(true);
 
-    constructor(protected dateService: NbDateService<D>) {
-    }
+    @HostBinding('class') cssClass = 'range-cell';
+
+    constructor(protected dateService: NbDateService<D>) {}
 
     @HostBinding('class.in-range') get inRange(): boolean {
-        return this.date && this.selectedValue
-            && (this.selectedValue.start && this.dateService.compareDates(this.date, this.selectedValue.start) >= 0)
-            && (this.selectedValue.end && this.dateService.compareDates(this.date, this.selectedValue.end) <= 0);
+        return (
+            this.date &&
+            this.selectedValue &&
+            (this.selectedValue.start && this.dateService.compareDates(this.date, this.selectedValue.start) >= 0) &&
+            (this.selectedValue.end && this.dateService.compareDates(this.date, this.selectedValue.end) <= 0)
+        );
     }
 
     @HostBinding('class.start') get start(): boolean {
-        return this.date && this.selectedValue
-            && (this.selectedValue.start && this.dateService.isSameDay(this.date, this.selectedValue.start));
+        return (
+            this.date &&
+            this.selectedValue &&
+            (this.selectedValue.start && this.dateService.isSameDay(this.date, this.selectedValue.start))
+        );
     }
 
     @HostBinding('class.end') get end(): boolean {
-        return this.date && this.selectedValue
-            && (this.selectedValue.end && this.dateService.isSameDay(this.date, this.selectedValue.end));
+        return (
+            this.date &&
+            this.selectedValue &&
+            (this.selectedValue.end && this.dateService.isSameDay(this.date, this.selectedValue.end))
+        );
     }
 
     get today(): boolean {
@@ -86,15 +97,16 @@ export class CalendarRangeDayCellComponent<D> implements NbCalendarCell<D, NbCal
     }
 
     get selected(): boolean {
-        return this.date && this.selectedValue
-            && (
-                (
-                    this.selectedValue.selectingStart && this.selectedValue.start
-                    && this.dateService.isSameDay(this.date, this.selectedValue.start))
-                || (
-                    !this.selectedValue.selectingStart && this.selectedValue.end
-                    && this.dateService.isSameDay(this.date, this.selectedValue.end)
-                ));
+        return (
+            this.date &&
+            this.selectedValue &&
+            ((this.selectedValue.selectingStart &&
+                this.selectedValue.start &&
+                this.dateService.isSameDay(this.date, this.selectedValue.start)) ||
+                (!this.selectedValue.selectingStart &&
+                    this.selectedValue.end &&
+                    this.dateService.isSameDay(this.date, this.selectedValue.end)))
+        );
     }
 
     get empty(): boolean {
@@ -109,6 +121,7 @@ export class CalendarRangeDayCellComponent<D> implements NbCalendarCell<D, NbCal
         return this.date && this.dateService.getDate(this.date);
     }
 
+    @HostListener('click')
     onClick() {
         if (this.disabled || this.empty) {
             return;
@@ -129,7 +142,6 @@ export class CalendarRangeDayCellComponent<D> implements NbCalendarCell<D, NbCal
         return this.date && this.filter && !this.filter(this.date);
     }
 }
-
 
 @Component({
     selector: 'depot-calendar-range',
@@ -155,59 +167,58 @@ export class CalendarRangeComponent<D> {
     /**
      * Defines if we should render previous and next months
      * in the current month view.
-     * */
-    @Input() boundingMonth: boolean = true;
+     */
+    @Input() boundingMonth = true;
 
     /**
      * Defines starting view for the calendar.
-     * */
+     */
     @Input() startView: NbCalendarViewMode = NbCalendarViewMode.DATE;
 
     /**
      * A minimum available date for selection.
-     * */
+     */
     @Input() min: D;
 
     /**
      * A maximum available date for selection.
-     * */
+     */
     @Input() max: D;
 
     /**
      * A predicate that decides which cells will be disabled.
-     * */
+     */
     @Input() filter: (D) => boolean;
     dayCellComponent: Type<NbCalendarCell<D, NbCalendarRangeWithStartEnd<D>>> = CalendarRangeDayCellComponent;
     /**
      * Custom month cell component. Have to implement `NbCalendarCell` interface.
-     * */
+     */
     @Input() monthCellComponent: Type<NbCalendarCell<D, NbCalendarRangeWithStartEnd<D>>> = null;
     yearCellComponent: Type<NbCalendarCell<D, NbCalendarRange<D>>> = NbCalendarRangeYearCellComponent;
     /**
      * Size of the calendar and entire components.
      * Can be 'medium' which is default or 'large'.
-     * */
+     */
     @Input() size: NbCalendarSize = NbCalendarSize.MEDIUM;
     @Input() visibleDate: D;
     /**
      * Determines should we show calendars header or not.
-     * */
-    @Input() showHeader: boolean = true;
+     */
+    @Input() showHeader = true;
     /**
      * Range which will be rendered as selected.
-     * */
+     */
     @Input() range: NbCalendarRangeWithStartEnd<D>;
     /**
      * Emits range when start selected and emits again when end selected.
-     * */
+     */
     @Output() rangeChange: EventEmitter<NbCalendarRangeWithStartEnd<D>> = new EventEmitter();
 
-    constructor(protected dateService: NbDateService<D>) {
-    }
+    constructor(protected dateService: NbDateService<D>) {}
 
     /**
      * Custom day cell component. Have to implement `NbCalendarCell` interface.
-     * */
+     */
     @Input('dayCellComponent')
     set _cellComponent(cellComponent: Type<NbCalendarCell<D, NbCalendarRangeWithStartEnd<D>>>) {
         if (cellComponent) {
@@ -217,7 +228,7 @@ export class CalendarRangeComponent<D> {
 
     /**
      * Custom year cell component. Have to implement `NbCalendarCell` interface.
-     * */
+     */
     @Input('yearCellComponent')
     set _yearCellComponent(cellComponent: Type<NbCalendarCell<D, NbCalendarRangeWithStartEnd<D>>>) {
         if (cellComponent) {
@@ -237,7 +248,6 @@ export class CalendarRangeComponent<D> {
     }
 }
 
-
 @Component({
     selector: 'depot-date-range-picker',
     template: '',
@@ -246,10 +256,16 @@ export class DateRangePickerComponent<D> extends NbDatepickerComponent<D> {
     @Input() selectingStart: boolean;
     @Input() otherDate: D;
 
-    protected pickerClass: Type<NbCalendarComponent<D>> = <Type<NbCalendarComponent<D>>><unknown>CalendarRangeComponent;
+    protected pickerClass: Type<NbCalendarComponent<D>> = <Type<NbCalendarComponent<D>>>(
+        (<unknown>CalendarRangeComponent) // tslint:disable-line
+    );
 
     get value(): D | undefined {
-        return this.picker && this.picker.range ? (this.selectingStart ? this.picker.range.start : this.picker.range.end) : undefined;
+        return this.picker && this.picker.range
+            ? this.selectingStart
+                ? this.picker.range.start
+                : this.picker.range.end
+            : undefined;
     }
 
     set value(value: D) {
@@ -265,11 +281,12 @@ export class DateRangePickerComponent<D> extends NbDatepickerComponent<D> {
             end: this.selectingStart ? this.otherDate : value,
             selectingStart: this.selectingStart,
         };
-        console.debug("Setting picker range", this.picker.range);
     }
 
     protected get pickerValueChange(): Observable<D> {
-        return this.picker.rangeChange.pipe(map((range: NbCalendarRangeWithStartEnd<D>) => this.selectingStart ? range.start : range.end));
+        return this.picker.rangeChange.pipe(
+            map((range: NbCalendarRangeWithStartEnd<D>) => (this.selectingStart ? range.start : range.end))
+        );
     }
 
     protected patchWithInputs(): void {

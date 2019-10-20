@@ -1,30 +1,27 @@
-import {Injectable} from '@angular/core';
-import {shareReplay, switchMap} from 'rxjs/operators';
-import {AuthUserModel} from '../_models';
-import {ApiService} from './api.service';
-import {NbAuthService} from '@nebular/auth';
-import {of} from 'rxjs/internal/observable/of';
-import {Observable} from 'rxjs';
-
+import { Injectable } from '@angular/core';
+import { shareReplay, switchMap } from 'rxjs/operators';
+import { AuthUserModel } from '../_models';
+import { ApiService } from './api.service';
+import { NbAuthService } from '@nebular/auth';
+import { of } from 'rxjs/internal/observable/of';
+import { Observable } from 'rxjs';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class AuthService {
     public user$: Observable<AuthUserModel>;
 
-    constructor(private api: ApiService, private authService: NbAuthService) {
+    constructor(api: ApiService, authService: NbAuthService) {
         this.user$ = authService.isAuthenticated().pipe(
-            switchMap(
-                (isAuthenticated) => {
-                    if (isAuthenticated) {
-                        console.log("isAuthenticated", api.getAuthSelf());
-                        return api.getAuthSelf();
-                    }
-                    return of(null);
+            switchMap(isAuthenticated => {
+                if (isAuthenticated) {
+                    console.log('isAuthenticated', api.getAuthSelf());
+                    return api.getAuthSelf();
                 }
-            ),
-            shareReplay(1),
+                return of(null);
+            }),
+            shareReplay(1)
         );
     }
 }

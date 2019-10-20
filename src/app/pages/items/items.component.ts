@@ -1,16 +1,16 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {BehaviorSubject, combineLatest, Observable, Subject} from "rxjs";
-import {Item, Reservation} from "../../_models";
-import {ApiService} from "../../_services";
-import {ActivatedRoute, Router} from "@angular/router";
-import {map, shareReplay, switchMap, takeUntil} from "rxjs/operators";
-import {NbSortDirection, NbSortRequest, NbTreeGridDataSource, NbTreeGridDataSourceBuilder} from "@nebular/theme";
-
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
+import { Item, Reservation } from '../../_models';
+import { ApiService } from '../../_services';
+import { ActivatedRoute, Router } from '@angular/router';
+import { map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
+import { NbSortDirection, NbSortRequest, NbTreeGridDataSource, NbTreeGridDataSourceBuilder } from '@nebular/theme';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Choice } from '../form-element/form-element.component';
 
 interface ItemWithConditionText extends Item {
     conditionText: string;
 }
-
 
 interface ItemEntry {
     data: ItemWithConditionText;
@@ -20,11 +20,10 @@ interface ItemEntry {
     expanded?: boolean;
 }
 
-
 @Component({
     selector: 'depot-items',
     templateUrl: './items.component.html',
-    styleUrls: ['./items.component.scss']
+    styleUrls: ['./items.component.scss'],
 })
 export class ItemsComponent implements OnInit, OnDestroy {
     reload$: BehaviorSubject<void> = new BehaviorSubject(undefined);
@@ -34,7 +33,17 @@ export class ItemsComponent implements OnInit, OnDestroy {
 
     showGrouped$: BehaviorSubject<boolean> = new BehaviorSubject(true);
 
-    allColumns = ['name', 'description', 'conditionText', 'purchaseDate', 'lastService', 'picture', 'tags'];
+    allColumns = [
+        'externalId',
+        'name',
+        'description',
+        'conditionText',
+        'purchaseDate',
+        'lastService',
+        'picture',
+        'tags',
+        'action',
+    ];
 
     dataSource: NbTreeGridDataSource<ItemEntry> = null;
     sortColumn: string;
@@ -42,31 +51,57 @@ export class ItemsComponent implements OnInit, OnDestroy {
 
     filter: string;
 
-    conditionTranslation = {
-        1: "Good",
-        2: "Ok",
-        3: "Bad",
-        4: "Gone",
+    editItem: ItemWithConditionText = null;
+
+    conditionTranslation: Record<number, string> = {
+        1: 'Good',
+        2: 'Ok',
+        3: 'Bad',
+        4: 'Gone',
     };
 
-    private stop$ = new Subject<void>();
+    readonly form: FormGroup = new FormGroup({
+        name: new FormControl('', Validators.required),
+        description: new FormControl('', Validators.required),
+        condition: new FormControl(null, Validators.required),
+        conditionComment: new FormControl(null),
+        purchaseDate: new FormControl(null),
+        lastService: new FormControl(null),
+        pictureId: new FormControl(null),
+        tags: new FormControl([]),
+    });
+
+    conditionChoices: Choice<number>[] = [1, 2, 3, 4].map(value => {
+        return {
+            value,
+            title: this.conditionTranslation[value],
+        };
+    });
+
+    private destroyed$ = new Subject<void>();
 
     constructor(
         public api: ApiService,
         public activatedRoute: ActivatedRoute,
         public router: Router,
         private dataSourceBuilder: NbTreeGridDataSourceBuilder<ItemEntry>
-    ) {
-    }
+    ) {}
 
     ngOnInit() {
         this.items$ = this.reload$.pipe(
             switchMap(() => this.api.getItems()),
-            map(items => items.map(item => {
-                return {...item, conditionText: this.conditionTranslation[item.condition] + (item.conditionComment?": " + item.conditionComment:"")};
-            })),
+            map(items =>
+                items.map(item => {
+                    return {
+                        ...item,
+                        conditionText:
+                            this.conditionTranslation[item.condition] +
+                            (item.conditionComment ? ': ' + item.conditionComment : ''),
+                    };
+                })
+            ),
             shareReplay(1),
-            takeUntil(this.stop$),
+            takeUntil(this.destroyed$)
         );
 
         const itemEntries$ = combineLatest([this.showGrouped$, this.items$]).pipe(
@@ -77,29 +112,33 @@ export class ItemsComponent implements OnInit, OnDestroy {
                     items.forEach(item => {
                         if (item.groupId) {
                             if (itemsByGroupId.hasOwnProperty(item.groupId)) {
-                                itemsByGroupId[item.groupId].children.push({data: item});
+                                itemsByGroupId[item.groupId].children.push({ data: item });
                             } else {
                                 const itemEntry = {
                                     data: item,
-                                    children: [{
-                                        data: item,
-                                    }],
+                                    children: [
+                                        {
+                                            data: item,
+                                        },
+                                    ],
                                     expanded: false,
                                 };
                                 itemsByGroupId[item.groupId] = itemEntry;
                                 itemEntries.push(itemEntry);
                             }
                         } else {
-                            itemEntries.push({data: item});
+                            itemEntries.push({ data: item });
                         }
                     });
                     return itemEntries;
                 } else {
-                    return items.map(item => {return {data: item};});
+                    return items.map(item => {
+                        return { data: item };
+                    });
                 }
             }),
             shareReplay(1),
-            takeUntil(this.stop$),
+            takeUntil(this.destroyed$)
         );
         itemEntries$.subscribe(entries => {
             this.dataSource = this.dataSourceBuilder.create(entries);
@@ -120,18 +159,30 @@ export class ItemsComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.stop$.next();
+        this.destroyed$.next();
     }
 
     onCreate() {
-        this.router.navigate(['new'], {relativeTo: this.activatedRoute});
+        this.router.navigate(['new'], { relativeTo: this.activatedRoute });
     }
 
     getItemPicturePreviewUrl(item: Item): string {
         return this.api.getPicturePreviewUrl(item.pictureId);
     }
 
-    onClickItem(item: Item) {
-        this.router.navigate([item.id], {relativeTo: this.activatedRoute});
+    onClickItem($event: MouseEvent, item: Item) {
+        $event.stopPropagation();
+        $event.preventDefault();
+        this.router.navigate([item.id], { relativeTo: this.activatedRoute.parent });
+    }
+
+    updateConditionText(item: ItemWithConditionText) {
+        item.conditionText =
+            this.conditionTranslation[item.condition] + (item.conditionComment ? ': ' + item.conditionComment : '');
+    }
+
+    onSubmit() {
+        console.log('Submit', this.editItem, this.form.getRawValue());
+        this.editItem = null;
     }
 }
