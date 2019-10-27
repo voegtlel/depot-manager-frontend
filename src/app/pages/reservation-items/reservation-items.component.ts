@@ -1,12 +1,13 @@
-import { Component, forwardRef, Input, OnDestroy, OnInit, TemplateRef } from '@angular/core';
+import { Component, forwardRef, Input, OnDestroy, OnInit, TemplateRef, OnChanges } from '@angular/core';
 import { ApiService, ItemsService } from '../../_services';
 import { BehaviorSubject, Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Item } from '../../_models';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
-import { map, shareReplay, switchMap, takeUntil, tap, skip } from 'rxjs/operators';
+import { map, shareReplay, switchMap, takeUntil, tap, skip, debounceTime } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
 import { Filterable } from '../../_pipes';
+import { AsyncInput } from '@ng-reactive/async-input';
 
 interface ItemWithAvailability extends Item, Filterable {
     available: boolean;
@@ -18,7 +19,7 @@ interface ItemWithAvailability extends Item, Filterable {
     providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ReservationItemsComponent), multi: true }],
     styleUrls: ['./reservation-items.component.scss'],
 })
-export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValueAccessor {
+export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, ControlValueAccessor {
     private destroyed$ = new Subject<void>();
 
     loading: boolean;
@@ -33,25 +34,13 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
 
     imageLoading: boolean;
 
-    reservationsStart$: ReplaySubject<string> = new ReplaySubject(1);
+    @Input() reservationsStart: string;
+    @Input() reservationsEnd: string;
+    @Input() skipReservationId: string;
 
-    @Input() set reservationsStart(value: string) {
-        console.log('Set reservation start', value);
-        this.reservationsStart$.next(value);
-    }
-
-    reservationsEnd$: ReplaySubject<string> = new ReplaySubject(1);
-
-    @Input() set reservationsEnd(value: string) {
-        console.log('Set reservation end', value);
-        this.reservationsEnd$.next(value);
-    }
-
-    skipReservationId$: ReplaySubject<string> = new ReplaySubject(1);
-
-    @Input() set skipReservationId(value: string) {
-        this.skipReservationId$.next(value);
-    }
+    @AsyncInput() reservationsStart$ = new BehaviorSubject<string>(null);
+    @AsyncInput() reservationsEnd$ = new BehaviorSubject<string>(null);
+    @AsyncInput() skipReservationId$ = new BehaviorSubject<string>(null);
 
     group = true;
     filter: string;
@@ -68,6 +57,7 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
     ngOnInit() {
         const filteredItemIds$ = this.reload$.pipe(
             switchMap(() => combineLatest([this.reservationsStart$, this.reservationsEnd$, this.skipReservationId$])),
+            debounceTime(200),
             switchMap(([reservationStart, reservationEnd, skipReservationId]) => {
                 if (reservationStart && reservationEnd) {
                     return this.api.getReservationItems(reservationStart, reservationEnd, skipReservationId);
@@ -173,6 +163,8 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, ControlValu
     ngOnDestroy(): void {
         this.destroyed$.next();
     }
+
+    ngOnChanges(): void {}
 
     select(id: string) {
         if (this.disabled) {

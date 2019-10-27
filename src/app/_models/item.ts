@@ -20,3 +20,11 @@ export interface Item {
 export interface ItemWithComment extends Item {
     comment: string;
 }
+
+export interface ItemState extends Item {
+    id: string;
+    fields: Record<string, any>;
+    timestamp: string;
+    userId: string;
+    comment: string;
+}

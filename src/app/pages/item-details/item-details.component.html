@@ -1,7 +1,37 @@
-<p>{{ item?.externalId }}</p>
-<p>{{ item?.name }}</p>
-<p>{{ item?.description }}</p>
-<p>{{ item?.lastService }}</p>
-<p>{{ item?.purchaseDate }}</p>
-TODO: Implement list of reservations in the same time frame and latest reservation before start time. TODO: Implement
-list of history entries.
+<nb-accordion>
+    <nb-accordion-item expanded>
+        <nb-accordion-item-header>Item Details</nb-accordion-item-header>
+        <nb-accordion-item-body>
+            <p>External ID: {{ item?.externalId }}</p>
+            <p>Name: {{ item?.name }}</p>
+            <p>Description: {{ item?.description }}</p>
+            <p>Last Service: {{ item?.lastService }}</p>
+            <p>Purchase Date: {{ item?.purchaseDate }}</p>
+        </nb-accordion-item-body>
+    </nb-accordion-item>
+    <nb-accordion-item>
+        <nb-accordion-item-header>History</nb-accordion-item-header>
+        <nb-accordion-item-body>
+            <nb-list>
+                <nb-list-item *ngFor="let state of itemHistory$ | async">
+                    <p>{{ state.comment }} on {{ state.timestamp | formatDateTime }}</p>
+                    <p *ngFor="let field of stateFields(state)">{{ field.key }}: {{ field.value }}</p>
+                </nb-list-item>
+            </nb-list>
+        </nb-accordion-item-body>
+    </nb-accordion-item>
+    <nb-accordion-item>
+        <nb-accordion-item-header>Reservations</nb-accordion-item-header>
+        <nb-accordion-item-body>
+            <nb-list>
+                <nb-list-item *ngFor="let reservation of reservations$ | async">
+                    <p>
+                        {{ reservation.name }}: {{ reservation.start | formatDate }} -
+                        {{ reservation.end | formatDate }}
+                    </p>
+                    <p>{{ reservation.contact }}</p>
+                </nb-list-item>
+            </nb-list>
+        </nb-accordion-item-body>
+    </nb-accordion-item>
+</nb-accordion>

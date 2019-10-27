@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { AuthUserModel, Item, Reservation, UserModel, ItemWithComment, Picture } from '../_models';
+import { AuthUserModel, Item, Reservation, UserModel, ItemWithComment, Picture, ItemState } from '../_models';
 import { NbAuthService } from '@nebular/auth';
 import { EnvService } from './env.service';
 
@@ -36,7 +36,15 @@ export class ApiService {
         return this.http.patch<Item>(`${this.env.apiUrl}/items/${itemId}`, item);
     }
 
-    getReservations(start?: string, end?: string, offset?: number, count?: number): Observable<Reservation[]> {
+    getItemHistory(
+        itemId: string,
+        start?: string,
+        end?: string,
+        offset?: number,
+        count?: number,
+        countBeforeStart?: number,
+        countAfterEnd?: number
+    ): Observable<ItemState[]> {
         const query = [];
         if (start) {
             query.push('start=' + start);
@@ -49,6 +57,50 @@ export class ApiService {
         }
         if (count) {
             query.push('count=' + count);
+        }
+        if (countBeforeStart) {
+            query.push('count_before_start=' + countBeforeStart);
+        }
+        if (countAfterEnd) {
+            query.push('count_after_end=' + countAfterEnd);
+        }
+        let queryStr = '';
+        if (query.length > 0) {
+            queryStr = '?' + query.join('&');
+        }
+        return this.http.get<ItemState[]>(`${this.env.apiUrl}/items/${itemId}/history${queryStr}`);
+    }
+
+    getReservations(
+        start?: string,
+        end?: string,
+        offset?: number,
+        count?: number,
+        countBeforeStart?: number,
+        countAfterEnd?: number,
+        itemId?: string
+    ): Observable<Reservation[]> {
+        const query = [];
+        if (start) {
+            query.push('start=' + start);
+        }
+        if (end) {
+            query.push('end=' + end);
+        }
+        if (offset) {
+            query.push('offset=' + offset);
+        }
+        if (count) {
+            query.push('count=' + count);
+        }
+        if (countBeforeStart) {
+            query.push('count_before_start=' + countBeforeStart);
+        }
+        if (countAfterEnd) {
+            query.push('count_after_end=' + countAfterEnd);
+        }
+        if (itemId) {
+            query.push('item_id=' + itemId);
         }
         let queryStr = '';
         if (query.length > 0) {

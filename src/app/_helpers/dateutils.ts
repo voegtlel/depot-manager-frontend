@@ -25,6 +25,26 @@ export function fromIsoDate(date: string): Date {
     return new Date(parseInt(ymd[0], 10), parseInt(ymd[1], 10) - 1, parseInt(ymd[2], 10), 0, 0, 0, 0);
 }
 
+export function fromIsoDateTime(dateTime: string): Date {
+    if (dateTime === undefined || dateTime === null) {
+        return null;
+    }
+    if (!(typeof dateTime === 'string')) {
+        throw Error('Expected string');
+    }
+    return new Date(dateTime);
+}
+
+export function toIsoDateTime(dateTime: Date): string {
+    if (dateTime === undefined || dateTime === null) {
+        return null;
+    }
+    if (!(dateTime instanceof Date)) {
+        throw Error('Expected Date');
+    }
+    return dateTime.toISOString();
+}
+
 export interface ValueAccessor {
     getValue(): string;
 

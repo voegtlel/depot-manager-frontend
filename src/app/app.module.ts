@@ -68,7 +68,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { ReservationComponent } from './pages/reservation/reservation.component';
 import { FormElementComponent } from './pages/form-element/form-element.component';
 import { ReservationItemsComponent } from './pages/reservation-items/reservation-items.component';
-import { ItemFilterPipe, ItemGroupFilterPipe } from './_pipes';
+import { ItemFilterPipe, ItemGroupFilterPipe, FormatDateTimePipe, FormatDatePipe } from './_pipes';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { ItemsComponent } from './pages/items/items.component';
@@ -92,6 +92,8 @@ import { ItemDetailsComponent } from './pages/item-details/item-details.componen
 
         ItemFilterPipe,
         ItemGroupFilterPipe,
+        FormatDatePipe,
+        FormatDateTimePipe,
         ReservationsComponent,
         NotFoundComponent,
         ItemsComponent,

@@ -24,6 +24,7 @@
     "@nebular/auth": "^4.4.0",
     "@nebular/eva-icons": "^4.4.0",
     "@nebular/theme": "^4.4.0",
+    "@ng-reactive/async-input": "0.0.1",
     "@types/xregexp": "^3.0.29",
     "eva-icons": "^1.1.1",
     "font-awesome": "^4.7.0",

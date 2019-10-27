@@ -2,11 +2,12 @@ import { Component, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { ApiService, AuthService, ItemsService } from '../../_services';
 import { BehaviorSubject, Observable, of, Subject, combineLatest } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Item } from '../../_models';
+import { Item, ItemWithComment } from '../../_models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NbToastrService, NbDialogService, NbDialogRef } from '@nebular/theme';
 import { map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
 import { Choice } from '../form-element/form-element.component';
+import { getDirtyValues } from 'src/app/_helpers/angular-dirty-forms';
 
 @Component({
     selector: 'depot-item',
@@ -146,7 +147,7 @@ export class ItemComponent implements OnInit, OnDestroy {
         if (this.isNew) {
             apiCall = this.api.createItem(this.form.getRawValue());
         } else {
-            apiCall = this.api.saveItem(this.itemId, this.form.getRawValue());
+            apiCall = this.api.saveItem(this.itemId, getDirtyValues(this.form) as ItemWithComment);
         }
         apiCall.subscribe(
             item => {
