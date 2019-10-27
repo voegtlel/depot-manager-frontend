@@ -1,6 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { Item } from '../_models';
 
-export interface Filterable {
+export interface Filterable extends Item {
     filterLookup: string;
 }
 

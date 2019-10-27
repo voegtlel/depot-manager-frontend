@@ -11,6 +11,6 @@
 
 <ngx-file-drop (onFileDrop)="onFileDrop($event)">
     <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
-        <button nbButton ghost fullWidth (click)="openFileSelector()">Drop files here</button>
+        <button nbButton ghost fullWidth (click)="onOpen(openFileSelector)">Drop files here</button>
     </ng-template>
 </ngx-file-drop>

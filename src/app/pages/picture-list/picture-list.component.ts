@@ -43,4 +43,9 @@ export class PictureListComponent implements OnInit {
             }
         }
     }
+
+    onOpen(openFileSelectorCallback) {
+        // Needed for correct typing :-/
+        openFileSelectorCallback();
+    }
 }
