@@ -1,15 +1,17 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { Item, Reservation } from '../../_models';
 import { ApiService, ItemsService } from '../../_services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
+import { map, shareReplay, takeUntil } from 'rxjs/operators';
 import { NbSortDirection, NbSortRequest, NbTreeGridDataSource, NbTreeGridDataSourceBuilder } from '@nebular/theme';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Choice } from '../form-element/form-element.component';
 
 interface ItemWithConditionText extends Item {
     conditionText: string;
+
+    originalOrder?: number;
 }
 
 interface ItemEntry {
@@ -24,6 +26,7 @@ interface ItemEntry {
     selector: 'depot-items',
     templateUrl: './items.component.html',
     styleUrls: ['./items.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ItemsComponent implements OnInit, OnDestroy {
     loading: boolean;
@@ -45,8 +48,7 @@ export class ItemsComponent implements OnInit, OnDestroy {
     ];
 
     dataSource: NbTreeGridDataSource<ItemEntry> = null;
-    sortColumn: string;
-    sortDirection: NbSortDirection = NbSortDirection.NONE;
+    sorting: NbSortRequest = { column: 'originalOrder', direction: NbSortDirection.ASCENDING };
 
     filter: string;
 
@@ -84,7 +86,8 @@ export class ItemsComponent implements OnInit, OnDestroy {
         public itemsService: ItemsService,
         public activatedRoute: ActivatedRoute,
         public router: Router,
-        private dataSourceBuilder: NbTreeGridDataSourceBuilder<ItemEntry>
+        private dataSourceBuilder: NbTreeGridDataSourceBuilder<ItemEntry>,
+        private changeDetector: ChangeDetectorRef
     ) {}
 
     ngOnInit() {
@@ -108,13 +111,13 @@ export class ItemsComponent implements OnInit, OnDestroy {
                 if (showGrouped) {
                     const itemEntries: ItemEntry[] = [];
                     const itemsByGroupId: { [id: string]: ItemEntry } = {};
-                    items.forEach(item => {
+                    items.forEach((item, idx) => {
                         if (item.groupId) {
                             if (itemsByGroupId.hasOwnProperty(item.groupId)) {
-                                itemsByGroupId[item.groupId].children.push({ data: item });
+                                itemsByGroupId[item.groupId].children.push({ data: { ...item, originalOrder: idx } });
                             } else {
                                 const itemEntry = {
-                                    data: item,
+                                    data: { ...item, originalOrder: idx },
                                     children: [
                                         {
                                             data: item,
@@ -126,13 +129,13 @@ export class ItemsComponent implements OnInit, OnDestroy {
                                 itemEntries.push(itemEntry);
                             }
                         } else {
-                            itemEntries.push({ data: item });
+                            itemEntries.push({ data: { ...item, originalOrder: idx } });
                         }
                     });
                     return itemEntries;
                 } else {
-                    return items.map(item => {
-                        return { data: item };
+                    return items.map((item, idx) => {
+                        return { data: { ...item, originalOrder: idx } };
                     });
                 }
             }),
@@ -141,18 +144,25 @@ export class ItemsComponent implements OnInit, OnDestroy {
         );
         itemEntries$.subscribe(entries => {
             this.dataSource = this.dataSourceBuilder.create(entries);
+            this.dataSource.filter(this.filter);
+            this.dataSource.sort(this.sorting);
+            this.changeDetector.markForCheck();
         });
     }
 
     updateSort(sortRequest: NbSortRequest): void {
-        this.sortColumn = sortRequest.column;
-        this.sortDirection = sortRequest.direction;
-        console.log(sortRequest);
+        this.sorting = sortRequest;
+        console.log('Sort:', sortRequest);
+        if (sortRequest.direction === NbSortDirection.NONE) {
+            this.sorting = { column: 'originalOrder', direction: NbSortDirection.ASCENDING };
+            this.dataSource.sort({ column: 'originalOrder', direction: NbSortDirection.ASCENDING });
+        }
+        this.changeDetector.markForCheck();
     }
 
     getSortDirection(column: string): NbSortDirection {
-        if (this.sortColumn === column) {
-            return this.sortDirection;
+        if (this.sorting.column === column) {
+            return this.sorting.direction;
         }
         return NbSortDirection.NONE;
     }
@@ -178,10 +188,5 @@ export class ItemsComponent implements OnInit, OnDestroy {
     updateConditionText(item: ItemWithConditionText) {
         item.conditionText =
             this.conditionTranslation[item.condition] + (item.conditionComment ? ': ' + item.conditionComment : '');
-    }
-
-    onSubmit() {
-        console.log('Submit', this.editItem, this.form.getRawValue());
-        this.editItem = null;
     }
 }

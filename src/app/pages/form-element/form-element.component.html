@@ -160,7 +160,7 @@
         <nb-card-header>Select Picture</nb-card-header>
         <nb-card-body class="no-padding">
             <depot-picture-list
-                (selectPicture)="formControlRef.value = $event; change.emit($event); ref.close()"
+                (selectPicture)="formControlRef.setValue($event); change.emit($event); ref.close()"
             ></depot-picture-list>
         </nb-card-body>
         <nb-card-footer>
