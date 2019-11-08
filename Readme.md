@@ -1,12 +1,12 @@
-<a href="https://cloud.docker.com/repository/docker/voegtlel/depot-man-frontend/builds">
-  <img src="https://img.shields.io/docker/cloud/build/voegtlel/depot-man-frontend.svg" alt="Docker build status" />
+<a href="https://cloud.docker.com/repository/docker/voegtlel/depot-manager-frontend/builds">
+  <img src="https://img.shields.io/docker/cloud/build/voegtlel/depot-manager-frontend.svg" alt="Docker build status" />
 </a>
-<img src="https://img.shields.io/github/license/voegtlel/depot-man-frontend.svg" alt="License" />
+<img src="https://img.shields.io/github/license/voegtlel/depot-manager-frontend.svg" alt="License" />
 
 
 # Client for ldap admin
 
-This is the frontend for [depot-man-backend](https://github.com/voegtlel/depot-man-backend).
+This is the frontend for [depot-manager-backend](https://github.com/voegtlel/depot-manager-backend).
 
 ## Development server
 
@@ -18,14 +18,14 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 ## Docker
 
-The docker image is located at `voegtlel/depot-man-frontend`.
+The docker image is located at `voegtlel/depot-manager-frontend`.
 
 ## Docker compose
 ```
 version: '3'
 services:
   frontend:
-    image: voegtlel/depot-man-frontend
+    image: voegtlel/depot-manager-frontend
     restart: unless-stopped
     environment:
       # Forward backend to /api
@@ -40,7 +40,7 @@ services:
       - backend
 
   backend:
-    image: voegtlel/depot-man-backend
+    image: voegtlel/depot-manager-backend
     restart: unless-stopped
     environment:
       # Define how to connect to the ldap server
@@ -58,6 +58,18 @@ services:
       # API_CONFIG_ALLOW_ORIGINS: "['https://admin.example.com']"
       
       API_CONFIG_AUTH_SECRET_KEY: 'your secret key for jwt'
+      
+      API_CONFIG_DATABASE_URI: 'mysql+pymysql://depotman:mysecretpassword@db/depotman'
+    networks:
+      - backend
+  
+  db:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: mysecretrootpassword
+      MYSQL_DATABASE: depotman
+      MYSQL_USER: depotman
+      MYSQL_PASSWORD: mysecretpassword
     networks:
       - backend
   
@@ -66,7 +78,5 @@ services:
     networks:
       - backend
 networks:
-  ldap:
-    external: true
   backend:
 ```
