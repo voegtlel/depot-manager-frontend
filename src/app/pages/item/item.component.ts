@@ -50,6 +50,7 @@ export class ItemComponent implements OnInit, OnDestroy {
         purchaseDate: new FormControl(null),
         lastService: new FormControl(null),
         pictureId: new FormControl(null),
+        groupId: new FormControl(null),
         tags: new FormControl([]),
         comment: new FormControl(''),
     });
@@ -129,12 +130,16 @@ export class ItemComponent implements OnInit, OnDestroy {
         if (!this.form.valid) {
             return;
         }
-        this.dialogService.open(dialog, {
-            hasBackdrop: true,
-            closeOnBackdropClick: false,
-            hasScroll: false,
-            autoFocus: true,
-        });
+        if (this.isNew) {
+            this.onSubmit(null);
+        } else {
+            this.dialogService.open(dialog, {
+                hasBackdrop: true,
+                closeOnBackdropClick: false,
+                hasScroll: false,
+                autoFocus: true,
+            });
+        }
     }
 
     onSubmit(dialogRef: NbDialogRef<any>) {
@@ -145,7 +150,9 @@ export class ItemComponent implements OnInit, OnDestroy {
         }
         let apiCall: Observable<Item>;
         if (this.isNew) {
-            apiCall = this.api.createItem(this.form.getRawValue());
+            const rawValue = this.form.getRawValue();
+            delete rawValue.comment;
+            apiCall = this.api.createItem(rawValue);
         } else {
             apiCall = this.api.saveItem(this.itemId, getDirtyValues(this.form) as ItemWithComment);
         }
@@ -160,7 +167,9 @@ export class ItemComponent implements OnInit, OnDestroy {
                     relativeTo: this.activatedRoute,
                 });
                 this.toastrService.success('Item was saved', 'Item Saved');
-                dialogRef.close();
+                if (dialogRef) {
+                    dialogRef.close();
+                }
                 this.itemsService.reload();
             },
             error => {
