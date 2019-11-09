@@ -74,7 +74,7 @@ export class ReservationComponent implements OnInit, OnDestroy {
                     this.isNew = false;
                     this.form.reset(reservation);
 
-                    if (reservation.userId === user.uid || user.teams.includes(reservation.teamId)) {
+                    if (reservation.userId === user.id || user.teams.includes(reservation.teamId)) {
                         this.form.enable();
                     } else {
                         this.form.disable();

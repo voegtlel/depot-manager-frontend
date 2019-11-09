@@ -1,5 +1,5 @@
 export interface AuthUserModel {
-    uid: string;
+    id: string;
     name: string;
     mail: string;
 
@@ -9,7 +9,7 @@ export interface AuthUserModel {
 }
 
 export interface UserModel {
-    uid: string;
+    id: string;
     name: string;
 
     teams: string[];
