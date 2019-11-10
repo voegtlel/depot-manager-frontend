@@ -3,6 +3,7 @@
         class="picture-entry clickable"
         *ngFor="let picture of pictures$ | async"
         (click)="selectPicture.next(picture.id)"
+        [class.selected]="selectedPicture === picture.id"
     >
         <div><img [src]="getPictureUrl(picture)" alt="Picture Preview" /></div>
         <div style="text-align: center;">{{ picture.originalName }}</div>

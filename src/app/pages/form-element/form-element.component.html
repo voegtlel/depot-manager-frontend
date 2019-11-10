@@ -3,7 +3,7 @@
         <nb-checkbox
             [formControl]="formControlRef"
             [status]="submitted && formControlRef.errors ? 'danger' : ''"
-            (valueChange)="change.emit($event)"
+            (checkboxChange)="change.emit($event)"
             >{{ title }}</nb-checkbox
         >
     </div>
@@ -148,6 +148,19 @@
             <tag-input-dropdown [autocompleteItems]="itemTags$ | async"></tag-input-dropdown>
         </tag-input>
     </div>
+    <ng-container *ngSwitchCase="'itemgroup'">
+        <button
+            type="button"
+            nbButton
+            fullWidth
+            ghost
+            class="label"
+            (click)="openDialog($event, selectItemGroupDialog)"
+        >
+            <span *ngIf="!formControlRef.value">{{ title || 'Set Item Group' }}</span>
+            <span *ngIf="formControlRef.value">Item Group: {{ formControlRef.value | itemGroupName | async }}</span>
+        </button>
+    </ng-container>
     <ng-container *ngSwitchCase="'picture'">
         <button type="button" nbButton fullWidth ghost class="label" (click)="openDialog($event, selectImageDialog)">
             <span *ngIf="!formControlRef.value">{{ title || 'Choose Picture' }}</span>
@@ -164,8 +177,24 @@
         <nb-card-header>Select Picture</nb-card-header>
         <nb-card-body class="no-padding">
             <depot-picture-list
+                [selectedPicture]="formControlRef.value"
                 (selectPicture)="formControlRef.setValue($event); change.emit($event); ref.close()"
             ></depot-picture-list>
+        </nb-card-body>
+        <nb-card-footer>
+            <button nbButton type="button" (click)="ref.close()">Close</button>
+        </nb-card-footer>
+    </nb-card>
+</ng-template>
+
+<ng-template #selectItemGroupDialog let-data let-ref="dialogRef">
+    <nb-card>
+        <nb-card-header>Select Item Group</nb-card-header>
+        <nb-card-body class="no-padding">
+            <depot-item-group-list
+                [selectedItemGroup]="formControlRef.value"
+                (selectItemGroup)="formControlRef.setValue($event); change.emit($event); ref.close()"
+            ></depot-item-group-list>
         </nb-card-body>
         <nb-card-footer>
             <button nbButton type="button" (click)="ref.close()">Close</button>

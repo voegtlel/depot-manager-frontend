@@ -21,6 +21,12 @@
                 title="Name"
             ></depot-form-element>
             <depot-form-element
+                [formControlRef]="form.get('groupId')"
+                [submitted]="submitted"
+                type="itemgroup"
+                title="Item Group"
+            ></depot-form-element>
+            <depot-form-element
                 [formControlRef]="form.get('description')"
                 [submitted]="submitted"
                 type="textarea"
@@ -38,12 +44,6 @@
                 [submitted]="submitted"
                 type="text"
                 title="Condition Comment"
-            ></depot-form-element>
-            <depot-form-element
-                [formControlRef]="groupItem"
-                [submitted]="submitted"
-                type="checkbox"
-                title="Grouped"
             ></depot-form-element>
             <depot-form-element
                 [formControlRef]="form.get('purchaseDate')"

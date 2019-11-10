@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { ApiService } from 'src/app/_services';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { Picture } from 'src/app/_models';
@@ -14,6 +14,7 @@ export class PictureListComponent implements OnInit {
     pictures$: Observable<Picture[]>;
     reload$ = new BehaviorSubject<void>(undefined);
 
+    @Input() public selectedPicture: string;
     @Output() public selectPicture = new EventEmitter<string>();
 
     constructor(private api: ApiService) {}

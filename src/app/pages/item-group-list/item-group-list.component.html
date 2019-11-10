@@ -1,0 +1,12 @@
+<nb-list>
+    <nb-list-item
+        class="group-entry clickable"
+        *ngFor="let item of itemGroups$ | async"
+        (click)="selectItemGroup.next(item.groupId)"
+        [class.selected]="selectedItemGroup === item.groupId"
+    >
+        {{ item.name }}
+    </nb-list-item>
+</nb-list>
+<button type="button" nbButton (click)="newGroup()">New Group</button>
+<button type="button" nbButton (click)="noGroup()">No Group</button>

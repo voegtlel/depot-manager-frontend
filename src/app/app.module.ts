@@ -75,6 +75,8 @@ import { ItemsComponent } from './pages/items/items.component';
 import { PictureListComponent } from './pages/picture-list/picture-list.component';
 import { ItemComponent } from './pages/item/item.component';
 import { ItemDetailsComponent } from './pages/item-details/item-details.component';
+import { ItemGroupListComponent } from './pages/item-group-list/item-group-list.component';
+import { ItemGroupNamePipe } from './_pipes/item-group-name.pipe';
 
 @NgModule({
     entryComponents: [CalendarRangeDayCellComponent, CalendarRangeComponent],
@@ -100,6 +102,8 @@ import { ItemDetailsComponent } from './pages/item-details/item-details.componen
         PictureListComponent,
         ItemComponent,
         ItemDetailsComponent,
+        ItemGroupListComponent,
+        ItemGroupNamePipe,
     ],
     imports: [
         BrowserModule,
