@@ -113,7 +113,7 @@
                     Purchase Date
                 </th>
                 <td nbTreeGridCell *nbTreeGridCellDef="let row">
-                    {{ row.data.purchaseDate }}
+                    {{ row.data.purchaseDate | formatDate }}
                 </td>
             </ng-container>
 
@@ -127,7 +127,7 @@
                     Last Service
                 </th>
                 <td nbTreeGridCell *nbTreeGridCellDef="let row">
-                    {{ row.data.lastService }}
+                    {{ row.data.lastService | formatDate }}
                 </td>
             </ng-container>
 

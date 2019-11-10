@@ -14,7 +14,8 @@
                 (click)="onClickReservation(reservation)"
                 class="clickable-item"
             >
-                {{ reservation.name }}
+                <div class="name">{{ reservation.name }}</div>
+                <div class="description">{{ reservation.start | formatDate }} - {{ reservation.end | formatDate }}</div>
             </nb-list-item>
             <nb-list-item nbButton *ngFor="let _ of placeholders$ | async">
                 <div class="text-placeholder"></div>

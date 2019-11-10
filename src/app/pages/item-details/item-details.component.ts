@@ -29,6 +29,13 @@ export class ItemDetailsComponent implements OnInit, OnDestroy, OnChanges {
     reservations$: Observable<Reservation[]>;
     destroyed$ = new Subject<void>();
 
+    conditionTranslation: Record<number, string> = {
+        1: 'Good',
+        2: 'Ok',
+        3: 'Bad',
+        4: 'Gone',
+    };
+
     constructor(private api: ApiService) {
         this.itemHistory$ = combineLatest([this.item$, this.reservationStart$, this.reservationEnd$]).pipe(
             debounceTime(200),
@@ -74,6 +81,10 @@ export class ItemDetailsComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     ngOnChanges(): void {}
+
+    getPicturePreviewUrl(pictureId: string): string {
+        return this.api.getPicturePreviewUrl(pictureId);
+    }
 
     stateFields(state: ItemState): FieldItem[] {
         return Object.entries(state.fields).map(([key, value]) => ({ key, value }));

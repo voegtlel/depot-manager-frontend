@@ -11,6 +11,14 @@
     cursor: pointer;
 
     color: nb-theme(button-outline-primary-text-color);
+
+    .name {
+        font-weight: bold;
+    }
+
+    .description {
+        font-weight: normal;
+    }
 }
 
 .clickable-item:hover {
