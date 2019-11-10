@@ -41,6 +41,8 @@ export class ItemComponent implements OnInit, OnDestroy {
         };
     });
 
+    groupItem = new FormControl(false);
+
     readonly form: FormGroup = new FormGroup({
         externalId: new FormControl(''),
         name: new FormControl('', Validators.required),
@@ -86,6 +88,7 @@ export class ItemComponent implements OnInit, OnDestroy {
                     this.itemId = item.id;
                     this.isNew = false;
                     this.form.reset(item);
+                    this.groupItem.reset(!!item.groupId);
                 } else {
                     this.itemId = null;
                     this.isNew = true;
@@ -117,6 +120,8 @@ export class ItemComponent implements OnInit, OnDestroy {
                 this.submitted = false;
                 this.loading = false;
             });
+
+        this.itemsService.items$.pipe(takeUntil(this.destroyed$)).subscribe(items => {});
     }
 
     ngOnDestroy(): void {

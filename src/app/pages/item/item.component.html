@@ -40,6 +40,12 @@
                 title="Condition Comment"
             ></depot-form-element>
             <depot-form-element
+                [formControlRef]="groupItem"
+                [submitted]="submitted"
+                type="checkbox"
+                title="Grouped"
+            ></depot-form-element>
+            <depot-form-element
                 [formControlRef]="form.get('purchaseDate')"
                 [submitted]="submitted"
                 type="date"

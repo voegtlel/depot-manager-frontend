@@ -4,10 +4,14 @@
 // framework component styles
 @import '~@nebular/theme/styles/globals';
 
+@import 'tag-edit';
+
 // install the framework styles
 @include nb-install() {
     @include nb-theme-global();
 }
+
+@include nb-tag-edit();
 
 /* You can add global styles to this file, and also import other style files */
 
