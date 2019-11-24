@@ -1,11 +1,16 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ChangeDetectionStrategy, TemplateRef } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
-import { Item, Reservation } from '../../_models';
+import { Item } from '../../_models';
 import { ApiService, ItemsService } from '../../_services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map, shareReplay, takeUntil } from 'rxjs/operators';
-import { NbSortDirection, NbSortRequest, NbTreeGridDataSource, NbTreeGridDataSourceBuilder } from '@nebular/theme';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+    NbSortDirection,
+    NbSortRequest,
+    NbTreeGridDataSource,
+    NbTreeGridDataSourceBuilder,
+    NbDialogService,
+} from '@nebular/theme';
 import { Choice } from '../form-element/form-element.component';
 
 interface ItemWithConditionText extends Item {
@@ -31,7 +36,6 @@ interface ItemEntry {
 export class ItemsComponent implements OnInit, OnDestroy {
     loading: boolean;
     items$: Observable<ItemWithConditionText[]>;
-    items: Reservation[] = [];
 
     showGrouped$: BehaviorSubject<boolean> = new BehaviorSubject(true);
 
@@ -42,6 +46,7 @@ export class ItemsComponent implements OnInit, OnDestroy {
         'conditionText',
         'purchaseDate',
         'lastService',
+        'bay',
         'picture',
         'tags',
         'action',
@@ -61,17 +66,6 @@ export class ItemsComponent implements OnInit, OnDestroy {
         4: 'Gone',
     };
 
-    readonly form: FormGroup = new FormGroup({
-        name: new FormControl('', Validators.required),
-        description: new FormControl('', Validators.required),
-        condition: new FormControl(null, Validators.required),
-        conditionComment: new FormControl(null),
-        purchaseDate: new FormControl(null),
-        lastService: new FormControl(null),
-        pictureId: new FormControl(null),
-        tags: new FormControl([]),
-    });
-
     conditionChoices: Choice<number>[] = [1, 2, 3, 4].map(value => {
         return {
             value,
@@ -87,7 +81,8 @@ export class ItemsComponent implements OnInit, OnDestroy {
         public activatedRoute: ActivatedRoute,
         public router: Router,
         private dataSourceBuilder: NbTreeGridDataSourceBuilder<ItemEntry>,
-        private changeDetector: ChangeDetectorRef
+        private changeDetector: ChangeDetectorRef,
+        private dialogService: NbDialogService
     ) {}
 
     ngOnInit() {
@@ -185,8 +180,15 @@ export class ItemsComponent implements OnInit, OnDestroy {
         this.router.navigate([item.id], { relativeTo: this.activatedRoute.parent });
     }
 
-    updateConditionText(item: ItemWithConditionText) {
-        item.conditionText =
-            this.conditionTranslation[item.condition] + (item.conditionComment ? ': ' + item.conditionComment : '');
+    openDialog($event: MouseEvent, imageDialog: TemplateRef<any>, item: Item) {
+        $event.preventDefault();
+        $event.stopPropagation();
+        this.dialogService.open(imageDialog, {
+            hasBackdrop: true,
+            closeOnBackdropClick: true,
+            context: item,
+            hasScroll: false,
+            autoFocus: true,
+        });
     }
 }

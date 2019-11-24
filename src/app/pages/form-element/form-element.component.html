@@ -148,6 +148,12 @@
             <tag-input-dropdown [autocompleteItems]="itemTags$ | async"></tag-input-dropdown>
         </tag-input>
     </div>
+    <ng-container *ngSwitchCase="'picture'">
+        <button type="button" nbButton fullWidth ghost class="label" (click)="openDialog($event, selectImageDialog)">
+            <span *ngIf="!formControlRef.value">{{ title || 'Choose Picture' }}</span>
+            <img *ngIf="formControlRef.value" [src]="itemPicturePreviewUrl" alt="Item Image" />
+        </button>
+    </ng-container>
     <ng-container *ngSwitchCase="'itemgroup'">
         <button
             type="button"
@@ -161,10 +167,10 @@
             <span *ngIf="formControlRef.value">Item Group: {{ formControlRef.value | itemGroupName | async }}</span>
         </button>
     </ng-container>
-    <ng-container *ngSwitchCase="'picture'">
-        <button type="button" nbButton fullWidth ghost class="label" (click)="openDialog($event, selectImageDialog)">
-            <span *ngIf="!formControlRef.value">{{ title || 'Choose Picture' }}</span>
-            <img *ngIf="formControlRef.value" [src]="itemPicturePreviewUrl" alt="Item Image" />
+    <ng-container *ngSwitchCase="'bay'">
+        <button type="button" nbButton fullWidth ghost class="label" (click)="openDialog($event, selectBayDialog)">
+            <span *ngIf="!formControlRef.value">{{ title || 'Select Bay' }}</span>
+            <span *ngIf="formControlRef.value">Bay: {{ formControlRef.value | bayName | async }}</span>
         </button>
     </ng-container>
     <nb-alert *ngIf="error" status="danger" closable (close)="formControlRef.updateValueAndValidity()">
@@ -178,11 +184,13 @@
         <nb-card-body class="no-padding">
             <depot-picture-list
                 [selectedPicture]="formControlRef.value"
-                (selectPicture)="formControlRef.setValue($event); change.emit($event); ref.close()"
+                (selectPicture)="
+                    formControlRef.setValue($event); formControlRef.markAsDirty(); change.emit($event); ref.close()
+                "
             ></depot-picture-list>
         </nb-card-body>
         <nb-card-footer>
-            <button nbButton type="button" (click)="ref.close()">Close</button>
+            <button nbButton type="button" (click)="ref.close()">Cancel</button>
         </nb-card-footer>
     </nb-card>
 </ng-template>
@@ -193,11 +201,30 @@
         <nb-card-body class="no-padding">
             <depot-item-group-list
                 [selectedItemGroup]="formControlRef.value"
-                (selectItemGroup)="formControlRef.setValue($event); change.emit($event); ref.close()"
+                (selectItemGroup)="
+                    formControlRef.setValue($event); formControlRef.markAsDirty(); change.emit($event); ref.close()
+                "
             ></depot-item-group-list>
         </nb-card-body>
         <nb-card-footer>
-            <button nbButton type="button" (click)="ref.close()">Close</button>
+            <button nbButton type="button" (click)="ref.close()">Cancel</button>
+        </nb-card-footer>
+    </nb-card>
+</ng-template>
+
+<ng-template #selectBayDialog let-data let-ref="dialogRef">
+    <nb-card>
+        <nb-card-header>Select Bay</nb-card-header>
+        <nb-card-body class="no-padding">
+            <depot-bay-list
+                [selectedBay]="formControlRef.value"
+                (selectBay)="
+                    formControlRef.setValue($event); formControlRef.markAsDirty(); change.emit($event); ref.close()
+                "
+            ></depot-bay-list>
+        </nb-card-body>
+        <nb-card-footer>
+            <button nbButton type="button" (click)="ref.close()">Cancel</button>
         </nb-card-footer>
     </nb-card>
 </ng-template>

@@ -55,6 +55,14 @@
                                 <span class="key">Picture: </span
                                 ><span class="value"><img [src]="getPicturePreviewUrl(field.value)"/></span>
                             </p>
+                            <p *ngSwitchCase="'groupId'">
+                                <span class="key">Group: </span
+                                ><span class="value">{{ field.value | itemGroupName | async }}</span>
+                            </p>
+                            <p *ngSwitchCase="'bayId'">
+                                <span class="key">Bay: </span
+                                ><span class="value">{{ field.value | bayName | async }}</span>
+                            </p>
                             <p *ngSwitchCase="'tags'">
                                 <span class="key">Tags: </span
                                 ><span class="value"
@@ -71,7 +79,7 @@
         </nb-accordion-item-body>
     </nb-accordion-item>
     <nb-accordion-item>
-        <nb-accordion-item-header>Reservations</nb-accordion-item-header>
+        <nb-accordion-item-header>Past Reservations</nb-accordion-item-header>
         <nb-accordion-item-body>
             <nb-list>
                 <nb-list-item *ngFor="let reservation of reservations$ | async">

@@ -20,7 +20,17 @@ export class FormElementComponent {
     @Input() formControlRef: FormControl;
     @Input() formControlRefEnd: FormControl;
 
-    @Input() type: 'text' | 'textarea' | 'checkbox' | 'date' | 'daterange' | 'radio' | 'select' | 'tags' = 'text';
+    @Input() type:
+        | 'text'
+        | 'textarea'
+        | 'checkbox'
+        | 'date'
+        | 'daterange'
+        | 'radio'
+        | 'select'
+        | 'tags'
+        | 'bay'
+        | 'itemgroup' = 'text';
     @Input() title = '';
 
     @Input() submitted = false;

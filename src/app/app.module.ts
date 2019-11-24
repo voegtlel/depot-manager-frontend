@@ -77,6 +77,10 @@ import { ItemComponent } from './pages/item/item.component';
 import { ItemDetailsComponent } from './pages/item-details/item-details.component';
 import { ItemGroupListComponent } from './pages/item-group-list/item-group-list.component';
 import { ItemGroupNamePipe } from './_pipes/item-group-name.pipe';
+import { BaysComponent } from './pages/bays/bays.component';
+import { BayComponent } from './pages/bay/bay.component';
+import { BayNamePipe } from './_pipes/bay-name.pipe';
+import { BayListComponent } from './pages/bay-list/bay-list.component';
 
 @NgModule({
     entryComponents: [CalendarRangeDayCellComponent, CalendarRangeComponent],
@@ -94,11 +98,15 @@ import { ItemGroupNamePipe } from './_pipes/item-group-name.pipe';
 
         ItemFilterPipe,
         ItemGroupFilterPipe,
+        BayNamePipe,
         FormatDatePipe,
         FormatDateTimePipe,
         ReservationsComponent,
         NotFoundComponent,
         ItemsComponent,
+        BaysComponent,
+        BayComponent,
+        BayListComponent,
         PictureListComponent,
         ItemComponent,
         ItemDetailsComponent,

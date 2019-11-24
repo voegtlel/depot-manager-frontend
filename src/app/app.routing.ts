@@ -10,6 +10,8 @@ import { ReservationsComponent } from './pages/reservations/reservations.compone
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { ItemsComponent } from './pages/items/items.component';
 import { ItemComponent } from './pages/item/item.component';
+import { BaysComponent } from './pages/bays/bays.component';
+import { BayComponent } from './pages/bay/bay.component';
 
 const appRoutes: Routes = [
     {
@@ -44,6 +46,19 @@ const appRoutes: Routes = [
                     {
                         path: ':itemId',
                         component: ItemComponent,
+                    },
+                ],
+            },
+            {
+                path: 'bays',
+                children: [
+                    {
+                        path: '',
+                        component: BaysComponent,
+                    },
+                    {
+                        path: ':bayId',
+                        component: BayComponent,
                     },
                 ],
             },

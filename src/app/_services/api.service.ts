@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { AuthUserModel, Item, Reservation, UserModel, ItemWithComment, Picture, ItemState } from '../_models';
+import { AuthUserModel, Item, Reservation, UserModel, ItemWithComment, Picture, ItemState, Bay } from '../_models';
 import { NbAuthService } from '@nebular/auth';
 import { EnvService } from './env.service';
 
@@ -34,6 +34,22 @@ export class ApiService {
 
     saveItem(itemId: string, item: ItemWithComment): Observable<Item> {
         return this.http.patch<Item>(`${this.env.apiUrl}/items/${itemId}`, item);
+    }
+
+    getBays(): Observable<Bay[]> {
+        return this.http.get<Bay[]>(`${this.env.apiUrl}/bays`);
+    }
+
+    createBay(bay: Bay): Observable<Bay> {
+        return this.http.post<Bay>(`${this.env.apiUrl}/bays`, bay);
+    }
+
+    getBay(bayId: string): Observable<Bay> {
+        return this.http.get<Bay>(`${this.env.apiUrl}/bays/${bayId}`);
+    }
+
+    saveBay(bayId: string, bay: Bay): Observable<Bay> {
+        return this.http.patch<Bay>(`${this.env.apiUrl}/bays/${bayId}`, bay);
     }
 
     getItemHistory(

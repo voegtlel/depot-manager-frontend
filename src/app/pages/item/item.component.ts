@@ -12,6 +12,7 @@ import { getDirtyValues } from 'src/app/_helpers/angular-dirty-forms';
 @Component({
     selector: 'depot-item',
     templateUrl: './item.component.html',
+    styleUrls: ['./item.component.scss'],
 })
 export class ItemComponent implements OnInit, OnDestroy {
     private destroyed$ = new Subject<void>();
@@ -22,8 +23,6 @@ export class ItemComponent implements OnInit, OnDestroy {
     isNew: boolean;
 
     reload$: BehaviorSubject<void> = new BehaviorSubject(undefined);
-
-    teams$: Observable<{ value: string; title: string }[]>;
 
     itemId: string = null;
 
@@ -53,6 +52,7 @@ export class ItemComponent implements OnInit, OnDestroy {
         lastService: new FormControl(null),
         pictureId: new FormControl(null),
         groupId: new FormControl(null),
+        bayId: new FormControl(null),
         tags: new FormControl([]),
         comment: new FormControl(''),
     });
@@ -106,6 +106,8 @@ export class ItemComponent implements OnInit, OnDestroy {
                         pictureId: null,
 
                         groupId: null,
+
+                        bayId: null,
 
                         tags: [],
 

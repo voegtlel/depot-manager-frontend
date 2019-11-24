@@ -25,6 +25,11 @@ export class PagesComponent implements OnInit {
             icon: 'file-add',
         },
         {
+            title: 'Bays',
+            link: '/bays',
+            icon: 'file-add',
+        },
+        {
             title: 'Logout',
             link: '/auth/logout',
             icon: 'log-out',

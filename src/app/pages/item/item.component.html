@@ -64,6 +64,12 @@
                 title="Picture"
             ></depot-form-element>
             <depot-form-element
+                [formControlRef]="form.get('bayId')"
+                [submitted]="submitted"
+                type="bay"
+                title="Item Bay"
+            ></depot-form-element>
+            <depot-form-element
                 [formControlRef]="form.get('tags')"
                 [submitted]="submitted"
                 type="tags"
