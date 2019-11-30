@@ -15,7 +15,7 @@ export class HttpErrorHandler implements HttpInterceptor {
         private authService: NbAuthService,
         @Inject(NB_AUTH_OPTIONS) protected options = {}
     ) {
-        // this.authService.onAuthenticationChange().subscribe((authenticated) => this.loggedIn = authenticated);
+        this.authService.onAuthenticationChange().subscribe((authenticated) => (this.loggedIn = authenticated));
     }
 
     private logout() {
@@ -41,7 +41,7 @@ export class HttpErrorHandler implements HttpInterceptor {
                     // noinspection JSDeprecatedSymbols
                     // location.reload(true);
                 } else if (err.status === 403) {
-                    console.log('ERROR: Retrieved 401 error. Reloading page.');
+                    console.log('ERROR: Retrieved 403 error. Reloading page.');
                     // noinspection JSDeprecatedSymbols
                     location.reload();
                 }

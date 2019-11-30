@@ -62,9 +62,9 @@ export class NbPasswordAuthStrategyEndpoint extends NbPasswordAuthStrategy {
                     name: 'email',
                     baseEndpoint: '',
                     refreshToken: {
-                        endpoint: '/refresh-token',
-                        defaultErrors: ['Username/password combination is not correct, please try again.'],
-                        defaultMessages: ['You have been successfully logged in.'],
+                        endpoint: '/jwt-refresh',
+                        defaultErrors: ['Token cannot be refreshed, please login again.'],
+                        defaultMessages: ['Token has been refreshed.'],
                         requireValidToken: false,
                     },
                     login: {
