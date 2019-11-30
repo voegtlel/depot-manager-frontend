@@ -17,17 +17,17 @@ export class PagesComponent implements OnInit {
         {
             title: 'Reservations',
             link: '/reservations',
-            icon: 'file-add',
+            icon: 'calendar',
         },
         {
             title: 'Items',
             link: '/items',
-            icon: 'file-add',
+            icon: 'cube',
         },
         {
             title: 'Bays',
             link: '/bays',
-            icon: 'file-add',
+            icon: 'briefcase',
         },
         {
             title: 'Logout',

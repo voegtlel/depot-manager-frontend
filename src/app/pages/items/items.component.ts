@@ -50,6 +50,7 @@ export class ItemsComponent implements OnInit, OnDestroy {
         'picture',
         'tags',
         'action',
+        'action-details',
     ];
 
     dataSource: NbTreeGridDataSource<ItemEntry> = null;

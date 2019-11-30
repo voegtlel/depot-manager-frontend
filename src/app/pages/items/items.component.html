@@ -164,8 +164,17 @@
                 </th>
                 <td nbTreeGridCell *nbTreeGridCellDef="let row">
                     <button nbButton ghost (click)="onClickItem($event, row.data)">
-                        <nb-icon icon="edit"></nb-icon></button
-                    ><button nbButton ghost (click)="openDialog($event, itemDialog, row.data)">
+                        <nb-icon icon="edit"></nb-icon>
+                    </button>
+                </td>
+            </ng-container>
+
+            <ng-container nbTreeGridColumnDef="action-details">
+                <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef>
+                    Action
+                </th>
+                <td nbTreeGridCell *nbTreeGridCellDef="let row">
+                    <button nbButton ghost (click)="openDialog($event, itemDialog, row.data)">
                         <nb-icon icon="search-outline"></nb-icon>
                     </button>
                 </td>
