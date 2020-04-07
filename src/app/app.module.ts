@@ -1,164 +1,35 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule, HttpRequest } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
-import {
-    NbAccordionModule,
-    NbActionsModule,
-    NbAlertModule,
-    NbBaseCalendarModule,
-    NbButtonModule,
-    NbCalendarKitModule,
-    NbCalendarModule,
-    NbCalendarRangeModule,
-    NbCardModule,
-    NbChatModule,
-    NbCheckboxModule,
-    NbContextMenuModule,
-    NbDatepickerModule,
-    NbDialogModule,
-    NbIconModule,
-    NbInputModule,
-    NbLayoutModule,
-    NbListModule,
-    NbMenuModule,
-    NbPopoverModule,
-    NbProgressBarModule,
-    NbRadioModule,
-    NbRouteTabsetModule,
-    NbSearchModule,
-    NbSelectModule,
-    NbSidebarModule,
-    NbSidebarService,
-    NbSpinnerModule,
-    NbStepperModule,
-    NbTabsetModule,
-    NbThemeModule,
-    NbToastrModule,
-    NbTooltipModule,
-    NbTreeGridModule,
-    NbUserModule,
-    NbWindowModule,
-} from '@nebular/theme';
-import { NbEvaIconsModule } from '@nebular/eva-icons';
 
 import { NB_AUTH_TOKEN_INTERCEPTOR_FILTER, NbAuthJWTInterceptor } from '@nebular/auth';
 
 import { APP_BASE_HREF } from '@angular/common';
 
-import { HttpErrorHandler } from './_services';
+import { HttpErrorHandler } from './common-module/_services';
 
 import { AppComponent } from './app.component';
-import { routing } from './app.routing';
+import { routing } from './client-module/app.routing';
+import { routing as routingDevice } from './device-module/app.routing.device';
 
-import { TagInputModule } from 'ngx-chips';
-import { NgxFileDropModule } from 'ngx-file-drop';
-
-import { DepotManAuthModule, NbPasswordAuthStrategyEndpoint } from './auth/auth.module';
-import {
-    CalendarRangeComponent,
-    CalendarRangeDayCellComponent,
-    DateRangePickerComponent,
-} from './pages/date-range-picker/date-range-picker.component';
-
-import { PagesComponent } from './pages/pages.component';
-import { HomeComponent } from './pages/home/home.component';
-import { ReservationComponent } from './pages/reservation/reservation.component';
-import { FormElementComponent } from './pages/form-element/form-element.component';
-import { ReservationItemsComponent } from './pages/reservation-items/reservation-items.component';
-import { ItemFilterPipe, ItemGroupFilterPipe, FormatDateTimePipe, FormatDatePipe } from './_pipes';
-import { ReservationsComponent } from './pages/reservations/reservations.component';
-import { NotFoundComponent } from './pages/not-found/not-found.component';
-import { ItemsComponent } from './pages/items/items.component';
-import { PictureListComponent } from './pages/picture-list/picture-list.component';
-import { ItemComponent } from './pages/item/item.component';
-import { ItemDetailsComponent } from './pages/item-details/item-details.component';
-import { ItemGroupListComponent } from './pages/item-group-list/item-group-list.component';
-import { ItemGroupNamePipe } from './_pipes/item-group-name.pipe';
-import { BaysComponent } from './pages/bays/bays.component';
-import { BayComponent } from './pages/bay/bay.component';
-import { BayNamePipe } from './_pipes/bay-name.pipe';
-import { BayListComponent } from './pages/bay-list/bay-list.component';
+import { NbPasswordAuthStrategyEndpoint } from './auth/auth.module';
+import { environment } from 'src/environments/environment';
+import { ClientModuleModule } from './client-module/client-module.module';
+import { DeviceModuleModule } from './device-module/device-module.module';
+import { NbSidebarModule, NbSidebarService } from '@nebular/theme';
+import { ReservationResolver } from './device-module/_services/reservation.resolver';
 
 @NgModule({
-    entryComponents: [CalendarRangeDayCellComponent, CalendarRangeComponent],
-    declarations: [
-        AppComponent,
-        PagesComponent,
-        HomeComponent,
-        FormElementComponent,
-        ReservationComponent,
-        ReservationItemsComponent,
-
-        CalendarRangeDayCellComponent,
-        CalendarRangeComponent,
-        DateRangePickerComponent,
-
-        ItemFilterPipe,
-        ItemGroupFilterPipe,
-        BayNamePipe,
-        FormatDatePipe,
-        FormatDateTimePipe,
-        ReservationsComponent,
-        NotFoundComponent,
-        ItemsComponent,
-        BaysComponent,
-        BayComponent,
-        BayListComponent,
-        PictureListComponent,
-        ItemComponent,
-        ItemDetailsComponent,
-        ItemGroupListComponent,
-        ItemGroupNamePipe,
-    ],
+    // entryComponents: [CalendarRangeDayCellComponent, CalendarRangeComponent],
+    declarations: [AppComponent],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,
-        NbThemeModule.forRoot(),
-        NbMenuModule.forRoot(),
-        NbToastrModule.forRoot(),
-        NbDialogModule.forRoot(),
-        NbDatepickerModule.forRoot(),
-        DepotManAuthModule,
-        NbActionsModule,
-        NbCardModule,
-        NbLayoutModule,
-        NbRouteTabsetModule,
-        NbSearchModule,
-        NbSidebarModule,
-        NbTabsetModule,
-        NbUserModule,
-        NbCheckboxModule,
-        NbPopoverModule,
-        NbContextMenuModule,
-        NbProgressBarModule,
-        NbCalendarModule,
-        NbCalendarRangeModule,
-        NbStepperModule,
-        NbButtonModule,
-        NbInputModule,
-        NbAccordionModule,
-        NbWindowModule,
-        NbListModule,
-        NbAlertModule,
-        NbSpinnerModule,
-        NbRadioModule,
-        NbSelectModule,
-        NbChatModule,
-        NbTooltipModule,
-        NbCalendarKitModule,
-        NbEvaIconsModule,
-        NbBaseCalendarModule,
-        NbIconModule,
-        NbTreeGridModule,
-        TagInputModule,
-        NgxFileDropModule,
-        ReactiveFormsModule,
-        FormsModule,
+        environment.onDevice ? ClientModuleModule : DeviceModuleModule,
         HttpClientModule,
-        routing,
+        environment.onDevice ? routingDevice : routing,
+        NbSidebarModule,
     ],
     providers: [
         NbSidebarService,
@@ -168,8 +39,12 @@ import { BayListComponent } from './pages/bay-list/bay-list.component';
         { provide: HTTP_INTERCEPTORS, useClass: HttpErrorHandler, multi: true },
         {
             provide: NB_AUTH_TOKEN_INTERCEPTOR_FILTER,
-            useValue: (req: HttpRequest<any>) => req.url.endsWith('/jwt-auth'),
+            useValue: (req: HttpRequest<any>) =>
+                req.url.endsWith('/jwt-auth') ||
+                req.url.endsWith('/jwt-auth-card') ||
+                (environment.deviceApiUrl && req.url.startsWith(environment.deviceApiUrl)),
         },
+        ReservationResolver,
     ],
 
     bootstrap: [AppComponent],

@@ -1,6 +1,6 @@
 export const environment = {
     production: true,
-    onDevice: false,
+    onDevice: true,
     deviceApiUrl: '',
     userApiUrl: '',
     userCardConfig: '',

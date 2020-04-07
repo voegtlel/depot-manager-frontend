@@ -5,7 +5,7 @@ import {
     NbPasswordAuthStrategy,
     NbPasswordAuthStrategyOptions,
 } from '@nebular/auth';
-import { getApiUrl } from '../_services';
+import { getApiUrl } from '../common-module/_services';
 import { Injectable, NgModule } from '@angular/core';
 import { LoginComponent } from './login/login.component';
 import { BrowserModule } from '@angular/platform-browser';
@@ -99,7 +99,6 @@ export class NbPasswordAuthStrategyEndpoint extends NbPasswordAuthStrategy {
             },
         }),
     ],
-    exports: [NbAuthModule],
     declarations: [LoginComponent],
 })
-export class DepotManAuthModule {}
+export class AuthModule {}

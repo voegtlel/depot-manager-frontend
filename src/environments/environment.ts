@@ -4,6 +4,11 @@
 
 export const environment = {
     production: false,
+    onDevice: false,
+    deviceApiUrl: '',
+    userApiUrl: '',
+    userCardConfig: '',
+    appBaseHref: '/',
 };
 
 /*

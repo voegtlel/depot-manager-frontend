@@ -1,12 +1,14 @@
 FROM node:alpine as builder
 
+ARG CONFIGURATION=production
+
 RUN apk update && apk add --no-cache make git
 COPY . /app
 WORKDIR /app
 RUN cd /app && \
     npm set progress=false && \
     npm install && \
-    npm run build-prod
+    npm run build --configuration=${CONFIGURATION}
 
 # STEP 2 build a small nginx image with static website
 FROM nginx:alpine
