@@ -1,0 +1,31 @@
+@import '../../../../themes';
+
+input.ng-dirty {
+    font-weight: bold;
+}
+
+.form-control-group {
+    padding-bottom: 1rem;
+}
+
+.date-range {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: stretch;
+}
+
+.date-range input {
+    flex: 1 auto;
+}
+
+.date-range .date-range-center {
+    flex: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    padding-left: 1em;
+    padding-right: 1em;
+}

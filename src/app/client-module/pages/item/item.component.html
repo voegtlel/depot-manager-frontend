@@ -1,0 +1,112 @@
+<nb-card [nbSpinner]="loading">
+    <nb-card-header>
+        Item
+        <nb-actions *ngIf="!isNew" size="small" class="float-right">
+            <nb-action icon="refresh" (click)="reload$.next(undefined)"></nb-action>
+            <nb-action icon="save" (click)="openConfirmDialog($event, submitDialog)"></nb-action>
+        </nb-actions>
+    </nb-card-header>
+    <nb-card-body>
+        <form [formGroup]="form" (ngSubmit)="openConfirmDialog($event, submitDialog)">
+            <depot-form-element
+                [formControlRef]="form.get('externalId')"
+                [submitted]="submitted"
+                type="text"
+                title="External ID"
+            ></depot-form-element>
+            <depot-form-element
+                [formControlRef]="form.get('name')"
+                [submitted]="submitted"
+                type="text"
+                title="Name"
+            ></depot-form-element>
+            <depot-form-element
+                [formControlRef]="form.get('groupId')"
+                [submitted]="submitted"
+                type="itemgroup"
+                title="Item Group"
+            ></depot-form-element>
+            <depot-form-element
+                [formControlRef]="form.get('description')"
+                [submitted]="submitted"
+                type="textarea"
+                title="Description"
+            ></depot-form-element>
+            <depot-form-element
+                [formControlRef]="form.get('condition')"
+                [submitted]="submitted"
+                type="select"
+                [choices]="conditionChoices"
+                title="Condition"
+            ></depot-form-element>
+            <depot-form-element
+                [formControlRef]="form.get('conditionComment')"
+                [submitted]="submitted"
+                type="text"
+                title="Condition Comment"
+            ></depot-form-element>
+            <depot-form-element
+                [formControlRef]="form.get('purchaseDate')"
+                [submitted]="submitted"
+                type="date"
+                title="Purchase Date"
+            ></depot-form-element>
+            <depot-form-element
+                [formControlRef]="form.get('lastService')"
+                [submitted]="submitted"
+                type="date"
+                title="Last Service"
+            ></depot-form-element>
+            <depot-form-element
+                [formControlRef]="form.get('pictureId')"
+                [submitted]="submitted"
+                type="picture"
+                title="Picture"
+            ></depot-form-element>
+            <depot-form-element
+                [formControlRef]="form.get('bayId')"
+                [submitted]="submitted"
+                type="bay"
+                title="Item Bay"
+            ></depot-form-element>
+            <depot-form-element
+                [formControlRef]="form.get('tags')"
+                [submitted]="submitted"
+                type="tags"
+                title="Tags"
+            ></depot-form-element>
+            <div class="form-group">
+                <button
+                    nbButton
+                    fullWidth
+                    status="primary"
+                    size="large"
+                    [disabled]="loading || !form.valid"
+                    type="submit"
+                    [class.btn-pulse]="submitted"
+                >
+                    Save
+                </button>
+            </div>
+        </form>
+    </nb-card-body>
+</nb-card>
+
+<ng-template #submitDialog let-ref="dialogRef">
+    <form [formGroup]="form" (ngSubmit)="onSubmit(ref)">
+        <nb-card>
+            <nb-card-header>Change Comment</nb-card-header>
+            <nb-card-body class="no-padding">
+                <depot-form-element
+                    [formControlRef]="form.get('changeComment')"
+                    type="text"
+                    title="Submit Comment"
+                ></depot-form-element>
+            </nb-card-body>
+            <nb-card-footer>
+                <button nbButton type="button" (click)="ref.close()">Cancel</button>
+                <button nbButton type="submit">Submit</button>
+            </nb-card-footer>
+        </nb-card>
+    </form>
+</ng-template>

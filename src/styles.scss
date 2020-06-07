@@ -9,6 +9,10 @@
     @include nb-theme-global();
 }
 
+@import 'tag-edit';
+
+@include nb-tag-edit();
+
 /* You can add global styles to this file, and also import other style files */
 
 .table th.fit,

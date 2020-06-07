@@ -3,7 +3,6 @@
 </a>
 <img src="https://img.shields.io/github/license/voegtlel/depot-manager-frontend.svg" alt="License" />
 
-
 # Client for ldap admin
 
 This is the frontend for [depot-manager-backend](https://github.com/voegtlel/depot-manager-backend).
@@ -20,7 +19,22 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 The docker image is located at `voegtlel/depot-manager-frontend`.
 
+## OAuth OIDC
+
+Register this client with the settings (change as needed by your OIDC Provider):
+
+```
+clientId: depot
+redirectUri: https://depot.example.com/.*
+scopes: openid, offline_access, profile, email, phone, groups
+endpointAuthMethod: none
+responseTypes: (refresh)token, code
+grantTypes: authorization code (pkce), refresh token
+mappedRoles: admin, manager
+```
+
 ## Docker compose
+
 ```
 version: '3'
 services:
@@ -31,8 +45,14 @@ services:
       # Forward backend to /api
       # (will set API_HOST='/api')
       PROXY_API_HOST: backend
+      # Set this if you're behind a reverse proxy:
+      # REAL_IP_RECURSIVE: on
+      # REAL_IP_HEADER: X-Real-Ip  # default: X-Real-Ip
       # OR: Host backend at separate URL:
       # API_HOST: 'api.example.com'
+
+      OICD_ISSUER: 'auth.example.com'
+      OICD_CLIENT_ID: 'manager'
     port:
       # Serve at :80, you may for sure also use a reverse proxy, etc.
       - 80:80
@@ -43,38 +63,32 @@ services:
     image: voegtlel/depot-manager-backend
     restart: unless-stopped
     environment:
-      # Define how to connect to the ldap server
-      API_CONFIG_LDAP_SERVER_URI: 'ldap://openldap'
-      # How to bind the ldap admin
-      API_CONFIG_LDAP_BIND_DN: 'cn=useradmin,ou=services,dc=jdav-freiburg,dc=de'
-      API_CONFIG_LDAP_BIND_PASSWORD: 'HaeCoth8muPhepheiphi'
-      # General API prefix.
-      API_CONFIG_LDAP_PREFIX: 'dc=jdav-freiburg,dc=de'
-      
       # Override any config.yaml variable by typing API_CONFIG_<container>_<container...>_<variable>
       # where the names are automagically converted from camelCase to underscore_notation (ignoring casing).
-      
+
       # Set this if you use different origin
-      # API_CONFIG_ALLOW_ORIGINS: "['https://admin.example.com']"
-      
-      API_CONFIG_AUTH_SECRET_KEY: 'your secret key for jwt'
-      
-      API_CONFIG_DATABASE_URI: 'mysql+pymysql://depotman:mysecretpassword@db/depotman'
+      # API_CONFIG_ALLOW_ORIGINS: "['https://api.depot.example.com']"
+
+      API_CONFIG_FRONTEND_BASE_URL: "https://depot.example.com"
+
+      API_CONFIG_MONGO_URI: "mongodb://depot:<mongopw>@mongo/depot"
+
+      API_CONFIG_OAUTH2_SERVER_METADATA_URL: "https://auth.example.com/.well-known/openid-configuration"
+      API_CONFIG_OAUTH2_CLIENT_ID: "depot"
+
+      API_CONFIG_MAIL_HOST: "mailhost"
+      API_CONFIG_MAIL_SENDER: "account@example.com"
     networks:
       - backend
-  
-  db:
-    image: mariadb
+      - default
+
+  mongo:
+    image: mongo
+    volumes:
+      - ./db:/data/db
     environment:
-      MYSQL_ROOT_PASSWORD: mysecretrootpassword
-      MYSQL_DATABASE: depotman
-      MYSQL_USER: depotman
-      MYSQL_PASSWORD: mysecretpassword
-    networks:
-      - backend
-  
-  ldap:
-    image: yourldapserver
+      MONGO_INITDB_ROOT_USERNAME: depot
+      MONGO_INITDB_ROOT_PASSWORD: <mongopw>
     networks:
       - backend
 networks:

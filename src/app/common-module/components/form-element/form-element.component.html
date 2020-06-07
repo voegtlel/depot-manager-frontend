@@ -1,0 +1,230 @@
+<ng-container [ngSwitch]="type">
+    <div *ngSwitchCase="'checkbox'" class="form-control-group">
+        <nb-checkbox
+            [formControl]="formControlRef"
+            [status]="submitted && formControlRef.errors ? 'danger' : 'basic'"
+            (checkboxChange)="change.emit($event)"
+            >{{ title }}</nb-checkbox
+        >
+    </div>
+    <div *ngSwitchCase="'text'" class="form-control-group">
+        <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
+        <input
+            nbInput
+            [placeholder]="title"
+            fullWidth
+            fieldSize="medium"
+            [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : 'basic'"
+            [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
+            [formControl]="formControlRef"
+            (change)="change.emit($event)"
+            #formControlEl
+        />
+    </div>
+    <div *ngSwitchCase="'textarea'" class="form-control-group">
+        <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
+        <textarea
+            nbInput
+            [placeholder]="title"
+            fullWidth
+            fieldSize="medium"
+            style="resize: vertical; min-height: 40px; height: 40px;"
+            [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : 'basic'"
+            [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
+            [formControl]="formControlRef"
+            (change)="change.emit($event)"
+            #formControlEl
+        ></textarea>
+    </div>
+    <div *ngSwitchCase="'date'" class="form-control-group">
+        <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
+        <input
+            nbInput
+            [placeholder]="title"
+            fullWidth
+            fieldSize="medium"
+            [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : 'basic'"
+            [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
+            [(ngModel)]="dateValue.dateValue"
+            (change)="change.emit($event)"
+            [disabled]="formControlRef.disabled"
+            [nbDatepicker]="datepicker"
+            #formControlEl
+        />
+        <nb-datepicker #datepicker></nb-datepicker>
+    </div>
+    <div *ngSwitchCase="'daterange'" class="form-control-group">
+        <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
+        <div class="date-range">
+            <input
+                nbInput
+                [placeholder]="title + ' Start'"
+                fullWidth
+                fieldSize="medium"
+                [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : 'basic'"
+                [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
+                [(ngModel)]="dateValue.dateValue"
+                (change)="change.emit($event)"
+                [disabled]="formControlRef.disabled"
+                [nbDatepicker]="daterangepickerStart"
+                #formControlEl
+            />
+            <div class="date-range-center">-</div>
+            <input
+                nbInput
+                [placeholder]="title + ' End'"
+                fullWidth
+                fieldSize="medium"
+                [status]="formControlRefEnd.dirty ? (formControlRefEnd.invalid ? 'danger' : 'success') : 'basic'"
+                [attr.aria-invalid]="formControlRefEnd.invalid && formControlRefEnd.touched ? true : null"
+                [(ngModel)]="dateValueEnd.dateValue"
+                (change)="change.emit($event)"
+                [disabled]="formControlRefEnd.disabled"
+                [nbDatepicker]="daterangepickerEnd"
+            />
+        </div>
+        <depot-date-range-picker
+            [selectingStart]="true"
+            [max]="dateValueEnd.dateValue"
+            [otherDate]="dateValueEnd.dateValue"
+            #daterangepickerStart
+        ></depot-date-range-picker>
+        <depot-date-range-picker
+            [selectingStart]="false"
+            [min]="dateValue.dateValue"
+            [otherDate]="dateValue.dateValue"
+            #daterangepickerEnd
+        ></depot-date-range-picker>
+    </div>
+    <div *ngSwitchCase="'radio'" class="form-control-group">
+        <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
+        <nb-radio-group
+            [formControl]="formControlRef"
+            (valueChange)="change.emit($event)"
+            [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : 'basic'"
+            [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
+            #formControlEl
+        >
+            <nb-radio
+                *ngFor="let choice of choices"
+                [value]="choice.value"
+                [disabled]="choice.disabled || formControlRef.disabled"
+                >{{ choice.title }}</nb-radio
+            >
+        </nb-radio-group>
+    </div>
+    <div *ngSwitchCase="'select'" class="form-control-group">
+        <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
+        <div>
+            <nb-select
+                fullWidth
+                [formControl]="formControlRef"
+                [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : 'basic'"
+                [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
+                (selectedChange)="change.emit($event)"
+                [placeholder]="title"
+                #formControlEl
+            >
+                <nb-option *ngFor="let choice of choices" [value]="choice.value" [disabled]="choice.disabled">{{
+                    choice.title
+                }}</nb-option>
+            </nb-select>
+        </div>
+    </div>
+    <div *ngSwitchCase="'tags'" class="form-control-group">
+        <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
+        <tag-input
+            [separatorKeyCodes]="[188, 13]"
+            [modelAsStrings]="true"
+            [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
+            [formControl]="formControlRef"
+            [addOnBlur]="true"
+            [allowDupes]="false"
+            [trimTags]="true"
+            [ripple]="false"
+            (change)="change.emit($event)"
+            #formControlEl
+        >
+            <tag-input-dropdown [autocompleteItems]="itemTags$ | async"></tag-input-dropdown>
+        </tag-input>
+    </div>
+    <ng-container *ngSwitchCase="'picture'">
+        <button type="button" nbButton fullWidth ghost class="label" (click)="openDialog($event, selectImageDialog)">
+            <span *ngIf="!formControlRef.value">{{ title || 'Choose Picture' }}</span>
+            <img *ngIf="formControlRef.value" [src]="itemPicturePreviewUrl" alt="Item Image" />
+        </button>
+    </ng-container>
+    <ng-container *ngSwitchCase="'itemgroup'">
+        <button
+            type="button"
+            nbButton
+            fullWidth
+            ghost
+            class="label"
+            (click)="openDialog($event, selectItemGroupDialog)"
+        >
+            <span *ngIf="!formControlRef.value">{{ title || 'Set Item Group' }}</span>
+            <span *ngIf="formControlRef.value">Item Group: {{ formControlRef.value | itemGroupName | async }}</span>
+        </button>
+    </ng-container>
+    <ng-container *ngSwitchCase="'bay'">
+        <button type="button" nbButton fullWidth ghost class="label" (click)="openDialog($event, selectBayDialog)">
+            <span *ngIf="!formControlRef.value">{{ title || 'Select Bay' }}</span>
+            <span *ngIf="formControlRef.value">Bay: {{ formControlRef.value | bayName | async }}</span>
+        </button>
+    </ng-container>
+    <nb-alert *ngIf="error" status="danger" closable (close)="formControlRef.updateValueAndValidity()">
+        {{ error }}
+    </nb-alert>
+</ng-container>
+
+<ng-template #selectImageDialog let-data let-ref="dialogRef">
+    <nb-card>
+        <nb-card-header>Select Picture</nb-card-header>
+        <nb-card-body class="no-padding">
+            <depot-picture-list
+                [selectedPicture]="formControlRef.value"
+                (selectPicture)="
+                    formControlRef.setValue($event); formControlRef.markAsDirty(); change.emit($event); ref.close()
+                "
+            ></depot-picture-list>
+        </nb-card-body>
+        <nb-card-footer>
+            <button nbButton type="button" (click)="ref.close()">Cancel</button>
+        </nb-card-footer>
+    </nb-card>
+</ng-template>
+
+<ng-template #selectItemGroupDialog let-data let-ref="dialogRef">
+    <nb-card>
+        <nb-card-header>Select Item Group</nb-card-header>
+        <nb-card-body class="no-padding">
+            <depot-item-group-list
+                [selectedItemGroup]="formControlRef.value"
+                (selectItemGroup)="
+                    formControlRef.setValue($event); formControlRef.markAsDirty(); change.emit($event); ref.close()
+                "
+            ></depot-item-group-list>
+        </nb-card-body>
+        <nb-card-footer>
+            <button nbButton type="button" (click)="ref.close()">Cancel</button>
+        </nb-card-footer>
+    </nb-card>
+</ng-template>
+
+<ng-template #selectBayDialog let-data let-ref="dialogRef">
+    <nb-card>
+        <nb-card-header>Select Bay</nb-card-header>
+        <nb-card-body class="no-padding">
+            <depot-bay-list
+                [selectedBay]="formControlRef.value"
+                (selectBay)="
+                    formControlRef.setValue($event); formControlRef.markAsDirty(); change.emit($event); ref.close()
+                "
+            ></depot-bay-list>
+        </nb-card-body>
+        <nb-card-footer>
+            <button nbButton type="button" (click)="ref.close()">Cancel</button>
+        </nb-card-footer>
+    </nb-card>
+</ng-template>
