@@ -13,8 +13,8 @@ import {
 } from 'rxjs/operators';
 import { Observable, BehaviorSubject, Subject, of } from 'rxjs';
 import { DeviceApiService } from './device-api.service';
-import { NbTokenService, NbAuthJWTToken, NbAuthService } from '@nebular/auth';
 import { AuthUserModel } from '../../common-module/_models';
+import { AuthService } from 'src/app/common-module/_services';
 
 const tickInterval = 250;
 
@@ -31,31 +31,24 @@ export class DeviceAuthService implements OnDestroy {
 
     public readonly requireLogin$: Observable<{ cardId: string }> = this.unknownCard$;
     public readonly displayErrorMessage$: Observable<string> = this.errorMessage$;
+    public readonly token$: Observable<string>;
 
-    constructor(
-        api: ApiService,
-        deviceApi: DeviceApiService,
-        tokenService: NbTokenService,
-        authService: NbAuthService
-    ) {
-        authService
-            .onTokenChange()
-            .pipe(takeUntil(this.destroyed$))
-            .subscribe(token => {
-                if (!token && !this.loggedOut$.value) {
-                    this.loggedOut$.next(true);
-                }
-            });
+    constructor(api: ApiService, deviceApi: DeviceApiService, authService: AuthService) {
+        this.token$.pipe(takeUntil(this.destroyed$)).subscribe((token) => {
+            if (!token && !this.loggedOut$.value) {
+                this.loggedOut$.next(true);
+            }
+        });
         // Check card every `tickInterval` seconds.
         const cardChecker$ = this.checkCard$.pipe(
             switchMap(() =>
                 deviceApi.getCard().pipe(
-                    catchError(err => {
+                    catchError((err) => {
                         const errMsg = err ? (err.status === 0 ? 'Service offline' : err.statusText) : 'Unknown error';
                         this.errorMessage$.next(`Error on checking card: ${errMsg}`);
                         return of(null).pipe(delay(5000 - tickInterval));
                     }),
-                    map(cardData => (cardData && cardData.cardId ? cardData : null))
+                    map((cardData) => (cardData && cardData.cardId ? cardData : null))
                 )
             ),
             shareReplay(1)
@@ -68,21 +61,21 @@ export class DeviceAuthService implements OnDestroy {
             .pipe(
                 distinctUntilChanged(
                     (x, y) => x === y,
-                    cardData => (cardData ? cardData.cardId : null)
+                    (cardData) => (cardData ? cardData.cardId : null)
                 ),
                 takeUntil(this.destroyed$)
             )
             .subscribe(this.cardData$);
-        this.cardData$.subscribe(cardData => console.log('Next data:', cardData));
-        this.cardData$.pipe(map(data => !data)).subscribe(this.loggedOut$);
+        this.cardData$.subscribe((cardData) => console.log('Next data:', cardData));
+        this.cardData$.pipe(map((data) => !data)).subscribe(this.loggedOut$);
         this.cardData$
             .pipe(
-                switchMap(cardData =>
+                switchMap((cardData) =>
                     cardData
                         ? api.authByCardId(cardData.token).pipe(
-                              tap(({ token }) => tokenService.set(new NbAuthJWTToken(token, 'email'))),
+                              tap(({ token }) => console.log('TODO: Save token')),
                               map(({ user }: { user: AuthUserModel }) => user),
-                              catchError(err => {
+                              catchError((err) => {
                                   if (err.status === 401) {
                                       this.unknownCard$.next({ cardId: cardData.cardId });
                                       return of(null);
@@ -110,12 +103,12 @@ export class DeviceAuthService implements OnDestroy {
 
         this.errorMessage$
             .pipe(
-                filter(m => !!m),
+                filter((m) => !!m),
                 delay(5000)
             )
             .subscribe(() => this.errorMessage$.next(null));
 
-        this.errorMessage$.subscribe(msg => {
+        this.errorMessage$.subscribe((msg) => {
             console.log('Error message:', msg);
         });
 

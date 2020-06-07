@@ -61,6 +61,8 @@ import { ItemGroupNamePipe } from './_pipes/item-group-name.pipe';
 import { BayNamePipe } from './_pipes/bay-name.pipe';
 import { BayListComponent } from './components/bay-list/bay-list.component';
 import { ItemBaysComponent } from './components/item-bays/item-bays.component';
+import { OAuthModule } from 'angular-oauth2-oidc';
+import { getApiUrl } from './_services';
 
 @NgModule({
     entryComponents: [CalendarRangeDayCellComponent, CalendarRangeComponent],
@@ -127,6 +129,12 @@ import { ItemBaysComponent } from './components/item-bays/item-bays.component';
         ReactiveFormsModule,
         FormsModule,
         HttpClientModule,
+        OAuthModule.forRoot({
+            resourceServer: {
+                customUrlValidation: (url) => url.startsWith(getApiUrl()),
+                sendAccessToken: true,
+            },
+        }),
     ],
     exports: [
         FormElementComponent,

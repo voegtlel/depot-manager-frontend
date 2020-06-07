@@ -1,22 +1,21 @@
 export interface AuthUserModel {
-    id: string;
+    sub: string;
     name: string;
-    mail: string;
-
-    mobile: string;
+    family_name: string;
+    given_name: string;
+    picture: string;
+    email: string;
+    phone_number: string;
+    roles: string[];
     groups: string[];
-    teams: string[];
 }
 
 export interface UserModel {
-    id: string;
+    sub: string;
     name: string;
-
-    teams: string[];
-}
-
-export interface TeamModel {
-    name: string;
-
-    users?: string[];
+    family_name: string;
+    given_name: string;
+    picture: string;
+    email: string;
+    phone_number: string;
 }

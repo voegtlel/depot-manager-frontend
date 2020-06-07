@@ -1,6 +1,6 @@
 export enum ReservationType {
-    Private = 1,
-    Team = 2,
+    Private = 'private',
+    Team = 'team',
 }
 
 export interface Reservation {

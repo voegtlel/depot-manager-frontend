@@ -70,7 +70,7 @@
 .item-counter-container {
     display: flex;
 
-    color: nb-theme(checkbox-text-color);
+    color: nb-theme(checkbox-basic-text-color);
 
     font-family: nb-theme(checkbox-text-font-family);
     font-size: nb-theme(checkbox-text-font-size);
@@ -102,7 +102,7 @@
 }
 
 .item-counter-container.disabled {
-    color: nb-theme(checkbox-disabled-text-color);
+    color: nb-theme(checkbox-basic-disabled-text-color);
 }
 
 .no-padding {

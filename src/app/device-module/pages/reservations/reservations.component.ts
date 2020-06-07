@@ -30,20 +30,20 @@ export class ReservationsComponent implements OnInit, OnDestroy {
             end = false;
             this.limit$.next(30);
         });
-        this.limit$.subscribe(limit => {
+        this.limit$.subscribe((limit) => {
             if (!end) {
                 this.placeholders$.next(new Array(limit - this.reservations.length));
             }
         });
         this.limit$
             .pipe(
-                switchMap(limit => {
+                switchMap((limit) => {
                     if (!end) {
-                        return this.api.getReservations(undefined, undefined, this.reservations.length, limit);
+                        return this.api.getReservations({ offset: this.reservations.length, limit });
                     }
                     return of([]);
                 }),
-                map(nextReservations => {
+                map((nextReservations) => {
                     if (nextReservations.length < 10) {
                         end = true;
                     }

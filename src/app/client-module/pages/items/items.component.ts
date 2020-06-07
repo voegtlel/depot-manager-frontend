@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ChangeDetectionStrategy, TemplateRef } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
-import { Item } from '../../../common-module/_models';
+import { Item, ItemCondition } from '../../../common-module/_models';
 import { ApiService, ItemsService } from '../../../common-module/_services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map, shareReplay, takeUntil } from 'rxjs/operators';
@@ -60,14 +60,14 @@ export class ItemsComponent implements OnInit, OnDestroy {
 
     editItem: ItemWithConditionText = null;
 
-    conditionTranslation: Record<number, string> = {
-        1: 'Good',
-        2: 'Ok',
-        3: 'Bad',
-        4: 'Gone',
+    conditionTranslation: Record<ItemCondition, string> = {
+        good: 'Good',
+        ok: 'Ok',
+        bad: 'Bad',
+        gone: 'Gone',
     };
 
-    conditionChoices: Choice<number>[] = [1, 2, 3, 4].map(value => {
+    conditionChoices: Choice<number>[] = [1, 2, 3, 4].map((value) => {
         return {
             value,
             title: this.conditionTranslation[value],
@@ -88,8 +88,8 @@ export class ItemsComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.items$ = this.itemsService.items$.pipe(
-            map(items =>
-                items.map(item => {
+            map((items) =>
+                items.map((item) => {
                     return {
                         ...item,
                         conditionText:
@@ -138,7 +138,7 @@ export class ItemsComponent implements OnInit, OnDestroy {
             shareReplay(1),
             takeUntil(this.destroyed$)
         );
-        itemEntries$.subscribe(entries => {
+        itemEntries$.subscribe((entries) => {
             this.dataSource = this.dataSourceBuilder.create(entries);
             this.dataSource.filter(this.filter);
             this.dataSource.sort(this.sorting);

@@ -1,6 +1,6 @@
 FROM node:alpine as builder
 
-ARG CONFIGURATION=production
+ARG CONFIGURATION=prod
 
 RUN apk update && apk add --no-cache make git
 COPY . /app

@@ -27,7 +27,7 @@ export class ItemGroupListComponent implements OnInit, OnDestroy {
 
     constructor(private itemsService: ItemsService) {
         this.itemGroups$ = this.itemsService.items$.pipe(
-            map(items => {
+            map((items) => {
                 const groupsLookup: Record<string, Item> = {};
                 const groups: Item[] = [];
                 for (const item of items) {

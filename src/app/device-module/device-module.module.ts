@@ -51,6 +51,7 @@ import { ReservationComponent } from './pages/reservation/reservation.component'
 import { BayComponent } from './pages/bay/bay.component';
 import { AuthComponent } from './pages/auth/auth.component';
 import { LoginComponent } from './pages/login/login.component';
+import { LogoutComponent } from './pages/logout/logout.component';
 
 @NgModule({
     declarations: [
@@ -63,13 +64,13 @@ import { LoginComponent } from './pages/login/login.component';
         BayComponent,
         AuthComponent,
         LoginComponent,
+        LogoutComponent,
     ],
     exports: [PagesComponent],
     imports: [
         CommonModule,
         CommonModuleModule,
         RouterModule,
-        NbThemeModule.forRoot(),
         NbMenuModule.forRoot(),
         NbToastrModule.forRoot(),
         NbDialogModule.forRoot(),

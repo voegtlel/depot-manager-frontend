@@ -67,8 +67,10 @@ export class CalendarRangeDayCellComponent<D> implements NbCalendarCell<D, NbCal
         return (
             this.date &&
             this.selectedValue &&
-            this.selectedValue.start && this.dateService.compareDates(this.date, this.selectedValue.start) >= 0 &&
-            this.selectedValue.end && this.dateService.compareDates(this.date, this.selectedValue.end) <= 0
+            this.selectedValue.start &&
+            this.dateService.compareDates(this.date, this.selectedValue.start) >= 0 &&
+            this.selectedValue.end &&
+            this.dateService.compareDates(this.date, this.selectedValue.end) <= 0
         );
     }
 
@@ -76,7 +78,8 @@ export class CalendarRangeDayCellComponent<D> implements NbCalendarCell<D, NbCal
         return (
             this.date &&
             this.selectedValue &&
-            this.selectedValue.start && this.dateService.isSameDay(this.date, this.selectedValue.start)
+            this.selectedValue.start &&
+            this.dateService.isSameDay(this.date, this.selectedValue.start)
         );
     }
 
@@ -84,7 +87,8 @@ export class CalendarRangeDayCellComponent<D> implements NbCalendarCell<D, NbCal
         return (
             this.date &&
             this.selectedValue &&
-            this.selectedValue.end && this.dateService.isSameDay(this.date, this.selectedValue.end)
+            this.selectedValue.end &&
+            this.dateService.isSameDay(this.date, this.selectedValue.end)
         );
     }
 
@@ -158,7 +162,7 @@ export class CalendarRangeDayCellComponent<D> implements NbCalendarCell<D, NbCal
             [monthCellComponent]="monthCellComponent"
             [yearCellComponent]="yearCellComponent"
             [visibleDate]="visibleDate"
-            [showHeader]="showHeader"
+            [showNavigation]="showNavigation"
             [size]="size"
         ></nb-base-calendar>
     `,
@@ -204,7 +208,7 @@ export class CalendarRangeComponent<D> {
     /**
      * Determines should we show calendars header or not.
      */
-    @Input() showHeader = true;
+    @Input() showNavigation = true;
     /**
      * Range which will be rendered as selected.
      */

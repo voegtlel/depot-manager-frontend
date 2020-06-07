@@ -2,12 +2,11 @@ import { Component, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { ApiService, AuthService, ItemsService } from '../../../common-module/_services';
 import { BehaviorSubject, Observable, of, Subject, combineLatest } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Item, ItemWithComment } from '../../../common-module/_models';
+import { Item, ItemCondition, ItemWithComment } from '../../../common-module/_models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NbToastrService, NbDialogService, NbDialogRef } from '@nebular/theme';
 import { map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
 import { Choice } from '../../../common-module/components/form-element/form-element.component';
-import { getDirtyValues } from '../../../common-module/_helpers/angular-dirty-forms';
 
 @Component({
     selector: 'depot-item',
@@ -26,14 +25,19 @@ export class ItemComponent implements OnInit, OnDestroy {
 
     itemId: string = null;
 
-    conditionTranslation: Record<number, string> = {
-        1: 'Good',
-        2: 'Ok',
-        3: 'Bad',
-        4: 'Gone',
+    conditionTranslation: Record<ItemCondition, string> = {
+        good: 'Good',
+        ok: 'Ok',
+        bad: 'Bad',
+        gone: 'Gone',
     };
 
-    conditionChoices: Choice<number>[] = [1, 2, 3, 4].map(value => {
+    conditionChoices: Choice<ItemCondition>[] = [
+        ItemCondition.Good,
+        ItemCondition.Ok,
+        ItemCondition.Bad,
+        ItemCondition.Gone,
+    ].map((value) => {
         return {
             value,
             title: this.conditionTranslation[value],
@@ -54,8 +58,8 @@ export class ItemComponent implements OnInit, OnDestroy {
         groupId: new FormControl(null),
         bayId: new FormControl(null),
         tags: new FormControl([]),
-        comment: new FormControl(''),
-    });
+        changeComment: new FormControl(''),
+    } as Record<keyof ItemWithComment, FormControl>);
 
     constructor(
         public api: ApiService,
@@ -68,10 +72,10 @@ export class ItemComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        const itemId$ = this.activatedRoute.paramMap.pipe(map(params => params.get('itemId')));
+        const itemId$ = this.activatedRoute.paramMap.pipe(map((params) => params.get('itemId')));
         const loadedItem$ = this.reload$.pipe(
             switchMap(() => itemId$),
-            switchMap(itemId => {
+            switchMap((itemId) => {
                 if (itemId && itemId !== 'new') {
                     return this.api.getItem(itemId);
                 }
@@ -111,8 +115,8 @@ export class ItemComponent implements OnInit, OnDestroy {
 
                         tags: [],
 
-                        comment: '',
-                    });
+                        changeComment: '',
+                    } as ItemWithComment);
                 }
                 if (user.groups.includes('admin')) {
                     this.form.enable();
@@ -123,7 +127,7 @@ export class ItemComponent implements OnInit, OnDestroy {
                 this.loading = false;
             });
 
-        this.itemsService.items$.pipe(takeUntil(this.destroyed$)).subscribe(items => {});
+        this.itemsService.items$.pipe(takeUntil(this.destroyed$)).subscribe(() => {});
     }
 
     ngOnDestroy(): void {
@@ -161,10 +165,10 @@ export class ItemComponent implements OnInit, OnDestroy {
             delete rawValue.comment;
             apiCall = this.api.createItem(rawValue);
         } else {
-            apiCall = this.api.saveItem(this.itemId, getDirtyValues(this.form) as ItemWithComment);
+            apiCall = this.api.saveItem(this.itemId, this.form.getRawValue());
         }
         apiCall.subscribe(
-            item => {
+            (item) => {
                 console.log('Saved', item);
                 this.form.reset(item);
                 this.form.markAsPristine();
@@ -179,7 +183,7 @@ export class ItemComponent implements OnInit, OnDestroy {
                 }
                 this.itemsService.reload();
             },
-            error => {
+            (error) => {
                 console.log(error);
                 this.toastrService.danger(error, 'Failed');
             }

@@ -3,7 +3,7 @@
     "version": 1,
     "newProjectRoot": "projects",
     "projects": {
-        "client": {
+        "depot": {
             "root": "",
             "sourceRoot": "src",
             "projectType": "application",
@@ -17,20 +17,15 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "outputPath": "dist/client",
+                        "outputPath": "dist/depot",
                         "index": "src/index.html",
                         "main": "src/main.ts",
                         "polyfills": "src/polyfills.ts",
                         "tsConfig": "src/tsconfig.app.json",
                         "aot": false,
                         "assets": ["src/favicon.ico", "src/assets", "src/env.js"],
-                        "styles": [
-                            "src/themes.scss",
-                            "src/styles.scss",
-                            "./node_modules/font-awesome/css/font-awesome.css",
-                            "./node_modules/ionicons/dist/css/ionicons.css"
-                        ],
-                        "scripts": ["./node_modules/xregexp/xregexp-all.js"]
+                        "styles": ["src/styles.scss"],
+                        "scripts": []
                     },
                     "configurations": {
                         "device": {
@@ -41,7 +36,7 @@
                                 }
                             ]
                         },
-                        "production": {
+                        "prod": {
                             "fileReplacements": [
                                 {
                                     "replace": "src/environments/environment.ts",
@@ -53,7 +48,6 @@
                             "sourceMap": false,
                             "extractCss": true,
                             "namedChunks": false,
-                            "aot": true,
                             "extractLicenses": true,
                             "vendorChunk": false,
                             "buildOptimizer": true,
@@ -70,7 +64,7 @@
                                 }
                             ]
                         },
-                        "device-production": {
+                        "device-prod": {
                             "fileReplacements": [
                                 {
                                     "replace": "src/environments/environment.ts",
@@ -82,7 +76,6 @@
                             "sourceMap": false,
                             "extractCss": true,
                             "namedChunks": false,
-                            "aot": true,
                             "extractLicenses": true,
                             "vendorChunk": false,
                             "buildOptimizer": true,
@@ -104,24 +97,24 @@
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "browserTarget": "client:build"
+                        "browserTarget": "depot:build"
                     },
                     "configurations": {
-                        "production": {
-                            "browserTarget": "client:build:production"
+                        "prod": {
+                            "browserTarget": "depot:build:prod"
                         },
                         "device-production": {
-                            "browserTarget": "client:build:device-production"
+                            "browserTarget": "depot:build:device-prod"
                         },
                         "device": {
-                            "browserTarget": "client:build:device"
+                            "browserTarget": "depot:build:device"
                         }
                     }
                 },
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "client:build"
+                        "browserTarget": "depot:build"
                     }
                 },
                 "test": {
@@ -146,5 +139,5 @@
             }
         }
     },
-    "defaultProject": "client"
+    "defaultProject": "depot"
 }

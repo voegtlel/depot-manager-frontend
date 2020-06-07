@@ -3,7 +3,7 @@ import { DeviceAuthService } from '../../_services/device-auth.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { NbAuthService } from '@nebular/auth';
+import { AuthService } from 'src/app/common-module/_services';
 
 @Component({
     selector: 'depot-login-by-card',
@@ -15,20 +15,17 @@ export class LoginByCardComponent implements OnInit, OnDestroy {
 
     errorMessage$: Observable<string>;
 
-    constructor(private authService: DeviceAuthService, private nbAuthService: NbAuthService, private router: Router) {
+    constructor(private authService: DeviceAuthService, private router: Router) {
         this.errorMessage$ = authService.displayErrorMessage$;
         this.authService.logout();
         this.authService.requireLogin$.pipe(takeUntil(this.destroyed$)).subscribe(() => {
             console.log('Require registration');
             this.router.navigate(['auth', 'register']);
         });
-        this.nbAuthService
-            .onTokenChange()
-            .pipe(takeUntil(this.destroyed$))
-            .subscribe(token => {
-                console.log('Logged in as', token);
-                this.router.navigate(['/']);
-            });
+        this.authService.token$.pipe(takeUntil(this.destroyed$)).subscribe((token) => {
+            console.log('Logged in as', token);
+            this.router.navigate(['/']);
+        });
     }
 
     ngOnInit() {}

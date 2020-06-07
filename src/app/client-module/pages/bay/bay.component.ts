@@ -6,7 +6,6 @@ import { Bay } from '../../../common-module/_models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NbToastrService } from '@nebular/theme';
 import { map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
-import { getDirtyValues } from '../../../common-module/_helpers/angular-dirty-forms';
 
 @Component({
     selector: 'depot-bay',
@@ -41,10 +40,10 @@ export class BayComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        const bayId$ = this.activatedRoute.paramMap.pipe(map(params => params.get('bayId')));
+        const bayId$ = this.activatedRoute.paramMap.pipe(map((params) => params.get('bayId')));
         const loadedBay$ = this.reload$.pipe(
             switchMap(() => bayId$),
-            switchMap(bayId => {
+            switchMap((bayId) => {
                 if (bayId && bayId !== 'new') {
                     return this.api.getBay(bayId);
                 }
@@ -96,10 +95,10 @@ export class BayComponent implements OnInit, OnDestroy {
             delete rawValue.comment;
             apiCall = this.api.createBay(rawValue);
         } else {
-            apiCall = this.api.saveBay(this.bayId, getDirtyValues(this.form) as Bay);
+            apiCall = this.api.saveBay(this.bayId, this.form.getRawValue());
         }
         apiCall.subscribe(
-            bay => {
+            (bay) => {
                 console.log('Saved', bay);
                 this.form.reset(bay);
                 this.form.markAsPristine();
@@ -111,7 +110,7 @@ export class BayComponent implements OnInit, OnDestroy {
                 this.toastrService.success('Bay was saved', 'Bay Saved');
                 this.itemsService.reload();
             },
-            error => {
+            (error) => {
                 console.log(error);
                 this.toastrService.danger(error, 'Failed');
             }

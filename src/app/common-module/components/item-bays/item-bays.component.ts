@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, OnChanges, SimpleChange, SimpleChanges } from '@angular/core';
 import { ItemsService } from '../../_services';
-import { NbToastrService, NbDialogService } from '@nebular/theme';
 import { Reservation, Item, Bay } from '../../_models';
 import { combineLatest, Observable, BehaviorSubject } from 'rxjs';
 import { AsyncInput } from '@ng-reactive/async-input';
@@ -23,10 +22,10 @@ export class ItemBaysComponent implements OnInit, OnChanges {
     bays$: Observable<BayWithItems[]>;
 
     constructor(private itemsService: ItemsService) {
-        this.reservation$.subscribe(res => console.log('Res:', res));
+        this.reservation$.subscribe((res) => console.log('Res:', res));
         console.log('InitRes:', this.reservation);
         this.bays$ = combineLatest([
-            this.reservation$.pipe(filter(r => !!r)),
+            this.reservation$.pipe(filter((r) => !!r)),
             this.itemsService.items$,
             this.itemsService.bays$,
         ]).pipe(
@@ -46,7 +45,7 @@ export class ItemBaysComponent implements OnInit, OnChanges {
                     res[item.id] = item;
                     return res;
                 }, {});
-                const mappedItems = reservation.items.map(itemId => itemsById[itemId]);
+                const mappedItems = reservation.items.map((itemId) => itemsById[itemId]);
                 const currentBays: BayWithItems[] = [];
                 const currentBaysById: Record<string, BayWithItems> = {};
                 for (const item of mappedItems) {

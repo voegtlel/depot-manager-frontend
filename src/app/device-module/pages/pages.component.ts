@@ -1,9 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AuthService, ApiService, DeviceAuthService } from '../../common-module/_services';
-import { NbAuthService, NbTokenService } from '@nebular/auth';
-import { Router, ActivatedRoute, NavigationEnd, Route } from '@angular/router';
-import { takeUntil, map, first, switchMap, filter } from 'rxjs/operators';
-import { Subject, Observable, combineLatest } from 'rxjs';
+import { AuthService, ApiService } from '../../common-module/_services';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { takeUntil, map, switchMap, filter } from 'rxjs/operators';
+import { Subject, combineLatest } from 'rxjs';
 
 @Component({
     selector: 'depot-pages',
@@ -18,16 +17,14 @@ export class PagesComponent implements OnInit, OnDestroy {
 
     constructor(
         public authService: AuthService,
-        private auth: NbAuthService,
         public api: ApiService,
-        deviceAuthService: DeviceAuthService,
         private router: Router,
         route: ActivatedRoute
     ) {
         this.router.events
             .pipe(
                 takeUntil(this.destroyed$),
-                filter(event => event instanceof NavigationEnd),
+                filter((event) => event instanceof NavigationEnd),
                 switchMap(() => {
                     let innerChild = route.firstChild;
                     while (innerChild.firstChild) {
@@ -70,6 +67,6 @@ export class PagesComponent implements OnInit, OnDestroy {
     }
 
     logout() {
-        this.auth.logout('email');
+        this.authService.logout();
     }
 }

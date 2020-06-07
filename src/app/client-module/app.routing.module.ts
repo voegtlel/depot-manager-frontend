@@ -1,10 +1,7 @@
 import { RouterModule, Routes } from '@angular/router';
-import { NbAuthComponent, NbLogoutComponent } from '@nebular/auth';
 
 import { AuthGuard } from './auth.guard';
-import { LoginComponent } from '../auth/login/login.component';
 
-import { HomeComponent } from './pages/home/home.component';
 import { PagesComponent } from './pages/pages.component';
 import { ReservationComponent } from './pages/reservation/reservation.component';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
@@ -13,19 +10,22 @@ import { ItemsComponent } from './pages/items/items.component';
 import { ItemComponent } from './pages/item/item.component';
 import { BaysComponent } from './pages/bays/bays.component';
 import { BayComponent } from './pages/bay/bay.component';
+import { AuthenticationComponent } from './pages/authentication/authentication.component';
+import { LogoutComponent } from './pages/logout/logout.component';
+import { NgModule } from '@angular/core';
 
-const appRoutes: Routes = [
+const routes: Routes = [
     {
         path: '',
-        canActivate: [AuthGuard],
         component: PagesComponent,
         children: [
             {
                 path: '',
-                component: HomeComponent,
+                component: AuthenticationComponent,
             },
             {
                 path: 'reservations',
+                canActivate: [AuthGuard],
                 children: [
                     {
                         path: '',
@@ -39,6 +39,7 @@ const appRoutes: Routes = [
             },
             {
                 path: 'items',
+                canActivate: [AuthGuard],
                 children: [
                     {
                         path: '',
@@ -52,6 +53,7 @@ const appRoutes: Routes = [
             },
             {
                 path: 'bays',
+                canActivate: [AuthGuard],
                 children: [
                     {
                         path: '',
@@ -63,34 +65,23 @@ const appRoutes: Routes = [
                     },
                 ],
             },
-        ],
-    },
-
-    {
-        path: 'auth',
-        component: NbAuthComponent,
-        children: [
-            {
-                path: '',
-                component: LoginComponent,
-            },
-            {
-                path: 'login',
-                component: LoginComponent,
-            },
             {
                 path: 'logout',
-                component: NbLogoutComponent,
+                component: LogoutComponent,
+            },
+
+            // otherwise redirect to home
+            {
+                path: '**',
+                component: NotFoundComponent,
+                // redirectTo: ''
             },
         ],
-    },
-
-    // otherwise redirect to home
-    {
-        path: '**',
-        component: NotFoundComponent,
-        // redirectTo: ''
     },
 ];
 
-export const routing = RouterModule.forRoot(appRoutes);
+@NgModule({
+    imports: [RouterModule.forRoot(routes)],
+    exports: [RouterModule],
+})
+export class AppRoutingModule {}

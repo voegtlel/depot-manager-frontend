@@ -64,20 +64,20 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
                 }
                 return of([]);
             }),
-            map(filteredItemIds => {
+            map((filteredItemIds) => {
                 const mapping: { [id: string]: boolean } = {};
-                filteredItemIds.forEach(itemId => {
+                filteredItemIds.forEach((itemId) => {
                     mapping[itemId] = true;
                 });
                 return mapping;
             }),
-            tap(x => console.log('filteredItemIds$', x)),
+            tap((x) => console.log('filteredItemIds$', x)),
             shareReplay(1)
         );
         this.reload$.pipe(skip(1), takeUntil(this.destroyed$)).subscribe(() => this.itemsService.reload());
         this.items$ = combineLatest([filteredItemIds$, this.itemsService.items$]).pipe(
             map(([filteredItemIds, items]) => {
-                return items.map(item => {
+                return items.map((item) => {
                     return {
                         ...item,
                         available: !filteredItemIds[item.id],
@@ -96,28 +96,30 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
             takeUntil(this.destroyed$)
         );
 
-        this.items$.subscribe(items => {
+        this.items$.subscribe((items) => {
             const itemsById: { [id: string]: ItemWithAvailability } = items.reduce((obj, item) => {
                 obj[item.id] = item;
                 return obj;
             }, {});
-            const foundItems = this.selected.filter(selectedId => itemsById.hasOwnProperty(selectedId));
+            const foundItems = this.selected.filter((selectedId) => itemsById.hasOwnProperty(selectedId));
             if (foundItems.length !== this.selected.length) {
                 this.toastrService.danger(
-                    `${this.selected.length -
-                        foundItems.length} items were removed from your reservation, because they do not exist any more`
+                    `${
+                        this.selected.length - foundItems.length
+                    } items were removed from your reservation, because they do not exist any more`
                 );
             }
-            const availableItems = foundItems.filter(selectedId => itemsById[selectedId].available);
+            const availableItems = foundItems.filter((selectedId) => itemsById[selectedId].available);
             if (availableItems.length !== foundItems.length) {
                 const removedItems = foundItems
-                    .filter(selectedId => !itemsById[selectedId].available)
-                    .map(itemId => itemsById[itemId])
-                    .map(item => `${item.name} (${item.externalId})`)
+                    .filter((selectedId) => !itemsById[selectedId].available)
+                    .map((itemId) => itemsById[itemId])
+                    .map((item) => `${item.name} (${item.externalId})`)
                     .join(', ');
                 this.toastrService.danger(
-                    `${foundItems.length -
-                        availableItems.length} items were removed from your reservation, because they are not available: ${removedItems}`
+                    `${
+                        foundItems.length - availableItems.length
+                    } items were removed from your reservation, because they are not available: ${removedItems}`
                 );
             }
 
@@ -132,10 +134,10 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
         });
 
         this.itemGroups$ = this.items$.pipe(
-            map(items => {
+            map((items) => {
                 const groupsById = {};
                 const groups = [];
-                items.forEach(item => {
+                items.forEach((item) => {
                     if (item.groupId) {
                         if (groupsById.hasOwnProperty(item.groupId)) {
                             groupsById[item.groupId].push(item);
@@ -257,14 +259,14 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
     }
 
     itemGroupCanSelectMore(items: ItemWithAvailability[]): boolean {
-        return items.some(item => item.available && !this.selectedLookup[item.id]);
+        return items.some((item) => item.available && !this.selectedLookup[item.id]);
     }
 
     addToGroup(items: ItemWithAvailability[], count: number = 1) {
         if (this.disabled) {
             return;
         }
-        items.forEach(item => {
+        items.forEach((item) => {
             if (count > 0) {
                 if (item.available && !this.selectedLookup[item.id]) {
                     this.select(item.id);
@@ -278,7 +280,7 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
         if (this.disabled) {
             return;
         }
-        items.forEach(item => {
+        items.forEach((item) => {
             if (count > 0) {
                 if (this.selectedLookup[item.id]) {
                     this.deselect(item.id);

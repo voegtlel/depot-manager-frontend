@@ -1,6 +1,9 @@
 {
-    "extends": ["tslint:recommended", "tslint-config-prettier", "rxjs-tslint-rules"],
+    "extends": ["tslint:recommended"],
     "rules": {
+        "align": {
+            "options": ["parameters", "statements"]
+        },
         "array-type": false,
         "arrow-parens": false,
         "deprecation": {

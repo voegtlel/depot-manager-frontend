@@ -1,2 +1,10 @@
 @import '~@nebular/theme/styles/theming';
 @import '~@nebular/theme/styles/themes/default';
+
+$nb-themes: nb-register-theme(
+    (
+        header-padding: 0,
+    ),
+    default,
+    default
+);

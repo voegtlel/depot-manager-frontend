@@ -3,14 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { AuthUserModel, Item, Reservation, ItemWithComment, Picture, ItemState, Bay, UserModel } from '../_models';
-import { NbAuthService } from '@nebular/auth';
 import { EnvService } from './env.service';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ApiService {
-    constructor(private http: HttpClient, private authService: NbAuthService, private env: EnvService) {}
+    constructor(private http: HttpClient, private env: EnvService, private oauthService: OAuthService) {}
 
     authByCardId(cardToken: string): Observable<{ token: string; user: AuthUserModel }> {
         return this.http.post<{ token: string; user: AuthUserModel }>(
@@ -22,12 +22,10 @@ export class ApiService {
         );
     }
 
-    getAuthSelf(): Observable<AuthUserModel> {
-        return this.http.get<AuthUserModel>(`${this.env.apiUrl}/auth`);
-    }
-
     getUser(userId: string): Observable<UserModel> {
-        return this.http.get<UserModel>(`${this.env.apiUrl}/user/${userId}`);
+        return this.http.get<UserModel>(`${this.env.oicdIssuer}/profiles/${userId}`, {
+            headers: { authorization: `Bearer ${this.oauthService.getAccessToken()}` },
+        });
     }
 
     getItems(): Observable<Item[]> {
@@ -43,7 +41,7 @@ export class ApiService {
     }
 
     saveItem(itemId: string, item: ItemWithComment): Observable<Item> {
-        return this.http.patch<Item>(`${this.env.apiUrl}/items/${itemId}`, item);
+        return this.http.put<Item>(`${this.env.apiUrl}/items/${itemId}`, item);
     }
 
     getBays(): Observable<Bay[]> {
@@ -59,17 +57,26 @@ export class ApiService {
     }
 
     saveBay(bayId: string, bay: Bay): Observable<Bay> {
-        return this.http.patch<Bay>(`${this.env.apiUrl}/bays/${bayId}`, bay);
+        return this.http.put<Bay>(`${this.env.apiUrl}/bays/${bayId}`, bay);
     }
 
     getItemHistory(
         itemId: string,
-        start?: string,
-        end?: string,
-        offset?: number,
-        count?: number,
-        countBeforeStart?: number,
-        countAfterEnd?: number
+        {
+            start,
+            end,
+            offset,
+            limit,
+            limitBeforeStart,
+            limitAfterEnd,
+        }: {
+            start?: string;
+            end?: string;
+            offset?: number;
+            limit?: number;
+            limitBeforeStart?: number;
+            limitAfterEnd?: number;
+        }
     ): Observable<ItemState[]> {
         const query = [];
         if (start) {
@@ -81,14 +88,14 @@ export class ApiService {
         if (offset) {
             query.push('offset=' + offset);
         }
-        if (count) {
-            query.push('count=' + count);
+        if (limit) {
+            query.push('limit=' + limit);
         }
-        if (countBeforeStart) {
-            query.push('count_before_start=' + countBeforeStart);
+        if (limitBeforeStart) {
+            query.push('limit_before_start=' + limitBeforeStart);
         }
-        if (countAfterEnd) {
-            query.push('count_after_end=' + countAfterEnd);
+        if (limitAfterEnd) {
+            query.push('limit_after_end=' + limitAfterEnd);
         }
         let queryStr = '';
         if (query.length > 0) {
@@ -97,15 +104,23 @@ export class ApiService {
         return this.http.get<ItemState[]>(`${this.env.apiUrl}/items/${itemId}/history${queryStr}`);
     }
 
-    getReservations(
-        start?: string,
-        end?: string,
-        offset?: number,
-        count?: number,
-        countBeforeStart?: number,
-        countAfterEnd?: number,
-        itemId?: string
-    ): Observable<Reservation[]> {
+    getReservations({
+        start,
+        end,
+        offset,
+        limit,
+        limitBeforeStart,
+        limitAfterEnd,
+        itemId,
+    }: {
+        start?: string;
+        end?: string;
+        offset?: number;
+        limit?: number;
+        limitBeforeStart?: number;
+        limitAfterEnd?: number;
+        itemId?: string;
+    }): Observable<Reservation[]> {
         const query = [];
         if (start) {
             query.push('start=' + start);
@@ -116,14 +131,14 @@ export class ApiService {
         if (offset) {
             query.push('offset=' + offset);
         }
-        if (count) {
-            query.push('count=' + count);
+        if (limit) {
+            query.push('limit=' + limit);
         }
-        if (countBeforeStart) {
-            query.push('count_before_start=' + countBeforeStart);
+        if (limitBeforeStart) {
+            query.push('limit_before_start=' + limitBeforeStart);
         }
-        if (countAfterEnd) {
-            query.push('count_after_end=' + countAfterEnd);
+        if (limitAfterEnd) {
+            query.push('limit_after_end=' + limitAfterEnd);
         }
         if (itemId) {
             query.push('item_id=' + itemId);
@@ -138,7 +153,7 @@ export class ApiService {
     getReservationItems(start: string, end: string, skipReservationId?: string): Observable<string[]> {
         let query = '?start=' + start + '&end=' + end;
         if (skipReservationId) {
-            query += '&skipReservationId=' + skipReservationId;
+            query += '&skip_reservation_id=' + skipReservationId;
         }
         return this.http.get<string[]>(`${this.env.apiUrl}/reservations/items${query}`);
     }
@@ -152,11 +167,11 @@ export class ApiService {
     }
 
     saveReservation(reservationId: string, reservation: Reservation): Observable<Reservation> {
-        return this.http.patch<Reservation>(`${this.env.apiUrl}/reservations/${reservationId}`, reservation);
+        return this.http.put<Reservation>(`${this.env.apiUrl}/reservations/${reservationId}`, reservation);
     }
 
-    deleteReservation(reservationId: string, reservation: Reservation): Observable<Reservation> {
-        return this.http.patch<Reservation>(`${this.env.apiUrl}/reservations/${reservationId}`, reservation);
+    deleteReservation(reservationId: string): Observable<Reservation> {
+        return this.http.delete<Reservation>(`${this.env.apiUrl}/reservations/${reservationId}`);
     }
 
     getPictures(): Observable<Picture[]> {

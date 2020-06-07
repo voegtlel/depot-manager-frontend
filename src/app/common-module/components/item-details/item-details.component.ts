@@ -41,11 +41,17 @@ export class ItemDetailsComponent implements OnInit, OnDestroy, OnChanges {
             debounceTime(200),
             switchMap(([item, reservationStart, reservationEnd]) => {
                 if (item && reservationStart && reservationEnd) {
-                    return this.api.getItemHistory(item.id, reservationStart, reservationEnd, undefined, 10, 10, 0);
+                    return this.api.getItemHistory(item.id, {
+                        start: reservationStart,
+                        end: reservationEnd,
+                        limit: 10,
+                        limitBeforeStart: 10,
+                        limitAfterEnd: 0,
+                    });
                 }
                 return EMPTY;
             }),
-            tap(history => console.log('history:', history)),
+            tap((history) => console.log('history:', history)),
             shareReplay(1),
             takeUntil(this.destroyed$)
         );
@@ -54,26 +60,24 @@ export class ItemDetailsComponent implements OnInit, OnDestroy, OnChanges {
             debounceTime(200),
             switchMap(([item, reservationStart, reservationEnd]) => {
                 if (item && reservationStart && reservationEnd) {
-                    return this.api.getReservations(
-                        reservationStart,
-                        reservationEnd,
-                        undefined,
-                        undefined,
-                        1,
-                        1,
-                        item.id
-                    );
+                    return this.api.getReservations({
+                        start: reservationStart,
+                        end: reservationEnd,
+                        limitBeforeStart: 1,
+                        limitAfterEnd: 1,
+                        itemId: item.id,
+                    });
                 }
                 return EMPTY;
             }),
-            tap(reservations => console.log('reservations:', reservations)),
+            tap((reservations) => console.log('reservations:', reservations)),
             shareReplay(1),
             takeUntil(this.destroyed$)
         );
     }
 
     ngOnInit() {
-        this.item$.subscribe(item => console.log('item:', item));
+        this.item$.subscribe((item) => console.log('item:', item));
     }
 
     ngOnDestroy(): void {
@@ -87,6 +91,6 @@ export class ItemDetailsComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     stateFields(state: ItemState): FieldItem[] {
-        return Object.entries(state.fields).map(([key, value]) => ({ key, value }));
+        return Object.entries(state.changes).map(([key, value]) => ({ key, value }));
     }
 }

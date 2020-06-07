@@ -2,7 +2,7 @@
     <div *ngSwitchCase="'checkbox'" class="form-control-group">
         <nb-checkbox
             [formControl]="formControlRef"
-            [status]="submitted && formControlRef.errors ? 'danger' : ''"
+            [status]="submitted && formControlRef.errors ? 'danger' : 'basic'"
             (checkboxChange)="change.emit($event)"
             >{{ title }}</nb-checkbox
         >
@@ -14,7 +14,7 @@
             [placeholder]="title"
             fullWidth
             fieldSize="medium"
-            [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : ''"
+            [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : 'basic'"
             [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
             [formControl]="formControlRef"
             (change)="change.emit($event)"
@@ -29,7 +29,7 @@
             fullWidth
             fieldSize="medium"
             style="resize: vertical; min-height: 40px; height: 40px;"
-            [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : ''"
+            [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : 'basic'"
             [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
             [formControl]="formControlRef"
             (change)="change.emit($event)"
@@ -43,7 +43,7 @@
             [placeholder]="title"
             fullWidth
             fieldSize="medium"
-            [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : ''"
+            [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : 'basic'"
             [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
             [(ngModel)]="dateValue.dateValue"
             (change)="change.emit($event)"
@@ -61,7 +61,7 @@
                 [placeholder]="title + ' Start'"
                 fullWidth
                 fieldSize="medium"
-                [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : ''"
+                [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : 'basic'"
                 [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
                 [(ngModel)]="dateValue.dateValue"
                 (change)="change.emit($event)"
@@ -75,7 +75,7 @@
                 [placeholder]="title + ' End'"
                 fullWidth
                 fieldSize="medium"
-                [status]="formControlRefEnd.dirty ? (formControlRefEnd.invalid ? 'danger' : 'success') : ''"
+                [status]="formControlRefEnd.dirty ? (formControlRefEnd.invalid ? 'danger' : 'success') : 'basic'"
                 [attr.aria-invalid]="formControlRefEnd.invalid && formControlRefEnd.touched ? true : null"
                 [(ngModel)]="dateValueEnd.dateValue"
                 (change)="change.emit($event)"
@@ -101,7 +101,7 @@
         <nb-radio-group
             [formControl]="formControlRef"
             (valueChange)="change.emit($event)"
-            [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : ''"
+            [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : 'basic'"
             [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
             #formControlEl
         >
@@ -119,7 +119,7 @@
             <nb-select
                 fullWidth
                 [formControl]="formControlRef"
-                [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : ''"
+                [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : 'basic'"
                 [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
                 (selectedChange)="change.emit($event)"
                 [placeholder]="title"
