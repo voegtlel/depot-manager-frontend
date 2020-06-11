@@ -54,6 +54,7 @@ export class AuthService {
             // redirectUri: window.location.origin,
             redirectUri: window.location.origin,
             postLogoutRedirectUri: window.location.origin,
+            silentRefreshRedirectUri: window.location.origin + '/assets/silent-refresh.html',
 
             requireHttps: window.location.origin.startsWith('https'),
 

@@ -1,0 +1,10 @@
+<html>
+  <body>
+    <script>
+      parent.postMessage(
+        location.hash || "#" + location.search.substr(1),
+        location.origin
+      );
+    </script>
+  </body>
+</html>
