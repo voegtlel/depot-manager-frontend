@@ -69,6 +69,9 @@ services:
       # Set this if you use different origin
       # API_CONFIG_ALLOW_ORIGINS: "['https://api.depot.example.com']"
 
+      # Allow proxy headers from everywhere (using nginx from the frontend)
+      GUNICORN_CMD_ARGS: '--forwarded-allow-ips=*'
+
       API_CONFIG_FRONTEND_BASE_URL: "https://depot.example.com"
 
       API_CONFIG_MONGO_URI: "mongodb://depot:<mongopw>@mongo/depot"
