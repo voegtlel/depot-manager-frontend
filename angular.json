@@ -22,7 +22,7 @@
                         "main": "src/main.ts",
                         "polyfills": "src/polyfills.ts",
                         "tsConfig": "src/tsconfig.app.json",
-                        "aot": false,
+                        "aot": true,
                         "assets": ["src/favicon.ico", "src/assets", "src/env.js"],
                         "styles": ["src/styles.scss"],
                         "scripts": []
@@ -43,6 +43,7 @@
                                     "with": "src/environments/environment.prod.ts"
                                 }
                             ],
+                            "aot": true,
                             "optimization": true,
                             "outputHashing": "all",
                             "sourceMap": false,
@@ -71,6 +72,7 @@
                                     "with": "src/environments/environment.device.prod.ts"
                                 }
                             ],
+                            "aot": true,
                             "optimization": true,
                             "outputHashing": "all",
                             "sourceMap": false,
