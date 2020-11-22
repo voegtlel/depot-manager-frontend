@@ -3,7 +3,7 @@
 </a>
 <img src="https://img.shields.io/github/license/voegtlel/depot-manager-frontend.svg" alt="License" />
 
-# Client for ldap admin
+# Client for Depot Manager
 
 This is the frontend for [depot-manager-backend](https://github.com/voegtlel/depot-manager-backend).
 

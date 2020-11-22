@@ -2,13 +2,18 @@ FROM node:alpine as builder
 
 ARG CONFIGURATION=prod
 
-RUN apk update && apk add --no-cache make git
-COPY . /app
 WORKDIR /app
+
+# Install dependencies
+RUN apk update && apk add --no-cache make git && npm install -g yarn
+COPY package.json yarn.lock ./
 RUN cd /app && \
-    npm set progress=false && \
-    npm install && \
-    npm run build --configuration=${CONFIGURATION}
+    yarn install --no-progress
+
+COPY . /app
+RUN cd /app && \
+    yarn install --no-progress && \
+    yarn run build --configuration=${CONFIGURATION}
 
 # STEP 2 build a small nginx image with static website
 FROM nginx:alpine
