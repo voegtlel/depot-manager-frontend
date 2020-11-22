@@ -22,7 +22,7 @@
         </div>
         <nb-actions size="small" class="float-right">
             <nb-action icon="refresh" (click)="itemsService.reload()"></nb-action>
-            <nb-action icon="file-add" (click)="onCreate()"></nb-action>
+            <nb-action icon="file-add" (click)="onCreate()" [disabled]="!(authService.isAdmin$ | async)"></nb-action>
         </nb-actions>
     </nb-card-header>
     <nb-card-body>
@@ -132,36 +132,28 @@
             </ng-container>
 
             <ng-container nbTreeGridColumnDef="bay">
-                <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef>
-                    Bay
-                </th>
+                <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef>Bay</th>
                 <td nbTreeGridCell *nbTreeGridCellDef="let row">
                     {{ row.data.bayId | bayName | async }}
                 </td>
             </ng-container>
 
             <ng-container nbTreeGridColumnDef="picture">
-                <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef>
-                    Picture
-                </th>
+                <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef>Picture</th>
                 <td nbTreeGridCell *nbTreeGridCellDef="let row">
                     <img [src]="getItemPicturePreviewUrl(row.data)" alt="Item Image" *ngIf="row.data.pictureId" />
                 </td>
             </ng-container>
 
             <ng-container nbTreeGridColumnDef="tags">
-                <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef>
-                    Tags
-                </th>
+                <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef>Tags</th>
                 <td nbTreeGridCell *nbTreeGridCellDef="let row">
                     {{ row.data.tags }}
                 </td>
             </ng-container>
 
             <ng-container nbTreeGridColumnDef="action">
-                <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef>
-                    Action
-                </th>
+                <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef>Action</th>
                 <td nbTreeGridCell *nbTreeGridCellDef="let row">
                     <button nbButton ghost (click)="onClickItem($event, row.data)">
                         <nb-icon icon="edit"></nb-icon>
@@ -170,9 +162,7 @@
             </ng-container>
 
             <ng-container nbTreeGridColumnDef="action-details">
-                <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef>
-                    Action
-                </th>
+                <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef>Action</th>
                 <td nbTreeGridCell *nbTreeGridCellDef="let row">
                     <button nbButton ghost (click)="openDialog($event, itemDialog, row.data)">
                         <nb-icon icon="search-outline"></nb-icon>

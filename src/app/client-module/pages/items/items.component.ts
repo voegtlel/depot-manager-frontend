@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ChangeDetectionStrategy, TemplateRef } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { Item, ItemCondition } from '../../../common-module/_models';
-import { ApiService, ItemsService } from '../../../common-module/_services';
+import { ApiService, AuthService, ItemsService } from '../../../common-module/_services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map, shareReplay, takeUntil } from 'rxjs/operators';
 import {
@@ -79,6 +79,7 @@ export class ItemsComponent implements OnInit, OnDestroy {
     constructor(
         public api: ApiService,
         public itemsService: ItemsService,
+        public authService: AuthService,
         public activatedRoute: ActivatedRoute,
         public router: Router,
         private dataSourceBuilder: NbTreeGridDataSourceBuilder<ItemEntry>,

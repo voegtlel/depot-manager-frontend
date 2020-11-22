@@ -18,7 +18,11 @@ export class DeviceApiService {
         return this.http.post<void>(`${environment.deviceApiUrl}/bays/${bayId}/open`, null);
     }
 
-    getCard(): Observable<{ cardId: string; token: string }> {
-        return this.http.get<{ cardId: string; token: string }>(`${environment.deviceApiUrl}/card`);
+    getCard(): Observable<{ redirectUri: string }> {
+        return this.http.get<{ redirectUri: string }>(`${environment.deviceApiUrl}/card`);
+    }
+
+    registerCard(): Observable<{ cardId: string }> {
+        return this.http.get<{ cardId: string }>(`${environment.deviceApiUrl}/card`);
     }
 }

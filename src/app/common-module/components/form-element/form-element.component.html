@@ -28,7 +28,7 @@
             [placeholder]="title"
             fullWidth
             fieldSize="medium"
-            style="resize: vertical; min-height: 40px; height: 40px;"
+            style="resize: vertical; min-height: 40px; height: 40px"
             [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : 'basic'"
             [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
             [formControl]="formControlRef"
@@ -142,6 +142,7 @@
             [allowDupes]="false"
             [trimTags]="true"
             [ripple]="false"
+            [disable]="!formControlRef.disabled"
             (change)="change.emit($event)"
             #formControlEl
         >
@@ -149,7 +150,15 @@
         </tag-input>
     </div>
     <ng-container *ngSwitchCase="'picture'">
-        <button type="button" nbButton fullWidth ghost class="label" (click)="openDialog($event, selectImageDialog)">
+        <button
+            type="button"
+            nbButton
+            fullWidth
+            ghost
+            class="label"
+            (click)="openDialog($event, selectImageDialog)"
+            [disabled]="formControlRef.disabled"
+        >
             <span *ngIf="!formControlRef.value">{{ title || 'Choose Picture' }}</span>
             <img *ngIf="formControlRef.value" [src]="itemPicturePreviewUrl" alt="Item Image" />
         </button>
@@ -162,13 +171,22 @@
             ghost
             class="label"
             (click)="openDialog($event, selectItemGroupDialog)"
+            [disabled]="formControlRef.disabled"
         >
             <span *ngIf="!formControlRef.value">{{ title || 'Set Item Group' }}</span>
             <span *ngIf="formControlRef.value">Item Group: {{ formControlRef.value | itemGroupName | async }}</span>
         </button>
     </ng-container>
     <ng-container *ngSwitchCase="'bay'">
-        <button type="button" nbButton fullWidth ghost class="label" (click)="openDialog($event, selectBayDialog)">
+        <button
+            type="button"
+            nbButton
+            fullWidth
+            ghost
+            class="label"
+            (click)="openDialog($event, selectBayDialog)"
+            [disabled]="formControlRef.disabled"
+        >
             <span *ngIf="!formControlRef.value">{{ title || 'Select Bay' }}</span>
             <span *ngIf="formControlRef.value">Bay: {{ formControlRef.value | bayName | async }}</span>
         </button>
