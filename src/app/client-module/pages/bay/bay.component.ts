@@ -53,9 +53,9 @@ export class BayComponent implements OnInit, OnDestroy {
             takeUntil(this.destroyed$)
         );
 
-        combineLatest([loadedBay$, this.authService.user$])
+        combineLatest([loadedBay$, this.authService.isAdmin$])
             .pipe(takeUntil(this.destroyed$))
-            .subscribe(([bay, user]) => {
+            .subscribe(([bay, isAdmin]) => {
                 if (bay !== null) {
                     this.bayId = bay.id;
                     this.isNew = false;
@@ -69,7 +69,7 @@ export class BayComponent implements OnInit, OnDestroy {
                         description: '',
                     });
                 }
-                if (user.groups.includes('admin')) {
+                if (isAdmin) {
                     this.form.enable();
                 } else {
                     this.form.disable();
