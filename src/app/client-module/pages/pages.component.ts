@@ -3,7 +3,7 @@ import { ApiService, AuthService } from '../../common-module/_services';
 import { NbMenuItem, NbSidebarService, NbMenuService } from '@nebular/theme';
 import { Router, NavigationStart } from '@angular/router';
 import { filter, map, takeUntil } from 'rxjs/operators';
-import { Subject, Observable } from 'rxjs';
+import { Subject, Observable, combineLatest } from 'rxjs';
 
 @Component({
     selector: 'depot-pages-root',
@@ -100,17 +100,17 @@ export class PagesComponent implements OnDestroy {
             filter((user) => !!user),
             map((user) => user.given_name)
         );
-        authService.user$.pipe(takeUntil(this.destroyed$)).subscribe((user) => {
-            if (user) {
-                if (user.roles.includes('admin')) {
+        combineLatest([authService.isAdmin$, authService.isManager$])
+            .pipe(takeUntil(this.destroyed$))
+            .subscribe(([isAdmin, isManager]) => {
+                if (isAdmin) {
                     this.menuItems = this.menuItemsAdmin;
-                } else if (user.roles.includes('manager')) {
+                } else if (isManager) {
                     this.menuItems = this.menuItemsManager;
                 } else {
                     this.menuItems = this.menuItemsUser;
                 }
-            }
-        });
+            });
         this.loggedIn$.pipe(takeUntil(this.destroyed$)).subscribe((loggedIn) => {
             if (loggedIn) {
                 sidebarService.expand('left');

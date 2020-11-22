@@ -142,7 +142,7 @@
             [allowDupes]="false"
             [trimTags]="true"
             [ripple]="false"
-            [disable]="!formControlRef.disabled"
+            [disable]="formControlRef.disabled"
             (change)="change.emit($event)"
             #formControlEl
         >

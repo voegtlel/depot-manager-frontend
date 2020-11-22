@@ -85,9 +85,9 @@ export class ItemComponent implements OnInit, OnDestroy {
             takeUntil(this.destroyed$)
         );
 
-        combineLatest([loadedItem$, this.authService.user$])
+        combineLatest([loadedItem$, this.authService.isManager$])
             .pipe(takeUntil(this.destroyed$))
-            .subscribe(([item, user]) => {
+            .subscribe(([item, isManager]) => {
                 if (item !== null) {
                     this.itemId = item.id;
                     this.isNew = false;
@@ -118,7 +118,7 @@ export class ItemComponent implements OnInit, OnDestroy {
                         changeComment: '',
                     } as ItemWithComment);
                 }
-                if (user.groups.includes('admin')) {
+                if (isManager) {
                     this.form.enable();
                 } else {
                     this.form.disable();

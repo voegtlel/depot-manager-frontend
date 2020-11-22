@@ -33,11 +33,19 @@ export class AuthService {
     private readonly _lastError$ = new BehaviorSubject<string>(null);
     public readonly lastError$: Observable<string> = this._lastError$.asObservable();
 
+    public readonly isManager$: Observable<boolean> = this.user$.pipe(
+        map((user) => user && (user.roles.includes('manager') || user.roles.includes('admin')))
+    );
+
     private readonly _discoveryDocument$ = new BehaviorSubject<Record<string, any>>(null);
     public readonly discoveryDocument$ = this._discoveryDocument$.asObservable();
 
     public get isAdmin(): boolean {
         return this._user$.value?.roles.includes('admin');
+    }
+
+    public get isManager(): boolean {
+        return this._user$.value?.roles.includes('manager') || this._user$.value?.roles.includes('admin');
     }
 
     public readonly userId$: Observable<string> = this.user$.pipe(map((user) => user?.sub));

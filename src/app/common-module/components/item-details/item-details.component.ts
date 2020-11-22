@@ -4,11 +4,15 @@ import { Item, ItemState, Reservation } from '../../_models';
 import { ApiService } from '../../_services';
 import { toIsoDate } from '../../_helpers';
 import { BehaviorSubject, combineLatest, EMPTY, Observable, Subject } from 'rxjs';
-import { switchMap, shareReplay, takeUntil, debounceTime, tap } from 'rxjs/operators';
+import { switchMap, shareReplay, takeUntil, debounceTime, tap, map } from 'rxjs/operators';
 
 interface FieldItem {
     key: string;
     value: any;
+}
+
+interface ItemStateWithArray extends ItemState {
+    changesArray: FieldItem[];
 }
 
 @Component({
@@ -25,7 +29,7 @@ export class ItemDetailsComponent implements OnInit, OnDestroy, OnChanges {
     @AsyncInput() reservationStart$ = new BehaviorSubject<string>(toIsoDate(new Date()));
     @AsyncInput() reservationEnd$ = new BehaviorSubject<string>(toIsoDate(new Date(Date.now() + 60 * 60 * 24 * 1000)));
 
-    itemHistory$: Observable<ItemState[]>;
+    itemHistoryWithState$: Observable<ItemStateWithArray[]>;
     reservations$: Observable<Reservation[]>;
     destroyed$ = new Subject<void>();
 
@@ -37,7 +41,7 @@ export class ItemDetailsComponent implements OnInit, OnDestroy, OnChanges {
     };
 
     constructor(private api: ApiService) {
-        this.itemHistory$ = combineLatest([this.item$, this.reservationStart$, this.reservationEnd$]).pipe(
+        this.itemHistoryWithState$ = combineLatest([this.item$, this.reservationStart$, this.reservationEnd$]).pipe(
             debounceTime(200),
             switchMap(([item, reservationStart, reservationEnd]) => {
                 if (item && reservationStart && reservationEnd) {
@@ -52,6 +56,14 @@ export class ItemDetailsComponent implements OnInit, OnDestroy, OnChanges {
                 return EMPTY;
             }),
             tap((history) => console.log('history:', history)),
+            map((history) =>
+                history.map((entry) => ({
+                    changesArray: Object.entries(entry.changes)
+                        .filter(([key, value]) => value != null)
+                        .map(([key, value]) => ({ key, value: value.next })),
+                    ...entry,
+                }))
+            ),
             shareReplay(1),
             takeUntil(this.destroyed$)
         );

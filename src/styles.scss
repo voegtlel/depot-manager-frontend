@@ -9,6 +9,20 @@
     @include nb-theme-global();
 }
 
+// Fix nebular checkbox sizing
+nb-checkbox {
+    position: relative;
+
+    > label.label {
+        width: 100%;
+        flex-grow: 1;
+
+        > span.div {
+            flex-grow: 1;
+        }
+    }
+}
+
 @import 'tag-edit';
 
 @include nb-tag-edit();

@@ -27,13 +27,15 @@
                 >
                     <ng-container *ngTemplateOutlet="itemTemplate; context: { item: item }"></ng-container>
                 </nb-checkbox>
+                <ng-container *ngTemplateOutlet="actionsTemplate; context: { item: item }"></ng-container>
             </nb-list-item>
         </nb-list>
         <nb-list *ngIf="group">
-            <nb-list-item *ngFor="let items of itemGroups$ | async | itemGroupFilter: filter" class="item">
+            <nb-list-item *ngFor="let items of itemGroups$ | async | itemGroupFilter: filter">
                 <nb-checkbox
                     *ngIf="items.length == 1"
                     status="primary"
+                    class="stretch"
                     [disabled]="!items[0].available || disabled"
                     [checked]="isSelected(items[0].id)"
                     (checkedChange)="setSelected(items[0].id, $event)"
@@ -41,8 +43,8 @@
                     <ng-container *ngTemplateOutlet="itemTemplate; context: { item: items[0] }"></ng-container>
                 </nb-checkbox>
                 <div
-                    class="item-counter-container"
                     *ngIf="items.length > 1"
+                    class="item-counter-container stretch"
                     [class.disabled]="itemGroupSelectableCount(items) === 0"
                 >
                     <div class="item-numeric-info">
@@ -79,34 +81,35 @@
                         <ng-container *ngTemplateOutlet="itemTemplate; context: { item: items[0] }"></ng-container>
                     </div>
                 </div>
+                <ng-container *ngTemplateOutlet="actionsTemplate; context: { item: items[0] }"></ng-container>
             </nb-list-item>
         </nb-list>
     </nb-card-body>
 </nb-card>
 
 <ng-template #itemTemplate let-item="item">
-    <div class="item">
-        <div class="item-info">
-            <a
-                *ngIf="item.pictureId"
-                class="item-picture image"
-                (click)="openDialog($event, imageDialog, item)"
-                [attr.href]="getItemPictureUrl(item)"
-            >
-                <img [src]="getItemPicturePreviewUrl(item)" alt="Item Image" />
-            </a>
-            <div class="item-text">
-                <div class="item-name">{{ item.name }}</div>
-                <div class="item-description">{{ item.description }}</div>
-                <div class="item-tags">
-                    <span class="item-tag" *ngFor="let tag of item.tags">{{ tag }}</span>
-                </div>
+    <div class="item-info">
+        <a
+            *ngIf="item.pictureId"
+            class="item-picture image"
+            (click)="openDialog($event, imageDialog, item)"
+            [attr.href]="getItemPictureUrl(item)"
+        >
+            <img [src]="getItemPicturePreviewUrl(item)" alt="Item Image" />
+        </a>
+        <div class="item-text">
+            <div class="item-name">{{ item.name }}</div>
+            <div class="item-description">{{ item.description }}</div>
+            <div class="item-tags">
+                <span class="item-tag" *ngFor="let tag of item.tags">{{ tag }}</span>
             </div>
         </div>
-        <nb-actions size="small" class="item-actions">
-            <nb-action icon="search-outline" (click)="openDialog($event, itemDialog, item)"></nb-action>
-        </nb-actions>
     </div>
+</ng-template>
+<ng-template #actionsTemplate let-item="item">
+    <nb-actions size="small" class="item-actions">
+        <nb-action icon="search-outline" (click)="openDialog($event, itemDialog, item)"></nb-action>
+    </nb-actions>
 </ng-template>
 <ng-template #imageDialog let-data let-ref="dialogRef">
     <div [nbSpinner]="imageLoading" nbSpinnerStatus="info">
