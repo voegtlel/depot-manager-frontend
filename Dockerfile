@@ -5,14 +5,13 @@ ARG CONFIGURATION=prod
 WORKDIR /app
 
 # Install dependencies
-RUN apk update && apk add --no-cache make git && npm install -g yarn
+RUN apk update && apk add --no-cache make git
 COPY package.json yarn.lock ./
 RUN cd /app && \
     yarn install --no-progress
 
 COPY . /app
 RUN cd /app && \
-    yarn install --no-progress && \
     yarn run build --configuration=${CONFIGURATION}
 
 # STEP 2 build a small nginx image with static website
