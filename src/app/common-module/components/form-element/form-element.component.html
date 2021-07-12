@@ -101,14 +101,18 @@
         <nb-radio-group
             [formControl]="formControlRef"
             (valueChange)="change.emit($event)"
-            [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : 'basic'"
             [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
+            [name]="uniqueId"
             #formControlEl
         >
             <nb-radio
                 *ngFor="let choice of choices"
                 [value]="choice.value"
                 [disabled]="choice.disabled || formControlRef.disabled"
+                [status]="choice.status"
+                [class.status-success]="choice.status == 'success'"
+                [class.status-warning]="choice.status == 'warning'"
+                [class.status-danger]="choice.status == 'danger'"
                 >{{ choice.title }}</nb-radio
             >
         </nb-radio-group>
@@ -207,7 +211,7 @@
         >
             <span *ngIf="!formControlRef.value">{{ title || 'Select Report Profile' }}</span>
             <span *ngIf="formControlRef.value"
-                >Report Profile: {{ (formControlRef.value | reportProfile | async).name }}</span
+                >Report Profile: {{ (formControlRef.value | reportProfile | async)?.name }}</span
             >
         </button>
         <div *ngIf="formControlRef.value | reportProfile; let reportProfile">
@@ -220,27 +224,31 @@
     </ng-container>
     <ng-container *ngSwitchCase="'reportState'">
         <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
-        <nb-radio-group #formControlEl [formControl]="formControlRef">
-            <nb-radio value="good" status="success"
-                ><nb-icon icon="checkmark-circle-2-outline"></nb-icon> Good condition</nb-radio
-            >
-            <nb-radio value="monitor" status="warning"><nb-icon icon="search-outline"></nb-icon> To monitor</nb-radio>
-            <nb-radio value="repair" status="warning"><nb-icon icon="scissors-outline"></nb-icon> To repair</nb-radio>
-            <nb-radio value="retire" status="danger"
-                ><nb-icon icon="trash-2-outline"></nb-icon> Do not use, retire</nb-radio
-            >
-            <nb-radio value="not-applicable"><nb-icon icon="slash-outline"></nb-icon> Not applicable</nb-radio>
+        <nb-radio-group #formControlEl [formControl]="formControlRef" [name]="uniqueId">
+            <nb-radio value="good" status="success" class="status-success"
+                >Good condition <nb-icon icon="checkmark-circle-2-outline"></nb-icon
+            ></nb-radio>
+            <nb-radio value="monitor" status="warning" class="status-warning"
+                >To monitor <nb-icon icon="search-outline"></nb-icon
+            ></nb-radio>
+            <nb-radio value="repair" status="warning" class="status-warning"
+                >To repair <nb-icon icon="scissors-outline"></nb-icon
+            ></nb-radio>
+            <nb-radio value="retire" status="danger" class="status-danger"
+                >Do not use, retire <nb-icon icon="trash-2-outline"></nb-icon
+            ></nb-radio>
+            <nb-radio value="not-applicable">Not applicable <nb-icon icon="slash-outline"></nb-icon></nb-radio>
         </nb-radio-group>
     </ng-container>
     <ng-container *ngSwitchCase="'totalReportState'">
         <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
-        <nb-radio-group #formControlEl [formControl]="formControlRef">
-            <nb-radio value="fit" status="success"
-                ><nb-icon icon="checkmark-circle-2-outline"></nb-icon> <b>Fit</b> to remain in service</nb-radio
-            >
-            <nb-radio value="unfit" status="danger"
-                ><nb-icon icon="close-circle-outline"></nb-icon> <b>Unfit</b> to remain in service</nb-radio
-            >
+        <nb-radio-group #formControlEl [formControl]="formControlRef" [name]="uniqueId">
+            <nb-radio value="fit" status="success" class="status-success"
+                ><b>Fit</b> to remain in service <nb-icon icon="checkmark-circle-2-outline"></nb-icon
+            ></nb-radio>
+            <nb-radio value="unfit" status="danger" class="status-danger"
+                ><b>Unfit</b> to remain in service <nb-icon icon="close-circle-outline"></nb-icon
+            ></nb-radio>
         </nb-radio-group>
     </ng-container>
     <nb-alert *ngIf="error" status="danger" closable (close)="formControlRef.updateValueAndValidity()">

@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnDestroy, OnChanges } from '@angular/core';
 import { AsyncInput } from '@ng-reactive/async-input';
-import { Item, ItemState, Reservation } from '../../_models';
+import { Item, ItemState, Reservation, TotalReportState } from '../../_models';
 import { ApiService } from '../../_services';
 import { toIsoDate } from '../../_helpers';
 import { BehaviorSubject, combineLatest, EMPTY, Observable, Subject } from 'rxjs';
@@ -32,13 +32,6 @@ export class ItemDetailsComponent implements OnInit, OnDestroy, OnChanges {
     itemHistoryWithState$: Observable<ItemStateWithArray[]>;
     reservations$: Observable<Reservation[]>;
     destroyed$ = new Subject<void>();
-
-    conditionTranslation: Record<number, string> = {
-        1: 'Good',
-        2: 'Ok',
-        3: 'Bad',
-        4: 'Gone',
-    };
 
     constructor(private api: ApiService) {
         this.itemHistoryWithState$ = combineLatest([this.item$, this.reservationStart$, this.reservationEnd$]).pipe(

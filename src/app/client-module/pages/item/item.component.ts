@@ -11,10 +11,8 @@ import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import {
     Item,
     ItemCondition,
-    ItemInWrite,
     ReportElement,
     ReportItemInWrite,
-    ReportProfile,
     TotalReportState,
 } from '../../../common-module/_models';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -49,11 +47,11 @@ export class ItemComponent implements OnInit, OnDestroy {
 
     itemId: string = null;
 
-    conditionTranslation: Record<ItemCondition, string> = {
-        good: 'Good',
-        ok: 'Ok',
-        bad: 'Bad',
-        gone: 'Gone',
+    conditionTranslation: Record<ItemCondition, [string, string]> = {
+        good: ['Good', 'success'],
+        ok: ['Ok', 'success'],
+        bad: ['Bad', 'warning'],
+        gone: ['Unavailable', 'danger'],
     };
 
     conditionChoices: Choice<ItemCondition>[] = [
@@ -64,7 +62,8 @@ export class ItemComponent implements OnInit, OnDestroy {
     ].map((value) => {
         return {
             value,
-            title: this.conditionTranslation[value],
+            title: this.conditionTranslation[value][0],
+            status: this.conditionTranslation[value][1],
         };
     });
 
@@ -93,10 +92,6 @@ export class ItemComponent implements OnInit, OnDestroy {
         bayId: new FormControl(null),
         tags: new FormControl([]),
         changeComment: new FormControl(''),
-
-        lastService: new FormControl(null),
-        totalReportState: new FormControl(TotalReportState.Fit, Validators.required),
-        report: this.reportForm,
     } as Record<keyof ReportItemInWrite, FormControl | FormArray>);
 
     constructor(
@@ -136,6 +131,7 @@ export class ItemComponent implements OnInit, OnDestroy {
                     this.createReport = true;
                     this.itemId = null;
                     this.isNew = true;
+                    this.reportForm.clear();
                     this.form.reset({
                         externalId: '',
 
@@ -206,10 +202,19 @@ export class ItemComponent implements OnInit, OnDestroy {
         if (profileId == null) {
             return;
         }
-        this.form.controls.lastService.setValue(new Date().toISOString());
-        this.form.controls.totalReportState.setValue(null);
+        this.form.addControl('lastService', new FormControl(new Date().toISOString().substring(0, 10)));
+        this.form.addControl('totalReportState', new FormControl(null, Validators.required));
+        this.form.addControl('report', this.reportForm);
         this.form.updateValueAndValidity();
         this.createReport = true;
+    }
+
+    uninitReport() {
+        this.form.removeControl('lastService');
+        this.form.removeControl('totalReportState');
+        this.form.removeControl('report');
+        this.form.updateValueAndValidity();
+        this.createReport = false;
     }
 
     openConfirmDialog($event: MouseEvent, dialog: TemplateRef<any>) {
@@ -231,6 +236,21 @@ export class ItemComponent implements OnInit, OnDestroy {
         }
     }
 
+    openItemDialog($event: MouseEvent, dialog: TemplateRef<any>) {
+        $event.preventDefault();
+        $event.stopPropagation();
+        this.dialogService.open(dialog, {
+            hasBackdrop: true,
+            closeOnBackdropClick: false,
+            hasScroll: false,
+            autoFocus: true,
+            context: {
+                id: this.itemId,
+                ...this.form.value,
+            },
+        });
+    }
+
     onSubmit(dialogRef: NbDialogRef<any>) {
         console.log('Submit:', this.form.getRawValue());
         this.submitted = true;
@@ -238,16 +258,24 @@ export class ItemComponent implements OnInit, OnDestroy {
             return;
         }
         let apiCall: Observable<Item>;
+        const rawValue = this.form.getRawValue();
+        if (!this.createReport) {
+            delete rawValue.lastService;
+            delete rawValue.totalReportState;
+            delete rawValue.report;
+        }
         if (this.isNew) {
-            const rawValue = this.form.getRawValue();
             delete rawValue.comment;
             apiCall = this.api.createItem(rawValue);
+        } else if (this.createReport) {
+            apiCall = this.api.reportItem(this.itemId, rawValue);
         } else {
-            apiCall = this.api.saveItem(this.itemId, this.form.getRawValue());
+            apiCall = this.api.saveItem(this.itemId, rawValue);
         }
         apiCall.subscribe(
             (item) => {
                 console.log('Saved', item);
+                this.uninitReport();
                 this.form.reset(item);
                 this.form.markAsPristine();
                 this.form.markAsUntouched();
