@@ -53,16 +53,25 @@ import {
 
 import { FormElementComponent } from './components/form-element/form-element.component';
 import { ReservationItemsComponent } from './components/reservation-items/reservation-items.component';
-import { ItemFilterPipe, ItemGroupFilterPipe, FormatDateTimePipe, FormatDatePipe } from './_pipes';
+import {
+    ItemFilterPipe,
+    ItemGroupFilterPipe,
+    FormatDateTimePipe,
+    FormatDatePipe,
+    ReportElementPipe,
+    ItemGroupNamePipe,
+    BayNamePipe,
+    ReportProfilePipe,
+} from './_pipes';
 import { PictureListComponent } from './components/picture-list/picture-list.component';
 import { ItemDetailsComponent } from './components/item-details/item-details.component';
 import { ItemGroupListComponent } from './components/item-group-list/item-group-list.component';
-import { ItemGroupNamePipe } from './_pipes/item-group-name.pipe';
-import { BayNamePipe } from './_pipes/bay-name.pipe';
 import { BayListComponent } from './components/bay-list/bay-list.component';
 import { ItemBaysComponent } from './components/item-bays/item-bays.component';
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { getApiUrl } from './_services';
+import { ReportElementListComponent } from './components/report-element-list/report-element-list.component';
+import { ReportProfileListComponent } from './components/report-profile-list/report-profile-list.component';
 
 @NgModule({
     entryComponents: [CalendarRangeDayCellComponent, CalendarRangeComponent],
@@ -85,6 +94,10 @@ import { getApiUrl } from './_services';
         ItemDetailsComponent,
         ItemGroupListComponent,
         ItemGroupNamePipe,
+        ReportElementListComponent,
+        ReportProfileListComponent,
+        ReportElementPipe,
+        ReportProfilePipe,
     ],
     imports: [
         CommonModule,
@@ -145,6 +158,8 @@ import { getApiUrl } from './_services';
         CalendarRangeComponent,
         DateRangePickerComponent,
 
+        ReportElementListComponent,
+
         ItemFilterPipe,
         ItemGroupFilterPipe,
         BayNamePipe,
@@ -155,6 +170,8 @@ import { getApiUrl } from './_services';
         ItemDetailsComponent,
         ItemGroupListComponent,
         ItemGroupNamePipe,
+        ReportElementPipe,
+        ReportProfilePipe,
     ],
 })
 export class CommonModuleModule {}

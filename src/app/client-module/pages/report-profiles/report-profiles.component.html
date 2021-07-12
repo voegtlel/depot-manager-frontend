@@ -1,6 +1,6 @@
 <nb-card [nbSpinner]="loading">
     <nb-card-header class="header-flex">
-        <span>Bays</span>
+        <span>Report Profiles</span>
         <div class="filter">
             <label class="label" [for]="filterInput">
                 <nb-icon icon="funnel"></nb-icon>
@@ -17,7 +17,7 @@
             />
         </div>
         <nb-actions size="small" class="float-right">
-            <nb-action icon="refresh" (click)="itemsService.reload()"></nb-action>
+            <nb-action icon="refresh" (click)="reportService.reload()"></nb-action>
             <nb-action icon="file-add" (click)="onCreate()"></nb-action>
         </nb-actions>
     </nb-card-header>
@@ -27,23 +27,9 @@
             <tr
                 nbTreeGridRow
                 *nbTreeGridRowDef="let row; columns: allColumns"
-                (dblclick)="onClickBay($event, row.data)"
+                (dblclick)="onClickReportProfile($event, row.data)"
                 [clickToToggle]="false"
             ></tr>
-
-            <ng-container nbTreeGridColumnDef="externalId">
-                <th
-                    nbTreeGridHeaderCell
-                    [nbSortHeader]="getSortDirection('externalId')"
-                    *nbTreeGridHeaderCellDef
-                    class="sortable"
-                >
-                    External ID
-                </th>
-                <td nbTreeGridCell *nbTreeGridCellDef="let row">
-                    {{ row.data.externalId }}
-                </td>
-            </ng-container>
 
             <ng-container nbTreeGridColumnDef="name">
                 <th
@@ -54,7 +40,15 @@
                 >
                     Name
                 </th>
-                <td nbTreeGridCell *nbTreeGridCellDef="let row">
+                <td
+                    nbTreeGridCell
+                    *nbTreeGridCellDef="let row"
+                    [class.expandable]="row.children"
+                    (click)="row.children && dataSource.toggle(row.data)"
+                >
+                    <nb-icon *ngIf="row.children && row.expanded" icon="chevron-up-outline"></nb-icon>
+                    <nb-icon *ngIf="row.children && !row.expanded" icon="chevron-down-outline"></nb-icon>
+                    <span *ngIf="!row.children" class="indent">&nbsp; &nbsp;</span>
                     {{ row.data.name }}
                 </td>
             </ng-container>
@@ -76,7 +70,7 @@
             <ng-container nbTreeGridColumnDef="action">
                 <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef>Action</th>
                 <td nbTreeGridCell *nbTreeGridCellDef="let row">
-                    <button nbButton ghost (click)="onClickBay($event, row.data)">
+                    <button nbButton ghost (click)="onClickReportProfile($event, row.data)">
                         <nb-icon icon="edit"></nb-icon>
                     </button>
                 </td>

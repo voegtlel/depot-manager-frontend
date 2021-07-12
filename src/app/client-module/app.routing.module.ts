@@ -13,6 +13,10 @@ import { BayComponent } from './pages/bay/bay.component';
 import { AuthenticationComponent } from './pages/authentication/authentication.component';
 import { LogoutComponent } from './pages/logout/logout.component';
 import { NgModule } from '@angular/core';
+import { ReportProfilesComponent } from './pages/report-profiles/report-profiles.component';
+import { ReportProfileComponent } from './pages/report-profile/report-profile.component';
+import { ReportElementsComponent } from './pages/report-elements/report-elements.component';
+import { ReportElementComponent } from './pages/report-element/report-element.component';
 
 const routes: Routes = [
     {
@@ -62,6 +66,34 @@ const routes: Routes = [
                     {
                         path: ':bayId',
                         component: BayComponent,
+                    },
+                ],
+            },
+            {
+                path: 'report-profiles',
+                canActivate: [AuthGuard],
+                children: [
+                    {
+                        path: '',
+                        component: ReportProfilesComponent,
+                    },
+                    {
+                        path: ':reportProfileId',
+                        component: ReportProfileComponent,
+                    },
+                ],
+            },
+            {
+                path: 'report-elements',
+                canActivate: [AuthGuard],
+                children: [
+                    {
+                        path: '',
+                        component: ReportElementsComponent,
+                    },
+                    {
+                        path: ':reportElementId',
+                        component: ReportElementComponent,
                     },
                 ],
             },

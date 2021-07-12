@@ -61,6 +61,10 @@ import { AuthenticationComponent } from './pages/authentication/authentication.c
 import { LogoutComponent } from './pages/logout/logout.component';
 import { OAuthStorage } from 'angular-oauth2-oidc';
 import { AuthGuard } from './auth.guard';
+import { ReportElementsComponent } from './pages/report-elements/report-elements.component';
+import { ReportElementComponent } from './pages/report-element/report-element.component';
+import { ReportProfileComponent } from './pages/report-profile/report-profile.component';
+import { ReportProfilesComponent } from './pages/report-profiles/report-profiles.component';
 
 @NgModule({
     declarations: [
@@ -76,6 +80,10 @@ import { AuthGuard } from './auth.guard';
         BaysComponent,
         BayComponent,
         ItemComponent,
+        ReportElementsComponent,
+        ReportElementComponent,
+        ReportProfileComponent,
+        ReportProfilesComponent,
     ],
     imports: [
         CommonModule,

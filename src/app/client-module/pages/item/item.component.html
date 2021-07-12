@@ -9,72 +9,148 @@
     <nb-card-body>
         <form [formGroup]="form" (ngSubmit)="openConfirmDialog($event, submitDialog)">
             <depot-form-element
-                [formControlRef]="form.get('externalId')"
+                [formControlRef]="form.controls.externalId"
                 [submitted]="submitted"
                 type="text"
                 title="External ID"
             ></depot-form-element>
             <depot-form-element
-                [formControlRef]="form.get('name')"
+                [formControlRef]="form.controls.manufacturer"
+                [submitted]="submitted"
+                type="text"
+                title="Manufacturer"
+            ></depot-form-element>
+            <depot-form-element
+                [formControlRef]="form.controls.model"
+                [submitted]="submitted"
+                type="text"
+                title="Model"
+            ></depot-form-element>
+            <depot-form-element
+                [formControlRef]="form.controls.serialNumber"
+                [submitted]="submitted"
+                type="text"
+                title="Serial Number"
+            ></depot-form-element>
+            <depot-form-element
+                [formControlRef]="form.controls.manufactureDate"
+                [submitted]="submitted"
+                type="text"
+                title="Date of manufacture"
+            ></depot-form-element>
+            <depot-form-element
+                [formControlRef]="form.controls.purchaseDate"
+                [submitted]="submitted"
+                type="date"
+                title="Purchase Date"
+            ></depot-form-element>
+            <depot-form-element
+                [formControlRef]="form.controls.firstUseDate"
+                [submitted]="submitted"
+                type="date"
+                title="First Use Date"
+            ></depot-form-element>
+            <depot-form-element
+                [formControlRef]="form.controls.name"
                 [submitted]="submitted"
                 type="text"
                 title="Name"
             ></depot-form-element>
             <depot-form-element
-                [formControlRef]="form.get('groupId')"
+                [formControlRef]="form.controls.groupId"
                 [submitted]="submitted"
                 type="itemgroup"
                 title="Item Group"
             ></depot-form-element>
             <depot-form-element
-                [formControlRef]="form.get('description')"
+                [formControlRef]="form.controls.description"
                 [submitted]="submitted"
                 type="textarea"
                 title="Description"
             ></depot-form-element>
             <depot-form-element
-                [formControlRef]="form.get('condition')"
+                [formControlRef]="form.controls.reportProfileId"
+                [submitted]="submitted"
+                type="reportProfile"
+                title="Report Profile"
+            ></depot-form-element>
+            <depot-form-element
+                [formControlRef]="form.controls.condition"
                 [submitted]="submitted"
                 type="select"
                 [choices]="conditionChoices"
                 title="Condition"
             ></depot-form-element>
             <depot-form-element
-                [formControlRef]="form.get('conditionComment')"
+                [formControlRef]="form.controls.conditionComment"
                 [submitted]="submitted"
                 type="text"
                 title="Condition Comment"
             ></depot-form-element>
             <depot-form-element
-                [formControlRef]="form.get('purchaseDate')"
-                [submitted]="submitted"
-                type="date"
-                title="Purchase Date"
-            ></depot-form-element>
-            <depot-form-element
-                [formControlRef]="form.get('lastService')"
-                [submitted]="submitted"
-                type="date"
-                title="Last Service"
-            ></depot-form-element>
-            <depot-form-element
-                [formControlRef]="form.get('pictureId')"
+                [formControlRef]="form.controls.pictureId"
                 [submitted]="submitted"
                 type="picture"
                 title="Picture"
             ></depot-form-element>
             <depot-form-element
-                [formControlRef]="form.get('bayId')"
+                [formControlRef]="form.controls.bayId"
                 [submitted]="submitted"
                 type="bay"
                 title="Item Bay"
             ></depot-form-element>
             <depot-form-element
-                [formControlRef]="form.get('tags')"
+                [formControlRef]="form.controls.tags"
                 [submitted]="submitted"
                 type="tags"
                 title="Tags"
             ></depot-form-element>
+            <div class="form-group" *ngIf="reportProfile$ | async">
+                <button
+                    nbButton
+                    type="button"
+                    status="primary"
+                    [disabled]="form.disabled"
+                    (click)="initReport()"
+                    *ngIf="!createReport"
+                >
+                    <nb-icon icon="file-add-outline"></nb-icon> Create Inspection Report
+                </button>
+                <ng-container *ngIf="createReport">
+                    <depot-form-element
+                        [formControlRef]="form.controls.lastService"
+                        [submitted]="submitted"
+                        type="date"
+                        title="Service Date"
+                    ></depot-form-element>
+                    <nb-card *ngFor="let reportElementForm of reportForm.controls">
+                        <nb-card-header>
+                            {{ reportElementForm.reportElement.title }}
+                        </nb-card-header>
+                        <nb-card-body>
+                            <div class="description">{{ reportElementForm.reportElement.description }}</div>
+                            <depot-form-element
+                                [formControlRef]="reportElementForm.controls.state"
+                                [submitted]="submitted"
+                                type="reportState"
+                                title="State"
+                            ></depot-form-element>
+                            <depot-form-element
+                                [formControlRef]="reportElementForm.controls.comment"
+                                [submitted]="submitted"
+                                type="textarea"
+                                title="State"
+                            ></depot-form-element>
+                        </nb-card-body>
+                    </nb-card>
+                    <depot-form-element
+                        [formControlRef]="form.controls.totalReportState"
+                        [submitted]="submitted"
+                        type="totalReportState"
+                        title="Final Total Report State"
+                    ></depot-form-element>
+                </ng-container>
+            </div>
             <div class="form-group">
                 <button
                     nbButton
@@ -98,7 +174,7 @@
             <nb-card-header>Change Comment</nb-card-header>
             <nb-card-body class="no-padding">
                 <depot-form-element
-                    [formControlRef]="form.get('changeComment')"
+                    [formControlRef]="form.controls.changeComment"
                     type="text"
                     title="Submit Comment"
                 ></depot-form-element>

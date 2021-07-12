@@ -1,5 +1,14 @@
-import { Component, EventEmitter, Input, Output, TemplateRef } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import {
+    Component,
+    ContentChild,
+    ElementRef,
+    EventEmitter,
+    Input,
+    Output,
+    TemplateRef,
+    ViewChild,
+} from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 import { DateHelper } from '../../_helpers';
 import { NbDialogService } from '@nebular/theme';
 import { ApiService, ItemsService } from '../../_services';
@@ -30,6 +39,9 @@ export class FormElementComponent {
         | 'select'
         | 'tags'
         | 'bay'
+        | 'reportProfile'
+        | 'reportState'
+        | 'reportFinalState'
         | 'itemgroup' = 'text';
     @Input() title = '';
 
@@ -46,6 +58,12 @@ export class FormElementComponent {
         getValue: () => this.formControlRefEnd.value,
         setValue: (val: string) => this.formControlRefEnd.setValue(val),
     });
+
+    get isRequired(): boolean {
+        return this.formControlRef.validator === Validators.required;
+    }
+
+    @ViewChild('formControlEl', { read: ElementRef }) formControlElRef: ElementRef;
 
     readonly itemTags$: Observable<string[]>;
     readonly getItemTags: () => Observable<string[]>;
@@ -84,5 +102,9 @@ export class FormElementComponent {
 
     get itemPicturePreviewUrl(): string {
         return this.api.getPicturePreviewUrl(this.formControlRef.value);
+    }
+
+    click() {
+        this.formControlElRef.nativeElement.click();
     }
 }

@@ -79,6 +79,16 @@ export class PagesComponent implements OnDestroy {
             icon: 'briefcase',
         },
         {
+            title: 'Report Profiles',
+            link: '/report-profiles',
+            icon: 'archive-outline',
+        },
+        {
+            title: 'Report Elements',
+            link: '/report-elements',
+            icon: 'credit-card-outline',
+        },
+        {
             title: 'Logout',
             link: '/logout',
             icon: 'log-out',

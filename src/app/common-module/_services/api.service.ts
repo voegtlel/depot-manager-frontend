@@ -2,7 +2,21 @@ import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { AuthUserModel, Item, Reservation, ItemWithComment, Picture, ItemState, Bay, UserModel } from '../_models';
+import {
+    AuthUserModel,
+    Item,
+    Reservation,
+    ItemInWrite,
+    Picture,
+    ItemState,
+    Bay,
+    UserModel,
+    ReportItemInWrite,
+    ReportElement,
+    ReportElementInWrite,
+    ReportProfile,
+    ReportProfileInWrite,
+} from '../_models';
 import { EnvService } from './env.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 
@@ -32,7 +46,7 @@ export class ApiService {
         return this.http.get<Item[]>(`${this.env.apiUrl}/items`);
     }
 
-    createItem(item: Item): Observable<Item> {
+    createItem(item: ReportItemInWrite): Observable<Item> {
         return this.http.post<Item>(`${this.env.apiUrl}/items`, item);
     }
 
@@ -40,8 +54,52 @@ export class ApiService {
         return this.http.get<Item>(`${this.env.apiUrl}/items/${itemId}`);
     }
 
-    saveItem(itemId: string, item: ItemWithComment): Observable<Item> {
+    saveItem(itemId: string, item: ItemInWrite): Observable<Item> {
         return this.http.put<Item>(`${this.env.apiUrl}/items/${itemId}`, item);
+    }
+
+    reportItem(itemId: string, item: ReportItemInWrite): Observable<Item> {
+        return this.http.put<Item>(`${this.env.apiUrl}/items/${itemId}/report`, item);
+    }
+
+    getReportElements(): Observable<ReportElement[]> {
+        return this.http.get<ReportElement[]>(`${this.env.apiUrl}/report-elements`);
+    }
+
+    createReportElement(element: ReportElementInWrite): Observable<ReportElement> {
+        return this.http.post<ReportElement>(`${this.env.apiUrl}/report-elements`, element);
+    }
+
+    getReportElement(id: string): Observable<ReportElement> {
+        return this.http.get<ReportElement>(`${this.env.apiUrl}/report-elements/${id}`);
+    }
+
+    saveReportElement(id: string, element: ReportElementInWrite): Observable<ReportElement> {
+        return this.http.put<ReportElement>(`${this.env.apiUrl}/report-elements/${id}`, element);
+    }
+
+    deleteReportElement(id: string): Observable<void> {
+        return this.http.delete<void>(`${this.env.apiUrl}/report-elements/${id}`);
+    }
+
+    getReportProfiles(): Observable<ReportProfile[]> {
+        return this.http.get<ReportProfile[]>(`${this.env.apiUrl}/report-profiles`);
+    }
+
+    createReportProfile(profile: ReportProfileInWrite): Observable<ReportProfile> {
+        return this.http.post<ReportProfile>(`${this.env.apiUrl}/report-profiles`, profile);
+    }
+
+    getReportProfile(id: string): Observable<ReportProfile> {
+        return this.http.get<ReportProfile>(`${this.env.apiUrl}/report-profiles/${id}`);
+    }
+
+    saveReportProfile(id: string, profile: ReportProfileInWrite): Observable<ReportProfile> {
+        return this.http.put<ReportProfile>(`${this.env.apiUrl}/report-profiles/${id}`, profile);
+    }
+
+    deleteReportProfile(id: string): Observable<void> {
+        return this.http.delete<void>(`${this.env.apiUrl}/report-profiles/${id}`);
     }
 
     getBays(): Observable<Bay[]> {

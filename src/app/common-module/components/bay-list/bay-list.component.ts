@@ -11,6 +11,7 @@ import { ItemsService } from '../../_services';
 })
 export class BayListComponent implements OnInit, OnDestroy {
     @Input() selectedBay: string;
+    @Input() required = false;
     @Output() selectBay = new EventEmitter();
 
     private destroyed$ = new Subject<void>();

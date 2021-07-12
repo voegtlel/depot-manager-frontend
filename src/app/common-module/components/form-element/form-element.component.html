@@ -151,6 +151,7 @@
     </div>
     <ng-container *ngSwitchCase="'picture'">
         <button
+            #formControlEl
             type="button"
             nbButton
             fullWidth
@@ -165,6 +166,7 @@
     </ng-container>
     <ng-container *ngSwitchCase="'itemgroup'">
         <button
+            #formControlEl
             type="button"
             nbButton
             fullWidth
@@ -179,6 +181,7 @@
     </ng-container>
     <ng-container *ngSwitchCase="'bay'">
         <button
+            #formControlEl
             type="button"
             nbButton
             fullWidth
@@ -190,6 +193,55 @@
             <span *ngIf="!formControlRef.value">{{ title || 'Select Bay' }}</span>
             <span *ngIf="formControlRef.value">Bay: {{ formControlRef.value | bayName | async }}</span>
         </button>
+    </ng-container>
+    <ng-container *ngSwitchCase="'reportProfile'">
+        <button
+            #formControlEl
+            type="button"
+            nbButton
+            fullWidth
+            ghost
+            class="label"
+            (click)="openDialog($event, selectReportProfileDialog)"
+            [disabled]="formControlRef.disabled"
+        >
+            <span *ngIf="!formControlRef.value">{{ title || 'Select Report Profile' }}</span>
+            <span *ngIf="formControlRef.value"
+                >Report Profile: {{ (formControlRef.value | reportProfile | async).name }}</span
+            >
+        </button>
+        <div *ngIf="formControlRef.value | reportProfile; let reportProfile">
+            <p>{{ reportProfile.description }}</p>
+            <div *ngFor="let element of reportProfile.elements">
+                <h5>{{ element.title }}</h5>
+                <p>{{ element.description }}</p>
+            </div>
+        </div>
+    </ng-container>
+    <ng-container *ngSwitchCase="'reportState'">
+        <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
+        <nb-radio-group #formControlEl [formControl]="formControlRef">
+            <nb-radio value="good" status="success"
+                ><nb-icon icon="checkmark-circle-2-outline"></nb-icon> Good condition</nb-radio
+            >
+            <nb-radio value="monitor" status="warning"><nb-icon icon="search-outline"></nb-icon> To monitor</nb-radio>
+            <nb-radio value="repair" status="warning"><nb-icon icon="scissors-outline"></nb-icon> To repair</nb-radio>
+            <nb-radio value="retire" status="danger"
+                ><nb-icon icon="trash-2-outline"></nb-icon> Do not use, retire</nb-radio
+            >
+            <nb-radio value="not-applicable"><nb-icon icon="slash-outline"></nb-icon> Not applicable</nb-radio>
+        </nb-radio-group>
+    </ng-container>
+    <ng-container *ngSwitchCase="'totalReportState'">
+        <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
+        <nb-radio-group #formControlEl [formControl]="formControlRef">
+            <nb-radio value="fit" status="success"
+                ><nb-icon icon="checkmark-circle-2-outline"></nb-icon> <b>Fit</b> to remain in service</nb-radio
+            >
+            <nb-radio value="unfit" status="danger"
+                ><nb-icon icon="close-circle-outline"></nb-icon> <b>Unfit</b> to remain in service</nb-radio
+            >
+        </nb-radio-group>
     </ng-container>
     <nb-alert *ngIf="error" status="danger" closable (close)="formControlRef.updateValueAndValidity()">
         {{ error }}
@@ -236,10 +288,29 @@
         <nb-card-body class="no-padding">
             <depot-bay-list
                 [selectedBay]="formControlRef.value"
+                [required]="isRequired"
                 (selectBay)="
                     formControlRef.setValue($event); formControlRef.markAsDirty(); change.emit($event); ref.close()
                 "
             ></depot-bay-list>
+        </nb-card-body>
+        <nb-card-footer>
+            <button nbButton type="button" (click)="ref.close()">Cancel</button>
+        </nb-card-footer>
+    </nb-card>
+</ng-template>
+
+<ng-template #selectReportProfileDialog let-data let-ref="dialogRef">
+    <nb-card>
+        <nb-card-header>Select Report Profile</nb-card-header>
+        <nb-card-body class="no-padding">
+            <depot-report-profile-list
+                [selectedReportProfile]="formControlRef.value"
+                [required]="isRequired"
+                (selectReportProfile)="
+                    formControlRef.setValue($event); formControlRef.markAsDirty(); change.emit($event); ref.close()
+                "
+            ></depot-report-profile-list>
         </nb-card-body>
         <nb-card-footer>
             <button nbButton type="button" (click)="ref.close()">Cancel</button>

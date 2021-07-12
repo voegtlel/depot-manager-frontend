@@ -12,8 +12,8 @@ export class ItemGroupNamePipe implements PipeTransform {
         if (!value) {
             return null;
         }
-        return this.itemsService.items$.pipe(
-            map((items) => items.find((item) => item.groupId === value)),
+        return this.itemsService.itemsById$.pipe(
+            map((itemsById) => itemsById[value]),
             filter((item) => !!item),
             map((item) => item.name)
         );

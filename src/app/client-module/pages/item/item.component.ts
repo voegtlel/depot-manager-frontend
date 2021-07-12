@@ -1,12 +1,36 @@
 import { Component, OnDestroy, OnInit, TemplateRef } from '@angular/core';
-import { ApiService, AuthService, ItemsService } from '../../../common-module/_services';
+import {
+    ApiService,
+    AuthService,
+    ItemsService,
+    ReportProfileWithElements,
+    ReportService,
+} from '../../../common-module/_services';
 import { BehaviorSubject, Observable, of, Subject, combineLatest } from 'rxjs';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Item, ItemCondition, ItemWithComment } from '../../../common-module/_models';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+    Item,
+    ItemCondition,
+    ItemInWrite,
+    ReportElement,
+    ReportItemInWrite,
+    ReportProfile,
+    TotalReportState,
+} from '../../../common-module/_models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NbToastrService, NbDialogService, NbDialogRef } from '@nebular/theme';
-import { map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, map, shareReplay, startWith, switchMap, takeUntil } from 'rxjs/operators';
 import { Choice } from '../../../common-module/components/form-element/form-element.component';
+
+class ReportElementFormGroup extends FormGroup {
+    constructor(public readonly reportElement: ReportElement) {
+        super({
+            reportElementId: new FormControl(reportElement.id),
+            state: new FormControl(null),
+            comment: new FormControl(null),
+        });
+    }
+}
 
 @Component({
     selector: 'depot-item',
@@ -44,22 +68,36 @@ export class ItemComponent implements OnInit, OnDestroy {
         };
     });
 
+    createReport = false;
+
     groupItem = new FormControl(false);
 
+    reportProfile$: Observable<ReportProfileWithElements>;
+
+    readonly reportForm: FormArray = new FormArray([]);
     readonly form: FormGroup = new FormGroup({
         externalId: new FormControl(''),
+        manufacturer: new FormControl(''),
+        model: new FormControl(''),
+        serialNumber: new FormControl(''),
+        manufactureDate: new FormControl(null),
+        purchaseDate: new FormControl(null),
+        firstUseDate: new FormControl(null),
         name: new FormControl('', Validators.required),
         description: new FormControl('', Validators.required),
+        reportProfileId: new FormControl(null),
         condition: new FormControl(null, Validators.required),
         conditionComment: new FormControl(''),
-        purchaseDate: new FormControl(null),
-        lastService: new FormControl(null),
         pictureId: new FormControl(null),
         groupId: new FormControl(null),
         bayId: new FormControl(null),
         tags: new FormControl([]),
         changeComment: new FormControl(''),
-    } as Record<keyof ItemWithComment, FormControl>);
+
+        lastService: new FormControl(null),
+        totalReportState: new FormControl(TotalReportState.Fit, Validators.required),
+        report: this.reportForm,
+    } as Record<keyof ReportItemInWrite, FormControl | FormArray>);
 
     constructor(
         public api: ApiService,
@@ -68,7 +106,8 @@ export class ItemComponent implements OnInit, OnDestroy {
         public router: Router,
         private toastrService: NbToastrService,
         private dialogService: NbDialogService,
-        private itemsService: ItemsService
+        private itemsService: ItemsService,
+        private reportService: ReportService
     ) {}
 
     ngOnInit() {
@@ -94,18 +133,25 @@ export class ItemComponent implements OnInit, OnDestroy {
                     this.form.reset(item);
                     this.groupItem.reset(!!item.groupId);
                 } else {
+                    this.createReport = true;
                     this.itemId = null;
                     this.isNew = true;
                     this.form.reset({
                         externalId: '',
+
+                        manufacturer: '',
+                        model: '',
+                        serialNumber: '',
+                        manufactureDate: null,
+                        purchaseDate: null,
+                        firstUseDate: null,
+
                         name: '',
                         description: '',
+                        reportProfileId: null,
 
                         condition: null,
                         conditionComment: '',
-
-                        purchaseDate: null,
-                        lastService: null,
 
                         pictureId: null,
 
@@ -116,7 +162,11 @@ export class ItemComponent implements OnInit, OnDestroy {
                         tags: [],
 
                         changeComment: '',
-                    } as ItemWithComment);
+
+                        lastService: null,
+                        totalReportState: null,
+                        report: [],
+                    } as ReportItemInWrite);
                 }
                 if (isManager) {
                     this.form.enable();
@@ -126,12 +176,40 @@ export class ItemComponent implements OnInit, OnDestroy {
                 this.submitted = false;
                 this.loading = false;
             });
+        this.reportProfile$ = this.form.controls.reportProfileId.valueChanges.pipe(
+            startWith(this.form.controls.reportProfileId.value),
+            distinctUntilChanged(),
+            switchMap((reportProfileId) =>
+                this.reportService.profilesByIdWithElements$.pipe(map((byId) => byId[reportProfileId]))
+            )
+        );
+
+        this.reportProfile$.pipe(takeUntil(this.destroyed$)).subscribe((reportProfile) => {
+            this.reportForm.clear();
+            if (reportProfile != null) {
+                for (const element of reportProfile.elements) {
+                    const elementForm = new ReportElementFormGroup(element);
+                    this.reportForm.push(elementForm);
+                }
+            }
+        });
 
         this.itemsService.items$.pipe(takeUntil(this.destroyed$)).subscribe(() => {});
     }
 
     ngOnDestroy(): void {
         this.destroyed$.next();
+    }
+
+    initReport() {
+        const profileId = this.form.controls.reportProfileId.value;
+        if (profileId == null) {
+            return;
+        }
+        this.form.controls.lastService.setValue(new Date().toISOString());
+        this.form.controls.totalReportState.setValue(null);
+        this.form.updateValueAndValidity();
+        this.createReport = true;
     }
 
     openConfirmDialog($event: MouseEvent, dialog: TemplateRef<any>) {

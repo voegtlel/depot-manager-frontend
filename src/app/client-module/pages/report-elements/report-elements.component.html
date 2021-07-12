@@ -1,6 +1,6 @@
 <nb-card [nbSpinner]="loading">
     <nb-card-header class="header-flex">
-        <span>Bays</span>
+        <span>Report Elements</span>
         <div class="filter">
             <label class="label" [for]="filterInput">
                 <nb-icon icon="funnel"></nb-icon>
@@ -17,7 +17,7 @@
             />
         </div>
         <nb-actions size="small" class="float-right">
-            <nb-action icon="refresh" (click)="itemsService.reload()"></nb-action>
+            <nb-action icon="refresh" (click)="reportService.reload()"></nb-action>
             <nb-action icon="file-add" (click)="onCreate()"></nb-action>
         </nb-actions>
     </nb-card-header>
@@ -27,35 +27,21 @@
             <tr
                 nbTreeGridRow
                 *nbTreeGridRowDef="let row; columns: allColumns"
-                (dblclick)="onClickBay($event, row.data)"
+                (dblclick)="onClickReportElement($event, row.data)"
                 [clickToToggle]="false"
             ></tr>
 
-            <ng-container nbTreeGridColumnDef="externalId">
+            <ng-container nbTreeGridColumnDef="title">
                 <th
                     nbTreeGridHeaderCell
-                    [nbSortHeader]="getSortDirection('externalId')"
+                    [nbSortHeader]="getSortDirection('title')"
                     *nbTreeGridHeaderCellDef
                     class="sortable"
                 >
-                    External ID
+                    Title
                 </th>
                 <td nbTreeGridCell *nbTreeGridCellDef="let row">
-                    {{ row.data.externalId }}
-                </td>
-            </ng-container>
-
-            <ng-container nbTreeGridColumnDef="name">
-                <th
-                    nbTreeGridHeaderCell
-                    [nbSortHeader]="getSortDirection('name')"
-                    *nbTreeGridHeaderCellDef
-                    class="sortable"
-                >
-                    Name
-                </th>
-                <td nbTreeGridCell *nbTreeGridCellDef="let row">
-                    {{ row.data.name }}
+                    {{ row.data.title }}
                 </td>
             </ng-container>
 
@@ -76,7 +62,7 @@
             <ng-container nbTreeGridColumnDef="action">
                 <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef>Action</th>
                 <td nbTreeGridCell *nbTreeGridCellDef="let row">
-                    <button nbButton ghost (click)="onClickBay($event, row.data)">
+                    <button nbButton ghost (click)="onClickReportElement($event, row.data)">
                         <nb-icon icon="edit"></nb-icon>
                     </button>
                 </td>

@@ -20,6 +20,8 @@ function uuid(a?, b?) {
 })
 export class ItemGroupListComponent implements OnInit, OnDestroy {
     @Input() selectedItemGroup: string;
+    @Input() required = false;
+    @Input() canCreateNew = true;
     @Output() selectItemGroup = new EventEmitter();
 
     private destroyed$ = new Subject<void>();

@@ -12,10 +12,10 @@ export class BayNamePipe implements PipeTransform {
         if (!value) {
             return null;
         }
-        return this.itemsService.bays$.pipe(
-            map(bays => bays.find(bay => bay.id === value)),
-            filter(bay => !!bay),
-            map(bay => bay.name)
+        return this.itemsService.baysById$.pipe(
+            map((baysById) => baysById[value]),
+            filter((bay) => !!bay),
+            map((bay) => bay.name)
         );
     }
 }
