@@ -100,8 +100,8 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
             const itemsById: { [id: string]: ItemWithAvailability } = items.reduce((obj, item) => {
                 obj[item.id] = item;
                 return obj;
-            }, {});
-            const foundItems = this.selected.filter((selectedId) => itemsById.hasOwnProperty(selectedId));
+            }, Object.create(null));
+            const foundItems = this.selected.filter((selectedId) => Object.hasOwnProperty.call(itemsById, selectedId));
             if (foundItems.length !== this.selected.length) {
                 this.toastrService.danger(
                     `${
@@ -135,11 +135,11 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
 
         this.itemGroups$ = this.items$.pipe(
             map((items) => {
-                const groupsById = {};
+                const groupsById = Object.create(null);
                 const groups = [];
                 items.forEach((item) => {
                     if (item.groupId) {
-                        if (groupsById.hasOwnProperty(item.groupId)) {
+                        if (Object.hasOwnProperty.call(groupsById, item.groupId)) {
                             groupsById[item.groupId].push(item);
                         } else {
                             const grp = [item];

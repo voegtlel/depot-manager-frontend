@@ -21,7 +21,7 @@ export class AuthenticationComponent {
         this.name$ = auth.user$.pipe(filter((user) => !!user)).pipe(map((user) => user.given_name));
 
         route.queryParams.subscribe((params) => {
-            if (params.hasOwnProperty('returnUrl')) {
+            if (Object.hasOwnProperty.call(params, 'returnUrl')) {
                 this.returnUrl = decodeURIComponent(params.returnUrl);
             }
         });

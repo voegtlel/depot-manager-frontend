@@ -1,9 +1,9 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ChangeDetectionStrategy, TemplateRef } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, merge, Observable, Subject } from 'rxjs';
 import { Item, ItemCondition } from '../../../common-module/_models';
 import { ApiService, ItemsService } from '../../../common-module/_services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map, shareReplay, takeUntil } from 'rxjs/operators';
+import { map, mergeAll, shareReplay, takeUntil } from 'rxjs/operators';
 import {
     NbSortDirection,
     NbSortRequest,
@@ -74,7 +74,11 @@ export class ItemsComponent implements OnInit, OnDestroy {
         };
     });
 
+    showUnavailable = false;
+
     private destroyed$ = new Subject<void>();
+
+    private allItems$ = new Subject<Item[]>();
 
     constructor(
         public api: ApiService,
@@ -87,7 +91,7 @@ export class ItemsComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        this.items$ = this.itemsService.items$.pipe(
+        this.items$ = merge(this.itemsService.items$, this.allItems$).pipe(
             map((items) =>
                 items.map((item) => {
                     return {
@@ -106,10 +110,10 @@ export class ItemsComponent implements OnInit, OnDestroy {
             map(([showGrouped, items]) => {
                 if (showGrouped) {
                     const itemEntries: ItemEntry[] = [];
-                    const itemsByGroupId: { [id: string]: ItemEntry } = {};
+                    const itemsByGroupId: { [id: string]: ItemEntry } = Object.create(null);
                     items.forEach((item, idx) => {
                         if (item.groupId) {
-                            if (itemsByGroupId.hasOwnProperty(item.groupId)) {
+                            if (Object.hasOwnProperty.call(itemsByGroupId, item.groupId)) {
                                 itemsByGroupId[item.groupId].children.push({ data: { ...item, originalOrder: idx } });
                             } else {
                                 const itemEntry = {
@@ -191,5 +195,24 @@ export class ItemsComponent implements OnInit, OnDestroy {
             hasScroll: false,
             autoFocus: true,
         });
+    }
+
+    reload() {
+        if (this.showUnavailable) {
+            this.onShowUnavailable(this.showUnavailable);
+        } else {
+            this.itemsService.reload();
+        }
+    }
+
+    onShowUnavailable(showUnavailable: boolean) {
+        if (showUnavailable) {
+            this.api
+                .getItems(true)
+                .pipe(takeUntil(this.destroyed$))
+                .subscribe((items) => this.allItems$.next(items));
+        } else {
+            this.itemsService.reload();
+        }
     }
 }

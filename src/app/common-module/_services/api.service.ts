@@ -42,8 +42,14 @@ export class ApiService {
         });
     }
 
-    getItems(): Observable<Item[]> {
-        return this.http.get<Item[]>(`${this.env.apiUrl}/items`);
+    getUsers(): Observable<UserModel[]> {
+        return this.http.get<UserModel[]>(`${this.env.oicdIssuer}/profiles`, {
+            headers: { authorization: `Bearer ${this.oauthService.getAccessToken()}` },
+        });
+    }
+
+    getItems(allItems: boolean = false): Observable<Item[]> {
+        return this.http.get<Item[]>(`${this.env.apiUrl}/items${allItems ? '?all=true' : ''}`);
     }
 
     createItem(item: ReportItemInWrite): Observable<Item> {
@@ -217,7 +223,9 @@ export class ApiService {
     }
 
     createReservation(reservation: Reservation): Observable<Reservation> {
-        return this.http.post<Reservation>(`${this.env.apiUrl}/reservations`, reservation);
+        return this.http.post<Reservation>(`${this.env.apiUrl}/reservations`, reservation, {
+            headers: { authorization: `Bearer ${this.oauthService.getIdToken()}` },
+        });
     }
 
     getReservation(reservationId: string): Observable<Reservation> {

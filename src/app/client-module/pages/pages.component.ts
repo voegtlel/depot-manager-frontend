@@ -66,26 +66,31 @@ export class PagesComponent implements OnDestroy {
         {
             title: 'Reservations',
             link: '/reservations',
+            pathMatch: 'prefix',
             icon: 'calendar',
         },
         {
             title: 'Items',
             link: '/items',
+            pathMatch: 'prefix',
             icon: 'cube',
         },
         {
             title: 'Bays',
             link: '/bays',
+            pathMatch: 'prefix',
             icon: 'briefcase',
         },
         {
             title: 'Report Profiles',
             link: '/report-profiles',
+            pathMatch: 'prefix',
             icon: 'archive-outline',
         },
         {
             title: 'Report Elements',
             link: '/report-elements',
+            pathMatch: 'prefix',
             icon: 'credit-card-outline',
         },
         {

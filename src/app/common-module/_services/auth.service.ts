@@ -14,7 +14,7 @@ export interface User {
     picture: string;
     zoneinfo: string;
     roles: string[];
-    groups: string[];
+    teams: string[];
     email: string;
     phone_number: string;
 }
@@ -81,7 +81,7 @@ export class AuthService {
             // The first four are defined by OIDC.
             // Important: Request offline_access to get a refresh token
             // The api scope is a usecase specific one
-            scope: 'openid profile email offline_access phone groups users',
+            scope: 'openid profile email offline_access phone teams *users',
 
             showDebugInformation: true,
 

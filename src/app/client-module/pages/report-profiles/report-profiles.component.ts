@@ -8,11 +8,15 @@ import { NbSortDirection, NbSortRequest, NbTreeGridDataSource, NbTreeGridDataSou
 
 interface ReportProfileWithOriginalOrderAndSteps extends ReportProfile {
     originalOrder: number;
+
+    isElement: boolean;
 }
 
 interface ReportElementEntry extends ReportElement {
     originalOrder: number;
     name: string;
+
+    isElement: boolean;
 }
 
 interface ReportProfileEntry {
@@ -57,9 +61,10 @@ export class ReportProfilesComponent implements OnInit, OnDestroy {
                     data: {
                         ...profile,
                         originalOrder: index,
+                        isElement: false,
                     },
                     children: profile.elements.map((element, eIndex) => ({
-                        data: { ...element, name: element.title, originalOrder: eIndex },
+                        data: { ...element, name: element.title, originalOrder: eIndex, isElement: true },
                     })),
                 }))
             ),
@@ -106,7 +111,7 @@ export class ReportProfilesComponent implements OnInit, OnDestroy {
     ) {
         $event.stopPropagation();
         $event.preventDefault();
-        if (reportProfile as ReportElementEntry) {
+        if (reportProfile.isElement) {
             this.router.navigate(['..', 'report-elements', reportProfile.id], {
                 relativeTo: this.activatedRoute.parent,
             });

@@ -47,10 +47,10 @@ export class ItemBaysComponent implements OnInit, OnChanges {
                 }, {});
                 const mappedItems = reservation.items.map((itemId) => itemsById[itemId]);
                 const currentBays: BayWithItems[] = [];
-                const currentBaysById: Record<string, BayWithItems> = {};
+                const currentBaysById: Record<string, BayWithItems> = Object.create(null);
                 for (const item of mappedItems) {
                     const bayId = item.bayId || '_';
-                    if (!currentBaysById.hasOwnProperty(bayId)) {
+                    if (!Object.hasOwnProperty.call(currentBaysById, bayId)) {
                         const newBay = { items: [item], ...baysById[bayId] };
                         currentBaysById[bayId] = newBay;
                         currentBays.push(newBay);

@@ -19,9 +19,12 @@
             <nb-checkbox [checked]="showGrouped$.value" (checkedChange)="showGrouped$.next(!showGrouped$.value)">
                 Grouped
             </nb-checkbox>
+            <nb-checkbox [(ngModel)]="showUnavailable" (checkedChange)="onShowUnavailable($event)">
+                Show Unavailable
+            </nb-checkbox>
         </div>
         <nb-actions size="small" class="float-right">
-            <nb-action icon="refresh" (click)="itemsService.reload()"></nb-action>
+            <nb-action icon="refresh" (click)="reload()"></nb-action>
             <nb-action icon="file-add" (click)="onCreate()"></nb-action>
         </nb-actions>
     </nb-card-header>

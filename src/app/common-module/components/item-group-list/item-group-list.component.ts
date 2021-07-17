@@ -30,10 +30,10 @@ export class ItemGroupListComponent implements OnInit, OnDestroy {
     constructor(private itemsService: ItemsService) {
         this.itemGroups$ = this.itemsService.items$.pipe(
             map((items) => {
-                const groupsLookup: Record<string, Item> = {};
+                const groupsLookup: Record<string, Item> = Object.create(null);
                 const groups: Item[] = [];
                 for (const item of items) {
-                    if (item.groupId && !groupsLookup.hasOwnProperty(item.groupId)) {
+                    if (item.groupId && !Object.hasOwnProperty.call(groupsLookup, item.groupId)) {
                         groupsLookup[item.groupId] = item;
                         groups.push(item);
                     }
