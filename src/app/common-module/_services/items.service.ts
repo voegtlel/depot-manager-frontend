@@ -11,6 +11,7 @@ export class ItemsService {
     private readonly reload$ = new BehaviorSubject<void>(undefined);
     public readonly itemsById$: Observable<Record<string, Item>>;
     public readonly items$: Observable<Item[]>;
+    public readonly itemsByGroupId$: Observable<Record<string, Item[]>>;
     public readonly baysById$: Observable<Record<string, Bay>>;
     public readonly bays$: Observable<Bay[]>;
     public readonly itemTags$: Observable<string[]>;
@@ -29,6 +30,22 @@ export class ItemsService {
                 }, Object.create(null) as Record<string, Item>)
             ),
             multicast(() => new ReplaySubject<Record<string, Item>>(1)),
+            refCount()
+        );
+        this.itemsByGroupId$ = this.items$.pipe(
+            map((items) =>
+                items.reduce((o, el) => {
+                    if (el.groupId != null) {
+                        if (Object.hasOwnProperty.call(o, el.groupId)) {
+                            o[el.groupId].push(el);
+                        } else {
+                            o[el.groupId] = [el];
+                        }
+                    }
+                    return o;
+                }, Object.create(null) as Record<string, Item[]>)
+            ),
+            multicast(() => new ReplaySubject<Record<string, Item[]>>(1)),
             refCount()
         );
         this.bays$ = this.reload$.pipe(

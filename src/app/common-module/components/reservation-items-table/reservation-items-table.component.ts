@@ -11,7 +11,6 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 interface ItemWithAvailability extends Item, Filterable {
     available: boolean;
-    index: number;
 }
 
 interface ReservationItemWithPosition {
@@ -146,10 +145,10 @@ export class ReservationItemsTableComponent implements OnChanges, OnDestroy, OnI
             this.items$.pipe(
                 filter((items) => !!items),
                 map((items) =>
-                    items.reduce((o, i) => {
-                        o[i.id] = i;
+                    items.reduce((o, item, index) => {
+                        o[item.id] = { item, index };
                         return o;
-                    }, Object.create(null) as Record<string, ItemWithAvailability>)
+                    }, Object.create(null) as Record<string, { item: ItemWithAvailability; index: number }>)
                 )
             ),
             this.dateRange$.pipe(filter(([x, y]) => !!x && !!y)),
@@ -157,7 +156,6 @@ export class ReservationItemsTableComponent implements OnChanges, OnDestroy, OnI
             this.reservationId$,
             this.selectedIds$$.pipe(switchMap((selectedIds$) => (selectedIds$ == null ? EMPTY : selectedIds$))),
         ]).pipe(
-            tap((reservations) => console.log('raw:', reservations)),
             map(
                 ([
                     reservations,
@@ -206,15 +204,14 @@ export class ReservationItemsTableComponent implements OnChanges, OnDestroy, OnI
                                         }
                                         const itemPosition = this.dateHeight + item.index * this.itemRowHeight - 1;
                                         return {
-                                            item,
+                                            item: item.item,
                                             itemPosition,
                                         };
                                     })
                                     .filter((x) => x != null),
                             };
                         })
-            ),
-            tap((reservations) => console.log('Reservations:', reservations))
+            )
         );
     }
 
@@ -227,9 +224,7 @@ export class ReservationItemsTableComponent implements OnChanges, OnDestroy, OnI
 
     ngOnDestroy(): void {}
 
-    ngOnChanges(changes: SimpleChanges): void {
-        console.log('Changes:', changes);
-    }
+    ngOnChanges(): void {}
 
     isSelected(id: string): Observable<boolean> {
         return this.selectedLookup[id];

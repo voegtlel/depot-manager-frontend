@@ -12,10 +12,10 @@ export class ItemGroupNamePipe implements PipeTransform {
         if (!value) {
             return null;
         }
-        return this.itemsService.itemsById$.pipe(
-            map((itemsById) => itemsById[value]),
-            filter((item) => !!item),
-            map((item) => item.name)
+        return this.itemsService.itemsByGroupId$.pipe(
+            map((itemsByGroupId) => itemsByGroupId[value]),
+            filter((items) => !!items?.length),
+            map((items) => items[0].name)
         );
     }
 }

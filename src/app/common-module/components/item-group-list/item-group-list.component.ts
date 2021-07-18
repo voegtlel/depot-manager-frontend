@@ -28,7 +28,12 @@ export class ItemGroupListComponent implements OnInit, OnDestroy {
     itemGroups$: Observable<Item[]>;
 
     constructor(private itemsService: ItemsService) {
-        this.itemGroups$ = this.itemsService.items$.pipe(
+        this.itemGroups$ = this.itemsService.itemsByGroupId$.pipe(
+            map((itemsByGroupId) => Object.values(itemsByGroupId).map((items) => items[0])),
+            shareReplay(1),
+            takeUntil(this.destroyed$)
+        );
+        /*this.itemGroups$ = this.itemsService.items$.pipe(
             map((items) => {
                 const groupsLookup: Record<string, Item> = Object.create(null);
                 const groups: Item[] = [];
@@ -42,7 +47,7 @@ export class ItemGroupListComponent implements OnInit, OnDestroy {
             }),
             shareReplay(1),
             takeUntil(this.destroyed$)
-        );
+        );*/
     }
 
     newGroup() {

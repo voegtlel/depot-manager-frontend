@@ -10,6 +10,13 @@
     <nb-card-body>
         <form [formGroup]="form" (ngSubmit)="openConfirmDialog($event, submitDialog)">
             <depot-form-element
+                [formControlRef]="form.controls.groupId"
+                [submitted]="submitted"
+                type="itemgroup"
+                title="Item Group"
+                (change)="openCopyFromItemDialog($event, copyFromItemDialog)"
+            ></depot-form-element>
+            <depot-form-element
                 [formControlRef]="form.controls.externalId"
                 [submitted]="submitted"
                 type="text"
@@ -56,12 +63,6 @@
                 [submitted]="submitted"
                 type="text"
                 title="Name"
-            ></depot-form-element>
-            <depot-form-element
-                [formControlRef]="form.controls.groupId"
-                [submitted]="submitted"
-                type="itemgroup"
-                title="Item Group"
             ></depot-form-element>
             <depot-form-element
                 [formControlRef]="form.controls.description"
@@ -205,6 +206,19 @@
         </nb-card-body>
         <nb-card-footer>
             <button nbButton (click)="ref.close()">Close</button>
+        </nb-card-footer>
+    </nb-card>
+</ng-template>
+
+<ng-template #copyFromItemDialog let-data let-ref="dialogRef">
+    <nb-card class="scrollable-container">
+        <nb-card-header>Copy all fields from {{ data.name }}?</nb-card-header>
+        <nb-card-body class="no-padding">
+            <depot-item-details [item]="data"></depot-item-details>
+        </nb-card-body>
+        <nb-card-footer>
+            <button nbButton (click)="copyFrom(data); ref.close()">Yes, copy</button>
+            <button nbButton (click)="ref.close()">No, do not copy</button>
         </nb-card-footer>
     </nb-card>
 </ng-template>

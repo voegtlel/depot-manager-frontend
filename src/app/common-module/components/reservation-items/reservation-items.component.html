@@ -13,6 +13,7 @@
             />
         </div>
         <nb-checkbox *ngIf="activeTab?.tabTitle != 'Table'" [(ngModel)]="group">Grouped</nb-checkbox>
+        <nb-checkbox [(ngModel)]="onlySelected">Only Selected</nb-checkbox>
         <nb-actions size="small" class="float-right">
             <nb-action icon="refresh" (click)="reload$.next(null)"></nb-action>
         </nb-actions>
@@ -21,7 +22,13 @@
         <nb-tabset (changeTab)="activeTab = $event">
             <nb-tab tabTitle="List">
                 <nb-list *ngIf="!group && activeTab?.tabTitle == 'List'">
-                    <nb-list-item *ngFor="let item of items$ | async | itemFilter: filter">
+                    <nb-list-item
+                        *ngFor="
+                            let item of items$
+                                | async
+                                | itemFilter: { filter: filter, onlyShowIds: onlySelected ? selected : null }
+                        "
+                    >
                         <nb-checkbox
                             status="primary"
                             class="stretch"
@@ -35,7 +42,13 @@
                     </nb-list-item>
                 </nb-list>
                 <nb-list *ngIf="group && activeTab?.tabTitle == 'List'">
-                    <nb-list-item *ngFor="let items of itemGroups$ | async | itemGroupFilter: filter">
+                    <nb-list-item
+                        *ngFor="
+                            let items of itemGroups$
+                                | async
+                                | itemGroupFilter: { filter: filter, onlyShowIds: onlySelected ? selected : null }
+                        "
+                    >
                         <nb-checkbox
                             *ngIf="items.length == 1"
                             status="primary"
@@ -93,7 +106,9 @@
                 <depot-reservation-items-table
                     *ngIf="activeTab?.tabTitle == 'Table'"
                     [reservationId]="skipReservationId"
-                    [items]="items$ | async | itemFilter: filter"
+                    [items]="
+                        items$ | async | itemFilter: { filter: filter, onlyShowIds: onlySelected ? selected : null }
+                    "
                     [selectedIds$]="selected$"
                     [selectedLookup]="selectedLookup"
                     [reservationsStart]="reservationsStart"

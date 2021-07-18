@@ -17,7 +17,7 @@ import {
 } from '../../../common-module/_models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NbToastrService, NbDialogService, NbDialogRef } from '@nebular/theme';
-import { distinctUntilChanged, map, shareReplay, startWith, switchMap, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, shareReplay, startWith, switchMap, takeUntil } from 'rxjs/operators';
 import { Choice } from '../../../common-module/components/form-element/form-element.component';
 
 class ReportElementFormGroup extends FormGroup {
@@ -249,6 +249,46 @@ export class ItemComponent implements OnInit, OnDestroy {
                 ...this.form.value,
             },
         });
+    }
+
+    openCopyFromItemDialog(fromGroupId: string, dialog: TemplateRef<any>) {
+        this.itemsService.itemsByGroupId$
+            .pipe(
+                map((itemsByGroupId) => itemsByGroupId[fromGroupId]),
+                filter((x) => !!x)
+            )
+            .subscribe((groupItems) => {
+                this.dialogService.open(dialog, {
+                    hasBackdrop: true,
+                    closeOnBackdropClick: false,
+                    hasScroll: false,
+                    autoFocus: true,
+                    context: groupItems[0],
+                });
+            });
+    }
+
+    copyFrom(sourceItem: Item) {
+        this.form.patchValue({
+            externalId: sourceItem.externalId ? sourceItem.externalId + ' copy' : '',
+
+            manufacturer: sourceItem.manufacturer,
+            model: sourceItem.model,
+            manufactureDate: sourceItem.manufactureDate,
+            purchaseDate: sourceItem.purchaseDate,
+            firstUseDate: sourceItem.firstUseDate,
+
+            name: sourceItem.name,
+            description: sourceItem.description,
+            reportProfileId: sourceItem.reportProfileId,
+
+            pictureId: sourceItem.pictureId,
+
+            bayId: sourceItem.bayId,
+
+            tags: sourceItem.tags,
+        });
+        this.form.updateValueAndValidity();
     }
 
     onSubmit(dialogRef: NbDialogRef<any>) {

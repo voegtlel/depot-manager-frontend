@@ -48,7 +48,6 @@ export class ItemDetailsComponent implements OnInit, OnDestroy, OnChanges {
                 }
                 return EMPTY;
             }),
-            tap((history) => console.log('history:', history)),
             map((history) =>
                 history.map((entry) => ({
                     changesArray: Object.entries(entry.changes)
@@ -75,15 +74,12 @@ export class ItemDetailsComponent implements OnInit, OnDestroy, OnChanges {
                 }
                 return EMPTY;
             }),
-            tap((reservations) => console.log('reservations:', reservations)),
             shareReplay(1),
             takeUntil(this.destroyed$)
         );
     }
 
-    ngOnInit() {
-        this.item$.subscribe((item) => console.log('item:', item));
-    }
+    ngOnInit() {}
 
     ngOnDestroy(): void {
         this.destroyed$.next();

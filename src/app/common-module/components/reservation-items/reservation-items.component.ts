@@ -11,7 +11,6 @@ import { AsyncInput } from '@ng-reactive/async-input';
 
 interface ItemWithAvailability extends Item, Filterable {
     available: boolean;
-    index: number;
 }
 
 @Component({
@@ -46,6 +45,7 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
     @AsyncInput() skipReservationId$ = new BehaviorSubject<string>(null);
 
     group = true;
+    onlySelected = false;
     filter: string;
     activeTab: any = { tabTitle: 'List' };
 
@@ -81,11 +81,10 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
         this.reload$.pipe(skip(1), takeUntil(this.destroyed$)).subscribe(() => this.itemsService.reload());
         this.items$ = combineLatest([filteredItemIds$, this.itemsService.items$]).pipe(
             map(([filteredItemIds, items]) => {
-                return items.map((item, index) => {
+                return items.map((item) => {
                     return {
                         ...item,
                         available: !filteredItemIds[item.id],
-                        index,
                         filterLookup: (
                             item.name +
                             '\0' +
