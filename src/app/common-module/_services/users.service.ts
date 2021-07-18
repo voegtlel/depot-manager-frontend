@@ -50,6 +50,10 @@ export class UsersService {
         return this._allUsers$;
     }
 
+    getTeam(teamId: string): Observable<string> {
+        return of(teamId);
+    }
+
     reload() {
         this._reload$.next();
         this._usersById = Object.create(null);

@@ -1,6 +1,6 @@
 import { Component, forwardRef, Input, OnDestroy, OnInit, TemplateRef, OnChanges } from '@angular/core';
 import { ApiService, ItemsService } from '../../_services';
-import { BehaviorSubject, Observable, of, ReplaySubject, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Item } from '../../_models';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
@@ -11,6 +11,7 @@ import { AsyncInput } from '@ng-reactive/async-input';
 
 interface ItemWithAvailability extends Item, Filterable {
     available: boolean;
+    index: number;
 }
 
 @Component({
@@ -27,8 +28,10 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
     items$: Observable<ItemWithAvailability[]>;
     itemGroups$: Observable<ItemWithAvailability[][]>;
 
-    private selected: string[] = [];
-    private selectedLookup: { [id: string]: boolean } = {};
+    selected: string[] = [];
+    selectedLookup: Record<string, boolean> = Object.create(null);
+    selected$ = new BehaviorSubject<string[]>(this.selected);
+    selectedLookup$ = new BehaviorSubject<Record<string, boolean>>(this.selectedLookup);
 
     disabled = false;
 
@@ -44,6 +47,7 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
 
     group = true;
     filter: string;
+    activeTab: any = { tabTitle: 'List' };
 
     propagateChange: (val: any) => void = () => {};
 
@@ -77,10 +81,11 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
         this.reload$.pipe(skip(1), takeUntil(this.destroyed$)).subscribe(() => this.itemsService.reload());
         this.items$ = combineLatest([filteredItemIds$, this.itemsService.items$]).pipe(
             map(([filteredItemIds, items]) => {
-                return items.map((item) => {
+                return items.map((item, index) => {
                     return {
                         ...item,
                         available: !filteredItemIds[item.id],
+                        index,
                         filterLookup: (
                             item.name +
                             '\0' +
@@ -130,6 +135,8 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
                     return obj;
                 }, {});
                 this.propagateChange(this.selected);
+                this.selected$.next(this.selected);
+                this.selectedLookup$.next(this.selectedLookup);
             }
         });
 
@@ -171,6 +178,8 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
         this.selectedLookup[id] = true;
         console.log('select', id);
         this.propagateChange(this.selected);
+        this.selected$.next(this.selected);
+        this.selectedLookup$.next(this.selectedLookup);
     }
 
     deselect(id: string) {
@@ -184,6 +193,8 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
             delete this.selectedLookup[id];
         }
         this.propagateChange(this.selected);
+        this.selected$.next(this.selected);
+        this.selectedLookup$.next(this.selectedLookup);
     }
 
     setSelected(id: string, selected: boolean) {
@@ -212,10 +223,14 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
                 obj[item] = true;
                 return obj;
             }, {});
+            this.selected$.next(this.selected);
+            this.selectedLookup$.next(this.selectedLookup);
             console.log('selected', this.selected);
         } else {
             this.selected = [];
             this.selectedLookup = {};
+            this.selected$.next(this.selected);
+            this.selectedLookup$.next(this.selectedLookup);
         }
     }
 
@@ -237,9 +252,9 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
         return this.api.getPictureUrl(item.pictureId);
     }
 
-    openDialog($event: MouseEvent, imageDialog: TemplateRef<any>, item: ItemWithAvailability) {
-        $event.preventDefault();
-        $event.stopPropagation();
+    openDialog($event: MouseEvent | null, imageDialog: TemplateRef<any>, item: ItemWithAvailability) {
+        $event?.preventDefault();
+        $event?.stopPropagation();
         this.imageLoading = true;
         this.dialogService.open(imageDialog, {
             hasBackdrop: true,

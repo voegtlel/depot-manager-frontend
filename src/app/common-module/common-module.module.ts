@@ -72,12 +72,19 @@ import { OAuthModule } from 'angular-oauth2-oidc';
 import { getApiUrl } from './_services';
 import { ReportElementListComponent } from './components/report-element-list/report-element-list.component';
 import { ReportProfileListComponent } from './components/report-profile-list/report-profile-list.component';
+import { ReservationItemsTableComponent } from './components/reservation-items-table/reservation-items-table.component';
+import { ReservationDetailsComponent } from './components/reservation-details/reservation-details.component';
+import { UserNamePipe } from './_pipes/user-name.pipe';
+import { ReservationListItemComponent } from './components/reservation-list-item/reservation-list-item.component';
 
 @NgModule({
     entryComponents: [CalendarRangeDayCellComponent, CalendarRangeComponent],
     declarations: [
         FormElementComponent,
         ReservationItemsComponent,
+        ReservationItemsTableComponent,
+        ReservationDetailsComponent,
+        ReservationListItemComponent,
         ItemBaysComponent,
 
         CalendarRangeDayCellComponent,
@@ -98,6 +105,7 @@ import { ReportProfileListComponent } from './components/report-profile-list/rep
         ReportProfileListComponent,
         ReportElementPipe,
         ReportProfilePipe,
+        UserNamePipe,
     ],
     imports: [
         CommonModule,

@@ -1,0 +1,143 @@
+<svg:svg class="content" [attr.width]="totalWidth$ | async" [attr.height]="totalHeight$ | async">
+    <ng-container *ngFor="let reservation of reservations$ | async">
+        <svg:rect
+            *ngFor="let item of reservation.itemsWithPosition"
+            [attr.x]="reservation.dateStartPosition"
+            [attr.width]="reservation.dateWidth"
+            [attr.y]="item.itemPosition"
+            [attr.height]="itemRowHeight"
+            [attr.fill]="reservation.color"
+            [class.clickable]="!reservation.isCurrent"
+            (click)="reservation.isCurrent ? null : showReservationDetails.emit(reservation)"
+        ></svg:rect>
+    </ng-container>
+
+    <svg:line
+        *ngFor="let date of dates$ | async; let idx = index"
+        class="line"
+        [attr.x1]="(idx + 1) * dateWidth - 1 + nameWidth"
+        [attr.y1]="0"
+        [attr.x2]="(idx + 1) * dateWidth - 1 + nameWidth"
+        [attr.y2]="totalHeight$ | async"
+    />
+
+    <svg:line
+        *ngFor="let item of items; let idx = index"
+        class="line"
+        [attr.x1]="0"
+        [attr.y1]="(idx + 1) * itemRowHeight - 1 + dateHeight"
+        [attr.x2]="totalWidth$ | async"
+        [attr.y2]="(idx + 1) * itemRowHeight - 1 + dateHeight"
+    />
+</svg:svg>
+
+<div class="top" [style.width.px]="totalWidth$ | async">
+    <svg:svg class="left-top" [attr.width]="nameWidth" [attr.height]="dateHeight">
+        <svg:line
+            class="line"
+            [attr.x1]="0"
+            [attr.y1]="dateHeight - 1"
+            [attr.x2]="nameWidth"
+            [attr.y2]="dateHeight - 1"
+        />
+        <svg:line
+            class="line"
+            [attr.x1]="nameWidth - 1"
+            [attr.y1]="0"
+            [attr.x2]="nameWidth - 1"
+            [attr.y2]="dateHeight"
+        />
+    </svg:svg>
+
+    <svg:svg class="top-content" [attr.width]="totalWidth$ | async" [attr.height]="dateHeight">
+        <svg:clipPath id="dateClip">
+            <rect x="0" y="0" [attr.width]="totalWidth$ | async" [attr.height]="dateHeight" />
+        </svg:clipPath>
+
+        <svg:line
+            class="line"
+            [attr.x1]="0"
+            [attr.y1]="dateHeight - 1"
+            [attr.x2]="totalWidth$ | async"
+            [attr.y2]="dateHeight - 1"
+        />
+
+        <svg:g [attr.transform]="'translate(' + nameWidth + ',' + 0 + ')'">
+            <svg:line
+                *ngFor="let date of dates$ | async; let idx = index"
+                class="line"
+                [attr.x1]="(idx + 1) * dateWidth - 1"
+                [attr.y1]="0"
+                [attr.x2]="(idx + 1) * dateWidth - 1"
+                [attr.y2]="dateHeight"
+            />
+            <svg:text
+                *ngFor="let date of dates$ | async; let idx = index"
+                [attr.x]="idx * dateWidth + 7"
+                [attr.y]="5"
+                clip-path="dateClip"
+                [attr.transform]="'rotate(90, ' + (idx * dateWidth + 7) + ', 5)'"
+                [class.selected]="date.isSelected"
+            >
+                {{ date.date.toLocaleDateString() }}
+            </svg:text>
+        </svg:g>
+    </svg:svg>
+</div>
+<svg:svg class="left" [attr.width]="nameWidth" [attr.height]="(totalHeight$ | async) - dateHeight">
+    <svg:clipPath id="nameClip">
+        <rect x="0" y="0" [attr.width]="nameWidth" [attr.height]="(totalHeight$ | async) - dateHeight" />
+    </svg:clipPath>
+
+    <svg:g>
+        <svg:g
+            *ngFor="let item of items; let idx = index"
+            (click)="
+                item.available ? (isSelected(item.id) ? deselectItem.emit(item.id) : selectItem.emit(item.id)) : null
+            "
+            [class.clickable]="item.available"
+            [attr.transform]="'translate(0, ' + idx * itemRowHeight + ')'"
+        >
+            <svg:rect x="0" y="0" [attr.width]="nameWidth" [attr.height]="itemRowHeight - 1" fill="white"></svg:rect>
+            <svg:text x="5" [attr.y]="itemRowHeight - 7" clip-path="nameClip" [class.selected]="isSelected(item.id)">
+                {{ item.name }}
+            </svg:text>
+        </svg:g>
+    </svg:g>
+
+    <svg:g>
+        <svg:g
+            *ngFor="let item of items; let idx = index"
+            (click)="showDetails.emit(item)"
+            [attr.transform]="'translate(' + (nameWidth - 1 - itemRowHeight) + ', ' + idx * itemRowHeight + ')'"
+            class="clickable"
+        >
+            <svg:svg
+                [attr.width]="itemRowHeight"
+                [attr.height]="itemRowHeight"
+                viewBox="0 0 24 24"
+                [innerHtml]="detailsIconHtml"
+                [class]="detailsIconClasses"
+            ></svg:svg>
+        </svg:g>
+    </svg:g>
+
+    <svg:g>
+        <svg:line
+            class="line"
+            [attr.x1]="nameWidth - 1"
+            [attr.y1]="0"
+            [attr.x2]="nameWidth - 1"
+            [attr.y2]="(totalHeight$ | async) - dateHeight"
+        />
+
+        <svg:line
+            *ngFor="let item of items; let idx = index"
+            class="line"
+            [attr.x1]="0"
+            [attr.y1]="(idx + 1) * itemRowHeight - 1"
+            [attr.x2]="nameWidth"
+            [attr.y2]="(idx + 1) * itemRowHeight - 1"
+        />
+    </svg:g>
+</svg:svg>
