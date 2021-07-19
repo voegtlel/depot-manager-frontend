@@ -1,3 +1,4 @@
+export * from './item-name.pipe';
 export * from './item-filter.pipe';
 export * from './item-group-filter.pipe';
 export * from './item-group-name.pipe';

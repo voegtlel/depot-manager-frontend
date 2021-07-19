@@ -16,6 +16,7 @@ import {
     ReportElementInWrite,
     ReportProfile,
     ReportProfileInWrite,
+    ReservationReturnInWrite,
 } from '../_models';
 import { EnvService } from './env.service';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -37,15 +38,17 @@ export class ApiService {
     }
 
     getUser(userId: string): Observable<UserModel> {
-        return this.http.get<UserModel>(`${this.env.oicdIssuer}/profiles/${userId}`, {
-            headers: { authorization: `Bearer ${this.oauthService.getAccessToken()}` },
-        });
+        return this.http.get<UserModel>(`${this.env.apiUrl}/users/${userId}`);
+        // return this.http.get<UserModel>(`${this.env.oicdIssuer}/profiles/${userId}`, {
+        //     headers: { authorization: `Bearer ${this.oauthService.getAccessToken()}` },
+        // });
     }
 
     getUsers(): Observable<UserModel[]> {
-        return this.http.get<UserModel[]>(`${this.env.oicdIssuer}/profiles`, {
-            headers: { authorization: `Bearer ${this.oauthService.getAccessToken()}` },
-        });
+        return this.http.get<UserModel[]>(`${this.env.apiUrl}/users`);
+        // return this.http.get<UserModel[]>(`${this.env.oicdIssuer}/profiles`, {
+        //     headers: { authorization: `Bearer ${this.oauthService.getAccessToken()}` },
+        // });
     }
 
     getItems(allItems: boolean = false): Observable<Item[]> {
@@ -169,6 +172,7 @@ export class ApiService {
     }
 
     getReservations({
+        includeReturned,
         start,
         end,
         offset,
@@ -177,6 +181,7 @@ export class ApiService {
         limitAfterEnd,
         itemId,
     }: {
+        includeReturned?: boolean;
         start?: string;
         end?: string;
         offset?: number;
@@ -191,6 +196,9 @@ export class ApiService {
         }
         if (end) {
             query.push('end=' + end);
+        }
+        if (includeReturned) {
+            query.push('include_returned=true');
         }
         if (offset) {
             query.push('offset=' + offset);
@@ -223,9 +231,7 @@ export class ApiService {
     }
 
     createReservation(reservation: Reservation): Observable<Reservation> {
-        return this.http.post<Reservation>(`${this.env.apiUrl}/reservations`, reservation, {
-            headers: { authorization: `Bearer ${this.oauthService.getIdToken()}` },
-        });
+        return this.http.post<Reservation>(`${this.env.apiUrl}/reservations`, reservation);
     }
 
     getReservation(reservationId: string): Observable<Reservation> {
@@ -238,6 +244,10 @@ export class ApiService {
 
     deleteReservation(reservationId: string): Observable<Reservation> {
         return this.http.delete<Reservation>(`${this.env.apiUrl}/reservations/${reservationId}`);
+    }
+
+    returnReservation(reservationId: string, reservationReturn: ReservationReturnInWrite): Observable<void> {
+        return this.http.put<void>(`${this.env.apiUrl}/reservations/${reservationId}/return`, reservationReturn);
     }
 
     getPictures(): Observable<Picture[]> {

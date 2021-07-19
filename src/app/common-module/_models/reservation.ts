@@ -17,4 +17,16 @@ export interface Reservation {
     contact: string;
 
     items?: string[];
+
+    returned: boolean;
+}
+
+export interface ReservationReturnItemState {
+    itemId: string;
+    problem: boolean;
+    comment?: string;
+}
+
+export interface ReservationReturnInWrite {
+    items: ReservationReturnItemState[];
 }

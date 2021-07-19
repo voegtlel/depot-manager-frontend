@@ -127,6 +127,7 @@ export class ReservationItemsTableComponent implements OnChanges, OnDestroy, OnI
             switchMap(([start, end]) =>
                 combineLatest([
                     api.getReservations({
+                        includeReturned: true,
                         start: start.toISOString().substr(0, 10),
                         end: end.toISOString().substr(0, 10),
                     }),
@@ -176,6 +177,7 @@ export class ReservationItemsTableComponent implements OnChanges, OnDestroy, OnI
                             teamId: null,
                             type: null,
                             userId: null,
+                            returned: false,
                         })
                         .map((reservation, resIdx) => {
                             const start =

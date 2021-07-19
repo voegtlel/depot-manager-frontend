@@ -62,6 +62,7 @@ import {
     ItemGroupNamePipe,
     BayNamePipe,
     ReportProfilePipe,
+    ItemNamePipe,
 } from './_pipes';
 import { PictureListComponent } from './components/picture-list/picture-list.component';
 import { ItemDetailsComponent } from './components/item-details/item-details.component';
@@ -106,6 +107,7 @@ import { ReservationListItemComponent } from './components/reservation-list-item
         ReportElementPipe,
         ReportProfilePipe,
         UserNamePipe,
+        ItemNamePipe,
     ],
     imports: [
         CommonModule,
@@ -180,6 +182,7 @@ import { ReservationListItemComponent } from './components/reservation-list-item
         ItemGroupNamePipe,
         ReportElementPipe,
         ReportProfilePipe,
+        ItemNamePipe,
     ],
 })
 export class CommonModuleModule {}

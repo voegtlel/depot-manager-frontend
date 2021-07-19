@@ -65,6 +65,7 @@ export class ItemDetailsComponent implements OnInit, OnDestroy, OnChanges {
             switchMap(([item, reservationStart, reservationEnd]) => {
                 if (item && reservationStart && reservationEnd) {
                     return this.api.getReservations({
+                        includeReturned: true,
                         start: reservationStart,
                         end: reservationEnd,
                         limitBeforeStart: 1,

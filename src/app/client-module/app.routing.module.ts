@@ -1,22 +1,21 @@
+import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-
 import { AuthGuard } from './auth.guard';
-
+import { AuthenticationComponent } from './pages/authentication/authentication.component';
+import { BayComponent } from './pages/bay/bay.component';
+import { BaysComponent } from './pages/bays/bays.component';
+import { ItemComponent } from './pages/item/item.component';
+import { ItemsComponent } from './pages/items/items.component';
+import { LogoutComponent } from './pages/logout/logout.component';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { PagesComponent } from './pages/pages.component';
+import { ReportElementComponent } from './pages/report-element/report-element.component';
+import { ReportElementsComponent } from './pages/report-elements/report-elements.component';
+import { ReportProfileComponent } from './pages/report-profile/report-profile.component';
+import { ReportProfilesComponent } from './pages/report-profiles/report-profiles.component';
+import { ReservationReturnComponent } from './pages/reservation-return/reservation-return.component';
 import { ReservationComponent } from './pages/reservation/reservation.component';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
-import { NotFoundComponent } from './pages/not-found/not-found.component';
-import { ItemsComponent } from './pages/items/items.component';
-import { ItemComponent } from './pages/item/item.component';
-import { BaysComponent } from './pages/bays/bays.component';
-import { BayComponent } from './pages/bay/bay.component';
-import { AuthenticationComponent } from './pages/authentication/authentication.component';
-import { LogoutComponent } from './pages/logout/logout.component';
-import { NgModule } from '@angular/core';
-import { ReportProfilesComponent } from './pages/report-profiles/report-profiles.component';
-import { ReportProfileComponent } from './pages/report-profile/report-profile.component';
-import { ReportElementsComponent } from './pages/report-elements/report-elements.component';
-import { ReportElementComponent } from './pages/report-element/report-element.component';
 
 const routes: Routes = [
     {
@@ -38,6 +37,10 @@ const routes: Routes = [
                     {
                         path: ':reservationId',
                         component: ReservationComponent,
+                    },
+                    {
+                        path: ':reservationId/return',
+                        component: ReservationReturnComponent,
                     },
                 ],
             },
