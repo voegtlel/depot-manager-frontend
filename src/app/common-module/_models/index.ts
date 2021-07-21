@@ -6,3 +6,4 @@ export * from './report-element';
 export * from './report-profile';
 export * from './bay';
 export * from './picture';
+export * from './user';

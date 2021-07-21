@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { switchMap, tap, shareReplay } from 'rxjs/operators';
 import { Observable, BehaviorSubject, of, throwError } from 'rxjs';
-import { UserModel } from '../_models';
+import { User } from '../_models';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -10,15 +10,17 @@ import { AuthService } from './auth.service';
 })
 export class UsersService {
     private _reload$ = new BehaviorSubject<void>(undefined);
-    private _usersById: Record<string, UserModel> = Object.create(null);
-    private _usersFetch: Record<string, Observable<UserModel>> = Object.create(null);
-    private _allUsers$?: Observable<UserModel[]>;
+    private _usersById: Record<string, User> = Object.create(null);
+    private _usersFetch: Record<string, Observable<User>> = Object.create(null);
+    private _allUsers$?: Observable<User[]>;
 
     constructor(private api: ApiService, authService: AuthService) {
-        authService.user$.subscribe((user) => (this._usersById[user.sub] = user));
+        authService.user$.subscribe(
+            (user) => (this._usersById[user.sub] = { ...user, phoneNumber: user.phone_number })
+        );
     }
 
-    getUser(userId: string): Observable<UserModel> {
+    getUser(userId: string): Observable<User> {
         if (Object.hasOwnProperty.call(this._usersById, userId)) {
             if (this._usersById[userId] == null) {
                 return throwError({ detail: 'Unknown User' });
@@ -39,7 +41,7 @@ export class UsersService {
         }
     }
 
-    allUsers(): Observable<UserModel[]> {
+    allUsers(): Observable<User[]> {
         if (this._allUsers$ == null) {
             this._allUsers$ = this._reload$.pipe(
                 switchMap(() => this.api.getUsers()),

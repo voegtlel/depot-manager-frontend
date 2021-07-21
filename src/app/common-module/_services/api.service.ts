@@ -10,13 +10,13 @@ import {
     Picture,
     ItemState,
     Bay,
-    UserModel,
     ReportItemInWrite,
     ReportElement,
     ReportElementInWrite,
     ReportProfile,
     ReportProfileInWrite,
     ReservationReturnInWrite,
+    User,
 } from '../_models';
 import { EnvService } from './env.service';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -37,15 +37,15 @@ export class ApiService {
         );
     }
 
-    getUser(userId: string): Observable<UserModel> {
-        return this.http.get<UserModel>(`${this.env.apiUrl}/users/${userId}`);
+    getUser(userId: string): Observable<User> {
+        return this.http.get<User>(`${this.env.apiUrl}/users/${userId}`);
         // return this.http.get<UserModel>(`${this.env.oicdIssuer}/profiles/${userId}`, {
         //     headers: { authorization: `Bearer ${this.oauthService.getAccessToken()}` },
         // });
     }
 
-    getUsers(): Observable<UserModel[]> {
-        return this.http.get<UserModel[]>(`${this.env.apiUrl}/users`);
+    getUsers(): Observable<User[]> {
+        return this.http.get<User[]>(`${this.env.apiUrl}/users`);
         // return this.http.get<UserModel[]>(`${this.env.oicdIssuer}/profiles`, {
         //     headers: { authorization: `Bearer ${this.oauthService.getAccessToken()}` },
         // });
