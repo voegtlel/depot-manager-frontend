@@ -1,8 +1,10 @@
 <nb-card [nbSpinner]="loading">
     <nb-card-header>
         Confirm return of reservation {{ (reservation$ | async)?.name }}
-        <nb-action icon="refresh" (click)="reload$.next(undefined)"></nb-action>
-        <nb-action icon="save" (click)="onSubmit()"></nb-action>
+        <nb-actions size="small" class="float-right">
+            <nb-action icon="refresh" (click)="reload$.next(undefined)"></nb-action>
+            <nb-action icon="save" (click)="onSubmit()"></nb-action>
+        </nb-actions>
     </nb-card-header>
     <nb-card-body>
         <form [formGroup]="form" (ngSubmit)="onSubmit()">

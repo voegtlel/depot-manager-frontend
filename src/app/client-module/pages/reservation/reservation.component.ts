@@ -44,6 +44,8 @@ export class ReservationComponent implements OnInit, OnDestroy {
     ];
     allUsers$: Observable<{ value: string; title: string }[] | undefined>;
 
+    canReturn$: Observable<boolean>;
+
     constructor(
         public api: ApiService,
         public authService: AuthService,
@@ -134,6 +136,11 @@ export class ReservationComponent implements OnInit, OnDestroy {
                 this.submitted = false;
                 this.loading = false;
             });
+        this.canReturn$ = this.form.controls.start.valueChanges.pipe(
+            startWith(this.form.controls.start.value),
+            map((value) => value && value >= new Date().toISOString().substring(0, 10)),
+            takeUntil(this.destroyed$)
+        );
 
         this.userIdRaw$
             .pipe(

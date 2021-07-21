@@ -20,9 +20,9 @@
                 type="textarea"
                 title="Description"
             ></depot-form-element>
-            <div class="element-list">
+            <div class="element-list" cdkDropList (cdkDropListDropped)="onDropElement($event)">
                 <ng-container *ngFor="let elementForm of elementsForm.controls">
-                    <nb-card *ngIf="elementForm.value | reportElement | async; let reportElement">
+                    <nb-card class="drag" *ngIf="elementForm.value | reportElement | async; let reportElement" cdkDrag>
                         <nb-card-header>
                             {{ reportElement.title }}
                             <nb-actions *ngIf="!isNew" size="small" class="float-right">
@@ -30,6 +30,7 @@
                                     icon="swap-outline"
                                     (click)="openReportElementDialog($event, elementForm)"
                                 ></nb-action>
+                                <nb-action icon="trash-2-outline" (click)="removeElement(elementForm)"></nb-action>
                             </nb-actions>
                         </nb-card-header>
                         <nb-card-body>

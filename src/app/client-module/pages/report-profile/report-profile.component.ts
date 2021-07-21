@@ -6,6 +6,7 @@ import { ReportProfile } from '../../../common-module/_models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
     selector: 'depot-report-profile',
@@ -144,5 +145,14 @@ export class ReportProfileComponent implements OnInit, OnDestroy {
             autoFocus: true,
             context,
         });
+    }
+
+    removeElement(elementForm: FormGroup) {
+        this.elementsForm.controls.splice(this.elementsForm.controls.indexOf(elementForm), 1);
+    }
+
+    onDropElement($event: CdkDragDrop<string[]>) {
+        console.log('Drop:', $event);
+        moveItemInArray(this.elementsForm.controls, $event.previousIndex, $event.currentIndex);
     }
 }

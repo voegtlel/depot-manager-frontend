@@ -2,6 +2,7 @@
     <nb-card-header>
         Reservation
         <nb-actions *ngIf="!isNew" size="small" class="float-right">
+            <nb-action icon="undo-outline" *ngIf="canReturn$ | async" link="return" status="success"></nb-action>
             <nb-action icon="refresh" (click)="reload$.next(undefined)"></nb-action>
             <nb-action icon="save" (click)="onSubmit()"></nb-action>
         </nb-actions>

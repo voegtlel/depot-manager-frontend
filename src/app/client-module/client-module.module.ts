@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+import { DragDropModule } from '@angular/cdk/drag-drop';
+
 import { PagesComponent } from './pages/pages.component';
 import { ReservationComponent } from './pages/reservation/reservation.component';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
@@ -127,6 +129,7 @@ import { ReservationReturnComponent } from './pages/reservation-return/reservati
         NbIconModule,
         NbTreeGridModule,
         ReactiveFormsModule,
+        DragDropModule,
         FormsModule,
         HttpClientModule,
     ],

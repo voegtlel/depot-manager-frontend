@@ -87,6 +87,7 @@
             [selectingStart]="true"
             [max]="dateValueEnd.dateValue"
             [otherDate]="dateValueEnd.dateValue"
+            (dateChange)="daterangepickerEnd.show()"
             #daterangepickerStart
         ></depot-date-range-picker>
         <depot-date-range-picker
