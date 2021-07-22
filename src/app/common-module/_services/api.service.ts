@@ -255,10 +255,9 @@ export class ApiService {
     }
 
     createPicture(data: Blob): Observable<string> {
-        const originalFilename = data instanceof File ? data.name : null;
-        return this.http.post<string>(`${this.env.apiUrl}/pictures`, data, {
-            headers: { 'Content-Type': data.type, 'X-Original-Filename': originalFilename },
-        });
+        const formData = new FormData();
+        formData.append('file', data);
+        return this.http.post<string>(`${this.env.apiUrl}/pictures`, formData);
     }
 
     getPictureUrl(pictureId: string): string {

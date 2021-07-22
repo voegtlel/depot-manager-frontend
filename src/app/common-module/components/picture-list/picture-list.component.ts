@@ -36,8 +36,8 @@ export class PictureListComponent implements OnInit {
             if (droppedFile.fileEntry.isFile) {
                 const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
                 fileEntry.file((file: File) => {
-                    this.api.createPicture(file).subscribe(pictureId => {
-                        console.log('Created picture', pictureId);
+                    this.api.createPicture(file).subscribe((pictureId) => {
+                        console.log('Saved picture', pictureId);
                         this.reload$.next();
                     });
                 });
