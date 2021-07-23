@@ -36,6 +36,28 @@
             #formControlEl
         ></textarea>
     </div>
+    <div *ngSwitchCase="'markdown'" class="form-control-group">
+        <nb-tabset>
+            <nb-tab tabTitle="Edit">
+                <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
+                <textarea
+                    nbInput
+                    [placeholder]="title"
+                    fullWidth
+                    fieldSize="medium"
+                    style="resize: vertical; min-height: 100px; height: 100px"
+                    [status]="formControlRef.dirty ? (formControlRef.invalid ? 'danger' : 'success') : 'basic'"
+                    [attr.aria-invalid]="formControlRef.invalid && formControlRef.touched ? true : null"
+                    [formControl]="formControlRef"
+                    (change)="change.emit($event)"
+                    #formControlEl
+                ></textarea>
+            </nb-tab>
+            <nb-tab tabTitle="Preview">
+                <markdown [data]="formControlRef.value"></markdown>
+            </nb-tab>
+        </nb-tabset>
+    </div>
     <div *ngSwitchCase="'date'" class="form-control-group">
         <label class="label" [for]="formControlEl" *ngIf="title">{{ title }}</label>
         <input

@@ -7,7 +7,7 @@
     >
         <div>
             <h5>{{ reportElement.title }}</h5>
-            <p>{{ reportElement.description }}</p>
+            <markdown [data]="reportElement.description"></markdown>
         </div>
     </nb-list-item>
 </nb-list>

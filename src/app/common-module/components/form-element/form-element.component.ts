@@ -33,6 +33,7 @@ export class FormElementComponent {
     @Input() type:
         | 'text'
         | 'textarea'
+        | 'markdown'
         | 'checkbox'
         | 'date'
         | 'daterange'

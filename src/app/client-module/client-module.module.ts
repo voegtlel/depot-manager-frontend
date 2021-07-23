@@ -68,6 +68,7 @@ import { ReportElementComponent } from './pages/report-element/report-element.co
 import { ReportProfileComponent } from './pages/report-profile/report-profile.component';
 import { ReportProfilesComponent } from './pages/report-profiles/report-profiles.component';
 import { ReservationReturnComponent } from './pages/reservation-return/reservation-return.component';
+import { MarkdownModule } from 'ngx-markdown';
 
 @NgModule({
     declarations: [
@@ -132,6 +133,7 @@ import { ReservationReturnComponent } from './pages/reservation-return/reservati
         DragDropModule,
         FormsModule,
         HttpClientModule,
+        MarkdownModule.forRoot(),
     ],
     exports: [PagesComponent],
     providers: [

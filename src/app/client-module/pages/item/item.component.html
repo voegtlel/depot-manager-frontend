@@ -85,6 +85,7 @@
                 title="Condition"
             ></depot-form-element>
             <depot-form-element
+                *ngIf="!createReport"
                 [formControlRef]="form.controls.conditionComment"
                 [submitted]="submitted"
                 type="text"
@@ -132,7 +133,7 @@
                             {{ reportElementForm.reportElement.title }}
                         </nb-card-header>
                         <nb-card-body>
-                            <div class="description">{{ reportElementForm.reportElement.description }}</div>
+                            <markdown [data]="reportElementForm.reportElement.description"></markdown>
                             <depot-form-element
                                 [formControlRef]="reportElementForm.controls.state"
                                 [submitted]="submitted"
@@ -159,6 +160,12 @@
                         type="radio"
                         [choices]="conditionChoices"
                         title="Condition"
+                    ></depot-form-element>
+                    <depot-form-element
+                        [formControlRef]="form.controls.conditionComment"
+                        [submitted]="submitted"
+                        type="text"
+                        title="Condition Comment"
                     ></depot-form-element>
                 </ng-container>
             </div>

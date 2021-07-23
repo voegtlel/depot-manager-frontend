@@ -77,6 +77,7 @@ import { ReservationItemsTableComponent } from './components/reservation-items-t
 import { ReservationDetailsComponent } from './components/reservation-details/reservation-details.component';
 import { UserNamePipe } from './_pipes/user-name.pipe';
 import { ReservationListItemComponent } from './components/reservation-list-item/reservation-list-item.component';
+import { MarkdownModule } from 'ngx-markdown';
 
 @NgModule({
     entryComponents: [CalendarRangeDayCellComponent, CalendarRangeComponent],
@@ -152,6 +153,7 @@ import { ReservationListItemComponent } from './components/reservation-list-item
         ReactiveFormsModule,
         FormsModule,
         HttpClientModule,
+        MarkdownModule.forRoot(),
         OAuthModule.forRoot({
             resourceServer: {
                 customUrlValidation: (url) => url.startsWith(getApiUrl()),

@@ -24,7 +24,7 @@ class ReportElementFormGroup extends FormGroup {
     constructor(public readonly reportElement: ReportElement) {
         super({
             reportElementId: new FormControl(reportElement.id),
-            state: new FormControl(null),
+            state: new FormControl(null, Validators.required),
             comment: new FormControl(null),
         });
     }
@@ -128,7 +128,6 @@ export class ItemComponent implements OnInit, OnDestroy {
                     this.form.reset(item);
                     this.groupItem.reset(!!item.groupId);
                 } else {
-                    this.createReport = true;
                     this.itemId = null;
                     this.isNew = true;
                     this.reportForm.clear();
@@ -206,6 +205,7 @@ export class ItemComponent implements OnInit, OnDestroy {
         this.form.addControl('totalReportState', new FormControl(null, Validators.required));
         this.form.addControl('report', this.reportForm);
         this.form.updateValueAndValidity();
+        this.form.controls.changeComment.setValue('Inspection');
         this.createReport = true;
     }
 
@@ -214,6 +214,7 @@ export class ItemComponent implements OnInit, OnDestroy {
         this.form.removeControl('totalReportState');
         this.form.removeControl('report');
         this.form.updateValueAndValidity();
+        this.form.controls.changeComment.setValue('');
         this.createReport = false;
     }
 
@@ -241,7 +242,7 @@ export class ItemComponent implements OnInit, OnDestroy {
         $event.stopPropagation();
         this.dialogService.open(dialog, {
             hasBackdrop: true,
-            closeOnBackdropClick: false,
+            closeOnBackdropClick: true,
             hasScroll: false,
             autoFocus: true,
             context: {
@@ -255,7 +256,7 @@ export class ItemComponent implements OnInit, OnDestroy {
         this.itemsService.itemsByGroupId$
             .pipe(
                 map((itemsByGroupId) => itemsByGroupId[fromGroupId]),
-                filter((x) => !!x)
+                filter((x) => !!x && x.every((item) => item.id !== this.itemId))
             )
             .subscribe((groupItems) => {
                 this.dialogService.open(dialog, {
@@ -306,6 +307,10 @@ export class ItemComponent implements OnInit, OnDestroy {
         }
         if (this.isNew) {
             delete rawValue.comment;
+            if (!this.createReport) {
+                rawValue.report = [];
+                rawValue.totalReportState = TotalReportState.Fit;
+            }
             apiCall = this.api.createItem(rawValue);
         } else if (this.createReport) {
             apiCall = this.api.reportItem(this.itemId, rawValue);

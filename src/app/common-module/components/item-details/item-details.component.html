@@ -123,7 +123,7 @@
                                     *ngIf="report.reportElementId | reportElement | async; let reportElementRef"
                                 >
                                     <h6>{{ reportElementRef.title }}</h6>
-                                    <p>{{ reportElementRef.description }}</p>
+                                    <markdown [data]="reportElementRef.description"></markdown>
                                     <p>
                                         <span class="key">Rating: </span>
                                         <ng-container [ngSwitch]="report.state">

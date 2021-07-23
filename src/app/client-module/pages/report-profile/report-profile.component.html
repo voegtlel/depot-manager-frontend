@@ -34,7 +34,7 @@
                             </nb-actions>
                         </nb-card-header>
                         <nb-card-body>
-                            <p>{{ reportElement.description }}</p>
+                            <markdown [data]="reportElement.description"></markdown>
                         </nb-card-body>
                     </nb-card>
                 </ng-container>
