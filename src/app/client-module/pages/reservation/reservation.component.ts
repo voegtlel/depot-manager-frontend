@@ -125,6 +125,7 @@ export class ReservationComponent implements OnInit, OnDestroy {
                         name: '',
                         start: null,
                         end: null,
+                        userId: user.sub,
 
                         teamId: null,
                         contact: `${user.name} (${user.email}, ${user.phone_number})`,
