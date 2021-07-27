@@ -17,7 +17,7 @@ import {
 } from '../../../common-module/_models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NbToastrService, NbDialogService, NbDialogRef } from '@nebular/theme';
-import { distinctUntilChanged, filter, map, shareReplay, startWith, switchMap, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, shareReplay, startWith, switchMap, take, takeUntil } from 'rxjs/operators';
 import { Choice } from '../../../common-module/components/form-element/form-element.component';
 
 class ReportElementFormGroup extends FormGroup {
@@ -46,6 +46,7 @@ export class ItemComponent implements OnInit, OnDestroy {
     reload$: BehaviorSubject<void> = new BehaviorSubject(undefined);
 
     itemId: string = null;
+    initialGroupId: string = null;
 
     conditionTranslation: Record<ItemCondition, [string, string]> = {
         good: ['Good', 'success'],
@@ -125,11 +126,13 @@ export class ItemComponent implements OnInit, OnDestroy {
                 if (item !== null) {
                     this.itemId = item.id;
                     this.isNew = false;
+                    this.initialGroupId = item.groupId;
                     this.form.reset(item);
                     this.groupItem.reset(!!item.groupId);
                 } else {
                     this.itemId = null;
                     this.isNew = true;
+                    this.initialGroupId = null;
                     this.reportForm.clear();
                     this.form.reset({
                         externalId: '',
@@ -176,7 +179,8 @@ export class ItemComponent implements OnInit, OnDestroy {
             distinctUntilChanged(),
             switchMap((reportProfileId) =>
                 this.reportService.profilesByIdWithElements$.pipe(map((byId) => byId[reportProfileId]))
-            )
+            ),
+            takeUntil(this.destroyed$)
         );
 
         this.reportProfile$.pipe(takeUntil(this.destroyed$)).subscribe((reportProfile) => {
@@ -252,13 +256,15 @@ export class ItemComponent implements OnInit, OnDestroy {
         });
     }
 
-    openCopyFromItemDialog(fromGroupId: string, dialog: TemplateRef<any>) {
-        this.itemsService.itemsByGroupId$
-            .pipe(
-                map((itemsByGroupId) => itemsByGroupId[fromGroupId]),
-                filter((x) => !!x && x.every((item) => item.id !== this.itemId))
-            )
-            .subscribe((groupItems) => {
+    async openCopyFromItemDialog(newGroupId: string, dialog: TemplateRef<any>) {
+        if (newGroupId && newGroupId !== this.initialGroupId) {
+            const groupItems = await this.itemsService.itemsByGroupId$
+                .pipe(
+                    map((itemsByGroupId) => itemsByGroupId[newGroupId]),
+                    take(1)
+                )
+                .toPromise();
+            if (groupItems) {
                 this.dialogService.open(dialog, {
                     hasBackdrop: true,
                     closeOnBackdropClick: false,
@@ -266,7 +272,9 @@ export class ItemComponent implements OnInit, OnDestroy {
                     autoFocus: true,
                     context: groupItems[0],
                 });
-            });
+            }
+        }
+        this.initialGroupId = newGroupId;
     }
 
     copyFrom(sourceItem: Item) {
