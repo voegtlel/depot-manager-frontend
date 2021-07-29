@@ -15,6 +15,12 @@
         .item-name {
             font-weight: bolder;
             font-size: larger;
+            nb-icon {
+                display: inline-block;
+                position: unset;
+                transform: none;
+                width: auto;
+            }
         }
 
         .item-description {
