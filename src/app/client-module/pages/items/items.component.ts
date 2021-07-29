@@ -1,17 +1,17 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, ChangeDetectionStrategy, TemplateRef } from '@angular/core';
-import { BehaviorSubject, combineLatest, merge, Observable, Subject } from 'rxjs';
-import { Item, ItemCondition } from '../../../common-module/_models';
-import { ApiService, ItemsService } from '../../../common-module/_services';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map, mergeAll, shareReplay, takeUntil } from 'rxjs/operators';
 import {
+    NbDialogService,
     NbSortDirection,
     NbSortRequest,
     NbTreeGridDataSource,
     NbTreeGridDataSourceBuilder,
-    NbDialogService,
 } from '@nebular/theme';
+import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
+import { delay, map, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { Choice } from '../../../common-module/components/form-element/form-element.component';
+import { Item, ItemCondition } from '../../../common-module/_models';
+import { ApiService, ItemsService, UpdateService } from '../../../common-module/_services';
 
 interface ItemWithConditionText extends Item {
     conditionText: string;
@@ -34,7 +34,7 @@ interface ItemEntry {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ItemsComponent implements OnInit, OnDestroy {
-    loading: boolean;
+    loading = true;
     items$: Observable<ItemWithConditionText[]>;
 
     showGrouped$: BehaviorSubject<boolean> = new BehaviorSubject(true);
@@ -75,10 +75,9 @@ export class ItemsComponent implements OnInit, OnDestroy {
     });
 
     showUnavailable = false;
+    showUnavailable$ = new BehaviorSubject<boolean>(false);
 
     private destroyed$ = new Subject<void>();
-
-    private allItems$ = new Subject<Item[]>();
 
     constructor(
         public api: ApiService,
@@ -87,11 +86,20 @@ export class ItemsComponent implements OnInit, OnDestroy {
         public router: Router,
         private dataSourceBuilder: NbTreeGridDataSourceBuilder<ItemEntry>,
         private changeDetector: ChangeDetectorRef,
-        private dialogService: NbDialogService
+        private dialogService: NbDialogService,
+        private updateService: UpdateService
     ) {}
 
     ngOnInit() {
-        this.items$ = merge(this.itemsService.items$, this.allItems$).pipe(
+        this.updateService.updateItems$.pipe(takeUntil(this.destroyed$)).subscribe(() => (this.loading = true));
+        this.items$ = this.showUnavailable$.pipe(
+            tap(() => (this.loading = true)),
+            delay(1),
+            switchMap((showUnavailable) =>
+                showUnavailable
+                    ? this.updateService.updateItems$.pipe(switchMap(() => this.api.getItems(true)))
+                    : this.itemsService.items$
+            ),
             map((items) =>
                 items.map((item) => {
                     return {
@@ -107,6 +115,7 @@ export class ItemsComponent implements OnInit, OnDestroy {
         );
 
         const itemEntries$ = combineLatest([this.showGrouped$, this.items$]).pipe(
+            tap(() => (this.loading = true)),
             map(([showGrouped, items]) => {
                 if (showGrouped) {
                     const itemEntries: ItemEntry[] = [];
@@ -139,6 +148,8 @@ export class ItemsComponent implements OnInit, OnDestroy {
                     });
                 }
             }),
+            delay(1),
+            tap(() => (this.loading = false)),
             shareReplay(1),
             takeUntil(this.destroyed$)
         );
@@ -198,21 +209,10 @@ export class ItemsComponent implements OnInit, OnDestroy {
     }
 
     reload() {
-        if (this.showUnavailable) {
-            this.onShowUnavailable(this.showUnavailable);
-        } else {
-            this.itemsService.reload();
-        }
+        this.itemsService.reload();
     }
 
     onShowUnavailable(showUnavailable: boolean) {
-        if (showUnavailable) {
-            this.api
-                .getItems(true)
-                .pipe(takeUntil(this.destroyed$))
-                .subscribe((items) => this.allItems$.next(items));
-        } else {
-            this.itemsService.reload();
-        }
+        this.showUnavailable$.next(showUnavailable);
     }
 }

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ApiService, AuthService, UsersService } from '../../../common-module/_services';
+import { ApiService, AuthService, UpdateService, UsersService } from '../../../common-module/_services';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Reservation } from '../../../common-module/_models';
@@ -32,7 +32,8 @@ export class ReservationReturnComponent implements OnInit, OnDestroy {
         public authService: AuthService,
         public activatedRoute: ActivatedRoute,
         public router: Router,
-        private toastrService: NbToastrService
+        private toastrService: NbToastrService,
+        private updateService: UpdateService
     ) {}
 
     ngOnInit() {
@@ -75,6 +76,7 @@ export class ReservationReturnComponent implements OnInit, OnDestroy {
         this.api.returnReservation(this.reservationId, formValue).subscribe(
             () => {
                 console.log('Saved');
+                this.updateService.updateReservations$.next();
                 this.router.navigate(['/'], { replaceUrl: true });
                 this.toastrService.success('Saved return of reservation', 'Reservation Saved');
             },

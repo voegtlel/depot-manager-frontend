@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Item } from '../../_models';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
-import { map, shareReplay, switchMap, takeUntil, tap, skip, debounceTime } from 'rxjs/operators';
+import { map, shareReplay, switchMap, takeUntil, tap, skip, debounceTime, delay } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
 import { Filterable } from '../../_pipes';
 import { AsyncInput } from '@ng-reactive/async-input';
@@ -22,7 +22,7 @@ interface ItemWithAvailability extends Item, Filterable {
 export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, ControlValueAccessor {
     private destroyed$ = new Subject<void>();
 
-    loading: boolean;
+    loading = true;
     reload$: BehaviorSubject<any> = new BehaviorSubject(null);
     items$: Observable<ItemWithAvailability[]>;
     itemGroups$: Observable<ItemWithAvailability[][]>;
@@ -62,6 +62,8 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
         const filteredItemIds$ = this.reload$.pipe(
             switchMap(() => combineLatest([this.reservationsStart$, this.reservationsEnd$, this.skipReservationId$])),
             debounceTime(200),
+            tap(() => (this.loading = true)),
+            delay(1),
             switchMap(([reservationStart, reservationEnd, skipReservationId]) => {
                 if (reservationStart && reservationEnd) {
                     return this.api.getReservationItems(reservationStart, reservationEnd, skipReservationId);
@@ -78,7 +80,14 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
             tap((x) => console.log('filteredItemIds$', x)),
             shareReplay(1)
         );
-        this.reload$.pipe(skip(1), takeUntil(this.destroyed$)).subscribe(() => this.itemsService.reload());
+        this.reload$
+            .pipe(
+                skip(1),
+                tap(() => (this.loading = true)),
+                delay(1),
+                takeUntil(this.destroyed$)
+            )
+            .subscribe(() => this.itemsService.reload());
         this.items$ = combineLatest([filteredItemIds$, this.itemsService.items$]).pipe(
             map(([filteredItemIds, items]) => {
                 return items.map((item) => {
@@ -137,6 +146,8 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
                 this.selected$.next(this.selected);
                 this.selectedLookup$.next(this.selectedLookup);
             }
+
+            this.loading = false;
         });
 
         this.itemGroups$ = this.items$.pipe(

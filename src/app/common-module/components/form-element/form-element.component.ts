@@ -12,7 +12,8 @@ import { FormControl, Validators } from '@angular/forms';
 import { DateHelper } from '../../_helpers';
 import { NbDialogService } from '@nebular/theme';
 import { ApiService, ItemsService } from '../../_services';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
 
 export interface Choice<T> {
     value: T;
@@ -109,6 +110,12 @@ export class FormElementComponent {
 
     get itemPicturePreviewUrl(): string {
         return this.api.getPicturePreviewUrl(this.formControlRef.value);
+    }
+
+    delayShow(elem) {
+        of(null)
+            .pipe(delay(1))
+            .subscribe(() => elem.show());
     }
 
     click() {

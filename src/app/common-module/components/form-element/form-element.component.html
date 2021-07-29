@@ -109,13 +109,14 @@
             [selectingStart]="true"
             [max]="dateValueEnd.dateValue"
             [otherDate]="dateValueEnd.dateValue"
-            (dateChange)="daterangepickerEnd.show()"
+            (dateChange)="delayShow(daterangepickerEnd)"
             #daterangepickerStart
         ></depot-date-range-picker>
         <depot-date-range-picker
             [selectingStart]="false"
             [min]="dateValue.dateValue"
             [otherDate]="dateValue.dateValue"
+            [visibleDate]="dateValueEnd.dateValue || dateValue.dateValue"
             #daterangepickerEnd
         ></depot-date-range-picker>
     </div>

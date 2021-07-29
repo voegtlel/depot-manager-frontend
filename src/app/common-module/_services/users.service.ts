@@ -1,20 +1,20 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { switchMap, tap, shareReplay } from 'rxjs/operators';
-import { Observable, BehaviorSubject, of, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { User } from '../_models';
 import { AuthService } from './auth.service';
+import { UpdateService } from './update.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class UsersService {
-    private _reload$ = new BehaviorSubject<void>(undefined);
     private _usersById: Record<string, User> = Object.create(null);
     private _usersFetch: Record<string, Observable<User>> = Object.create(null);
     private _allUsers$?: Observable<User[]>;
 
-    constructor(private api: ApiService, authService: AuthService) {
+    constructor(private api: ApiService, authService: AuthService, private updateService: UpdateService) {
         authService.user$.subscribe(
             (user) => (this._usersById[user.sub] = { ...user, phoneNumber: user.phone_number })
         );
@@ -51,7 +51,7 @@ export class UsersService {
 
     allUsers(): Observable<User[]> {
         if (this._allUsers$ == null) {
-            this._allUsers$ = this._reload$.pipe(
+            this._allUsers$ = this.updateService.updateUsers$.pipe(
                 switchMap(() => this.api.getUsers()),
                 tap((users) => users.forEach((user) => (this._usersById[user.sub] = user))),
                 shareReplay(1)
@@ -65,7 +65,7 @@ export class UsersService {
     }
 
     reload() {
-        this._reload$.next();
+        this.updateService.updateUsers$.next();
         this._usersById = Object.create(null);
         this._usersFetch = Object.create(null);
     }

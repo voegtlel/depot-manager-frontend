@@ -78,6 +78,7 @@ import { ReservationDetailsComponent } from './components/reservation-details/re
 import { UserNamePipe } from './_pipes/user-name.pipe';
 import { ReservationListItemComponent } from './components/reservation-list-item/reservation-list-item.component';
 import { MarkdownModule } from 'ngx-markdown';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
     entryComponents: [CalendarRangeDayCellComponent, CalendarRangeComponent],
@@ -105,6 +106,7 @@ import { MarkdownModule } from 'ngx-markdown';
         ItemGroupNamePipe,
         ReportElementListComponent,
         ReportProfileListComponent,
+        ConfirmDialogComponent,
         ReportElementPipe,
         ReportProfilePipe,
         UserNamePipe,
@@ -171,6 +173,7 @@ import { MarkdownModule } from 'ngx-markdown';
         DateRangePickerComponent,
 
         ReportElementListComponent,
+        ConfirmDialogComponent,
 
         ItemFilterPipe,
         ItemGroupFilterPipe,

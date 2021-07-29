@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ApiService, AuthService, UsersService } from '../../../common-module/_services';
+import { ApiService, AuthService, UpdateService, UsersService } from '../../../common-module/_services';
 import { BehaviorSubject, Observable, of, Subject, combineLatest } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Reservation, ReservationType, UserModel } from '../../../common-module/_models';
+import { Reservation, ReservationType } from '../../../common-module/_models';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NbToastrService } from '@nebular/theme';
-import { filter, map, shareReplay, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { NbDialogService, NbToastrService } from '@nebular/theme';
+import { map, shareReplay, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { ConfirmDialogComponent } from 'src/app/common-module/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
     selector: 'depot-reservation',
@@ -52,7 +53,9 @@ export class ReservationComponent implements OnInit, OnDestroy {
         public activatedRoute: ActivatedRoute,
         private userService: UsersService,
         public router: Router,
-        private toastrService: NbToastrService
+        private toastrService: NbToastrService,
+        private dialogService: NbDialogService,
+        private updateService: UpdateService
     ) {}
 
     ngOnInit() {
@@ -138,7 +141,7 @@ export class ReservationComponent implements OnInit, OnDestroy {
             });
         this.canReturn$ = this.form.controls.start.valueChanges.pipe(
             startWith(this.form.controls.start.value),
-            map((value) => value && value >= new Date().toISOString().substring(0, 10)),
+            map((value) => value && value <= new Date().toISOString().substring(0, 10)),
             takeUntil(this.destroyed$)
         );
 
@@ -167,6 +170,35 @@ export class ReservationComponent implements OnInit, OnDestroy {
         }
     }
 
+    onShowDeleteDialog() {
+        const dialogRef = this.dialogService.open(ConfirmDialogComponent);
+        const name = this.form.controls.name.value;
+        dialogRef.componentRef.instance.title = 'Really delete reservation?';
+        dialogRef.componentRef.instance.message = `Do you really want to delete the reservation ${name}?`;
+        dialogRef.componentRef.instance.confirmStatus = 'danger';
+        dialogRef.componentRef.instance.confirmTitle = 'Delete';
+        dialogRef.componentRef.instance.cancelTitle = 'Cancel';
+        dialogRef.onClose.subscribe((result) => {
+            if (result) {
+                this.api.deleteReservation(this.reservationId).subscribe(
+                    () => {
+                        console.log('Deleted', this.reservationId);
+                        this.updateService.updateReservations$.next();
+                        this.router.navigate(['..'], {
+                            replaceUrl: true,
+                            relativeTo: this.activatedRoute,
+                        });
+                        this.toastrService.success(`Reservation ${name} was deleted`, 'Reservation Deleted');
+                    },
+                    (error) => {
+                        console.log(error);
+                        this.toastrService.danger(error, 'Failed');
+                    }
+                );
+            }
+        });
+    }
+
     onSubmit() {
         this.submitted = true;
         if (!this.form.valid) {
@@ -189,6 +221,7 @@ export class ReservationComponent implements OnInit, OnDestroy {
                 this.form.reset(reservation);
                 this.form.markAsPristine();
                 this.form.markAsUntouched();
+                this.updateService.updateReservations$.next();
                 this.router.navigate(['..', reservation.id], {
                     replaceUrl: true,
                     relativeTo: this.activatedRoute,

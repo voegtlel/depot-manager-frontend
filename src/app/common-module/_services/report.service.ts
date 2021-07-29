@@ -3,6 +3,7 @@ import { ApiService } from './api.service';
 import { multicast, refCount, switchMap, map } from 'rxjs/operators';
 import { ReplaySubject, Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { ReportProfile, ReportElement } from '../_models';
+import { UpdateService } from './update.service';
 
 export class ReportProfileWithElements {
     public readonly id: string;
@@ -20,7 +21,6 @@ export class ReportProfileWithElements {
     providedIn: 'root',
 })
 export class ReportService {
-    private readonly reload$ = new BehaviorSubject<void>(undefined);
     public readonly profilesById$: Observable<Record<string, ReportProfile>>;
     public readonly profiles$: Observable<ReportProfile[]>;
     public readonly elementsById$: Observable<Record<string, ReportElement>>;
@@ -29,13 +29,13 @@ export class ReportService {
     public readonly profilesWithElements$: Observable<ReportProfileWithElements[]>;
     public readonly profilesByIdWithElements$: Observable<Record<string, ReportProfileWithElements>>;
 
-    constructor(api: ApiService) {
-        this.profiles$ = this.reload$.pipe(
+    constructor(api: ApiService, private updateService: UpdateService) {
+        this.profiles$ = updateService.updateReportProfiles$.pipe(
             switchMap(() => api.getReportProfiles()),
             multicast(() => new ReplaySubject<ReportProfile[]>(1)),
             refCount()
         );
-        this.elements$ = this.reload$.pipe(
+        this.elements$ = updateService.updateReportElements$.pipe(
             switchMap(() => api.getReportElements()),
             multicast(() => new ReplaySubject<ReportElement[]>(1)),
             refCount()
@@ -84,6 +84,7 @@ export class ReportService {
     }
 
     reload() {
-        this.reload$.next();
+        this.updateService.updateReportProfiles$.next();
+        this.updateService.updateReportElements$.next();
     }
 }

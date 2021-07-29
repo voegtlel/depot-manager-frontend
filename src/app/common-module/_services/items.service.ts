@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { multicast, refCount, switchMap, map } from 'rxjs/operators';
-import { ReplaySubject, Observable, BehaviorSubject } from 'rxjs';
+import { ReplaySubject, Observable } from 'rxjs';
 import { Item, Bay } from '../_models';
+import { UpdateService } from './update.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ItemsService {
-    private readonly reload$ = new BehaviorSubject<void>(undefined);
     public readonly itemsById$: Observable<Record<string, Item>>;
     public readonly items$: Observable<Item[]>;
     public readonly itemsByGroupId$: Observable<Record<string, Item[]>>;
@@ -16,8 +16,8 @@ export class ItemsService {
     public readonly bays$: Observable<Bay[]>;
     public readonly itemTags$: Observable<string[]>;
 
-    constructor(api: ApiService) {
-        this.items$ = this.reload$.pipe(
+    constructor(api: ApiService, private updateService: UpdateService) {
+        this.items$ = updateService.updateItems$.pipe(
             switchMap(() => api.getItems()),
             multicast(() => new ReplaySubject<Item[]>(1)),
             refCount()
@@ -48,7 +48,7 @@ export class ItemsService {
             multicast(() => new ReplaySubject<Record<string, Item[]>>(1)),
             refCount()
         );
-        this.bays$ = this.reload$.pipe(
+        this.bays$ = updateService.updateBays$.pipe(
             switchMap(() => api.getBays()),
             multicast(() => new ReplaySubject<Bay[]>(1)),
             refCount()
@@ -63,8 +63,7 @@ export class ItemsService {
             multicast(() => new ReplaySubject<Record<string, Bay>>(1)),
             refCount()
         );
-        this.itemTags$ = this.reload$.pipe(
-            switchMap(() => this.items$),
+        this.itemTags$ = this.items$.pipe(
             map((items) => [...new Set([].concat(...items.map((item) => item.tags)))].sort()),
             multicast(() => new ReplaySubject<string[]>(1)),
             refCount()
@@ -72,6 +71,7 @@ export class ItemsService {
     }
 
     reload() {
-        this.reload$.next();
+        this.updateService.updateItems$.next();
+        this.updateService.updateBays$.next();
     }
 }
