@@ -57,7 +57,7 @@ import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { APP_BASE_HREF } from '@angular/common';
 
 import { environment } from 'src/environments/environment';
-import { RouterModule } from '@angular/router';
+import { RouteReuseStrategy, RouterModule } from '@angular/router';
 import { CommonModuleModule } from '../common-module/common-module.module';
 import { AuthenticationComponent } from './pages/authentication/authentication.component';
 import { LogoutComponent } from './pages/logout/logout.component';
@@ -69,6 +69,7 @@ import { ReportProfileComponent } from './pages/report-profile/report-profile.co
 import { ReportProfilesComponent } from './pages/report-profiles/report-profiles.component';
 import { ReservationReturnComponent } from './pages/reservation-return/reservation-return.component';
 import { MarkdownModule } from 'ngx-markdown';
+import { CustomReuseStrategy } from './reuse-route';
 
 @NgModule({
     declarations: [
@@ -141,6 +142,7 @@ import { MarkdownModule } from 'ngx-markdown';
         { provide: APP_BASE_HREF, useValue: environment.appBaseHref },
         { provide: OAuthStorage, useValue: localStorage },
         AuthGuard,
+        { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
     ],
 })
 export class ClientModuleModule {}

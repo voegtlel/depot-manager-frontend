@@ -33,14 +33,17 @@ const routes: Routes = [
                     {
                         path: '',
                         component: ReservationsComponent,
+                        data: { reuseRoute: true },
                     },
                     {
                         path: ':reservationId',
                         component: ReservationComponent,
+                        data: { back: ['..'] },
                     },
                     {
                         path: ':reservationId/return',
                         component: ReservationReturnComponent,
+                        data: { back: ['..'] },
                     },
                 ],
             },
@@ -51,10 +54,12 @@ const routes: Routes = [
                     {
                         path: '',
                         component: ItemsComponent,
+                        data: { reuseRoute: true },
                     },
                     {
                         path: ':itemId',
                         component: ItemComponent,
+                        data: { back: ['..'] },
                     },
                 ],
             },
@@ -65,10 +70,12 @@ const routes: Routes = [
                     {
                         path: '',
                         component: BaysComponent,
+                        data: { reuseRoute: true },
                     },
                     {
                         path: ':bayId',
                         component: BayComponent,
+                        data: { back: ['..'] },
                     },
                 ],
             },
@@ -79,10 +86,12 @@ const routes: Routes = [
                     {
                         path: '',
                         component: ReportProfilesComponent,
+                        data: { reuseRoute: true },
                     },
                     {
                         path: ':reportProfileId',
                         component: ReportProfileComponent,
+                        data: { back: ['..'] },
                     },
                 ],
             },
@@ -93,10 +102,12 @@ const routes: Routes = [
                     {
                         path: '',
                         component: ReportElementsComponent,
+                        data: { reuseRoute: true },
                     },
                     {
                         path: ':reportElementId',
                         component: ReportElementComponent,
+                        data: { back: ['..'] },
                     },
                 ],
             },

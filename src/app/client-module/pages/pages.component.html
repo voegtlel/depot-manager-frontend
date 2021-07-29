@@ -3,10 +3,10 @@
         <div class="section left">
             <nb-actions size="medium">
                 <nb-action
+                    *ngIf="loggedIn$ | async"
                     (click)="back()"
                     icon="arrow-back"
-                    [disabled]="backDisabled"
-                    *ngIf="loggedIn$ | async"
+                    [disabled]="!(back$ | async)"
                     title="Back"
                 ></nb-action>
                 <nb-action

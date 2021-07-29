@@ -81,8 +81,7 @@ export class ReservationComponent implements OnInit, OnDestroy {
                           switchMap((userId) => this.userService.getUser(userId)),
                           tap((user) => console.log('Fetched selected user:', user)),
                           map(
-                              (selectedUser) =>
-                                  (selectedUser as any).teams?.map((team) => ({ value: team, title: team })) ?? []
+                              (selectedUser) => selectedUser?.teams?.map((team) => ({ value: team, title: team })) ?? []
                           )
                       )
                     : of(user.teams?.map((team) => ({ value: team, title: team })) ?? [])

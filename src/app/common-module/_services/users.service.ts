@@ -20,17 +20,25 @@ export class UsersService {
         );
     }
 
-    getUser(userId: string): Observable<User> {
+    getUser(userId?: string): Observable<User> {
+        if (userId == null) {
+            return of(null);
+        }
         if (Object.hasOwnProperty.call(this._usersById, userId)) {
             if (this._usersById[userId] == null) {
-                return throwError({ detail: 'Unknown User' });
+                return throwError({ detail: `Unknown User ${userId}` });
             }
             return of(this._usersById[userId]);
         } else if (Object.hasOwnProperty.call(this._usersFetch, userId)) {
             return this._usersFetch[userId];
         } else if (this._allUsers$ != null) {
             return this._allUsers$.pipe(
-                switchMap(() => this.getUser(userId)),
+                switchMap(() => {
+                    if (!this._usersById[userId]) {
+                        throw new Error(`Unknown User ${userId}`);
+                    }
+                    return of(this._usersById[userId]);
+                }),
                 shareReplay(1)
             );
         } else {
@@ -60,6 +68,5 @@ export class UsersService {
         this._reload$.next();
         this._usersById = Object.create(null);
         this._usersFetch = Object.create(null);
-        this._allUsers$ = null;
     }
 }
