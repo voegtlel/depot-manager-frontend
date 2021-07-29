@@ -261,7 +261,7 @@ export class ApiService {
     }
 
     getPictureUrl(pictureId: string): string {
-        return `${this.env.apiUrl}/pictures/${pictureId}/large`;
+        return `${this.env.apiUrl}/pictures/${pictureId}`;
     }
 
     getPicturePreviewUrl(pictureId: string): string {

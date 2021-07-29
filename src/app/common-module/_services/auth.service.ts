@@ -89,7 +89,9 @@ export class AuthService {
             sessionChecksEnabled: true,
         });
 
-        this.oauthService.events.subscribe((e) => console.log('Auth:', e));
+        this.oauthService.events
+            .pipe(filter((event) => event.type !== 'session_unchanged'))
+            .subscribe((e) => console.log('Auth:', e));
 
         this.oauthService.events
             .pipe(
