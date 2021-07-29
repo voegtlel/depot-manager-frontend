@@ -9,6 +9,9 @@
             [attr.fill]="reservation.color"
             [class.clickable]="!reservation.isCurrent"
             (click)="reservation.isCurrent ? null : showReservationDetails.emit(reservation)"
+            [nbTooltip]="
+                reservation.isCurrent ? 'Selected for reservation' : reservation.name + ' (' + reservation.contact + ')'
+            "
         ></svg:rect>
     </ng-container>
 
@@ -85,6 +88,32 @@
     </svg:svg>
 </div>
 <svg:svg class="left" [attr.width]="nameWidth" [attr.height]="(totalHeight$ | async) - dateHeight">
+    <svg:defs>
+        <svg:svg
+            id="_detailsIcon"
+            [attr.width]="itemRowHeight"
+            [attr.height]="itemRowHeight"
+            viewBox="0 0 24 24"
+            [innerHtml]="detailsIconHtml"
+            [class]="detailsIconClasses"
+        ></svg:svg>
+        <svg:svg
+            id="_warningIcon"
+            [attr.width]="itemRowHeight"
+            [attr.height]="itemRowHeight"
+            viewBox="0 0 24 24"
+            [innerHtml]="warningIconHtml"
+            [class]="warningIconClasses"
+        ></svg:svg>
+        <svg:svg
+            id="_dangerIcon"
+            [attr.width]="itemRowHeight"
+            [attr.height]="itemRowHeight"
+            viewBox="0 0 24 24"
+            [innerHtml]="dangerIconHtml"
+            [class]="dangerIconClasses"
+        ></svg:svg>
+    </svg:defs>
     <svg:clipPath id="nameClip">
         <rect x="0" y="0" [attr.width]="nameWidth" [attr.height]="(totalHeight$ | async) - dateHeight" />
     </svg:clipPath>
@@ -96,6 +125,7 @@
                 item.available ? (isSelected(item.id) ? deselectItem.emit(item.id) : selectItem.emit(item.id)) : null
             "
             [class.clickable]="item.available"
+            [class.disabled]="!item.available"
             [attr.transform]="'translate(0, ' + idx * itemRowHeight + ')'"
         >
             <svg:rect x="0" y="0" [attr.width]="nameWidth" [attr.height]="itemRowHeight - 1" fill="white"></svg:rect>
@@ -111,14 +141,17 @@
             (click)="showDetails.emit(item)"
             [attr.transform]="'translate(' + (nameWidth - 1 - itemRowHeight) + ', ' + idx * itemRowHeight + ')'"
             class="clickable"
+            [nbTooltip]="
+                item.condition === 'ok'
+                    ? 'Condition is ok (not best)' + (item.conditionComment ? ': ' + item.conditionComment : '')
+                    : item.condition === 'bad'
+                    ? 'Condition is bad' + (item.conditionComment ? ': ' + item.conditionComment : '')
+                    : 'Good condition'
+            "
         >
-            <svg:svg
-                [attr.width]="itemRowHeight"
-                [attr.height]="itemRowHeight"
-                viewBox="0 0 24 24"
-                [innerHtml]="detailsIconHtml"
-                [class]="detailsIconClasses"
-            ></svg:svg>
+            <use *ngIf="item.condition === 'good'" href="#_detailsIcon"></use>
+            <use *ngIf="item.condition === 'ok'" href="#_warningIcon"></use>
+            <use *ngIf="item.condition === 'bad'" href="#_dangerIcon"></use>
         </svg:g>
     </svg:g>
 

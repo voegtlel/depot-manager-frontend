@@ -119,7 +119,11 @@ export class ReservationItemsTableComponent implements OnChanges, OnDestroy, OnI
     reservations$: Observable<ReservationWithItemWithPosition[]>;
 
     detailsIconHtml: any;
+    warningIconHtml: any;
+    dangerIconHtml: any;
     detailsIconClasses: string;
+    warningIconClasses: string;
+    dangerIconClasses: string;
 
     constructor(public api: ApiService, private iconLibrary: NbIconLibraries, private sanitizer: DomSanitizer) {
         const reservations$ = this.dateRangeFull$.pipe(
@@ -217,11 +221,18 @@ export class ReservationItemsTableComponent implements OnChanges, OnDestroy, OnI
         );
     }
 
-    ngOnInit(): void {
-        const icon = this.iconLibrary.getSvgIcon('search-outline');
+    loadIcon(name: string): [any, string] {
+        const icon = this.iconLibrary.getSvgIcon(name);
         const content = icon.icon.getContent();
-        this.detailsIconHtml = this.sanitizer.bypassSecurityTrustHtml(content);
-        this.detailsIconClasses = icon.icon.getClasses().join(' ');
+        return [this.sanitizer.bypassSecurityTrustHtml(content), icon.icon.getClasses().join(' ')];
+    }
+
+    ngOnInit(): void {
+        [this.detailsIconHtml, this.detailsIconClasses] = this.loadIcon('search-outline');
+        [this.warningIconHtml, this.warningIconClasses] = this.loadIcon('alert-circle-outline');
+        [this.dangerIconHtml, this.dangerIconClasses] = this.loadIcon('alert-triangle-outline');
+        this.warningIconClasses += ' status-warning';
+        this.dangerIconClasses += ' status-danger';
     }
 
     ngOnDestroy(): void {}
