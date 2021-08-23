@@ -9,6 +9,7 @@
     </a>
     <div class="item-text">
         <div class="item-name">
+            <span *ngIf="item.externalId" style="font-weight: bold">{{ item.externalId }}</span>
             {{ item.name }}
             <nb-icon
                 *ngIf="item.condition === 'ok'"
