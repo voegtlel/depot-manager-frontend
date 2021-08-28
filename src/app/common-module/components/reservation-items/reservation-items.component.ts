@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Item } from '../../_models';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
-import { map, shareReplay, switchMap, takeUntil, tap, skip, debounceTime, delay } from 'rxjs/operators';
+import { map, shareReplay, switchMap, takeUntil, tap, skip, debounceTime, delay, catchError } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
 import { Filterable } from '../../_pipes';
 import { AsyncInput } from '@ng-reactive/async-input';
@@ -57,6 +57,27 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
         private toastrService: NbToastrService,
         private dialogService: NbDialogService
     ) {}
+
+    async toastRemovedItems(itemIds: string[]) {
+        const removedItems = (
+            await Promise.all(
+                itemIds.map((itemId) =>
+                    this.api
+                        .getItem(itemId)
+                        .pipe(catchError(() => itemId))
+                        .toPromise()
+                )
+            )
+        )
+            .map((item) => (typeof item === 'string' ? item : `${item.name} (${item.externalId})`))
+            .join('\n• ');
+
+        this.toastrService.danger(
+            `${itemIds.length} items were removed from your reservation, because they were disabled:\n• ${removedItems}`,
+            'Items Removed',
+            { destroyByClick: true, duration: null, toastClass: 'pre' }
+        );
+    }
 
     ngOnInit() {
         const filteredItemIds$ = this.reload$.pipe(
@@ -116,10 +137,8 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
             }, Object.create(null));
             const foundItems = this.selected.filter((selectedId) => Object.hasOwnProperty.call(itemsById, selectedId));
             if (foundItems.length !== this.selected.length) {
-                this.toastrService.danger(
-                    `${
-                        this.selected.length - foundItems.length
-                    } items were removed from your reservation, because they do not exist any more`
+                this.toastRemovedItems(
+                    this.selected.filter((selectedId) => !Object.hasOwnProperty.call(itemsById, selectedId))
                 );
             }
             const availableItems = foundItems.filter((selectedId) => itemsById[selectedId].available);
@@ -128,11 +147,13 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
                     .filter((selectedId) => !itemsById[selectedId].available)
                     .map((itemId) => itemsById[itemId])
                     .map((item) => `${item.name} (${item.externalId})`)
-                    .join(', ');
+                    .join('\n• ');
                 this.toastrService.danger(
                     `${
                         foundItems.length - availableItems.length
-                    } items were removed from your reservation, because they are not available: ${removedItems}`
+                    } items were removed from your reservation, because they are not available:\n• ${removedItems}`,
+                    'Items Removed',
+                    { destroyByClick: true, duration: null, toastClass: 'pre' }
                 );
             }
 
