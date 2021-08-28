@@ -60,9 +60,21 @@
         </nb-accordion-item-body>
     </nb-accordion-item>
     <nb-accordion-item>
+        <nb-accordion-item-header>Reports</nb-accordion-item-header>
+        <nb-accordion-item-body>
+            <depot-item-details-history
+                [states]="itemHistoryWithState$ | async"
+                [onlyReports]="true"
+            ></depot-item-details-history>
+        </nb-accordion-item-body>
+    </nb-accordion-item>
+    <nb-accordion-item>
         <nb-accordion-item-header>History</nb-accordion-item-header>
         <nb-accordion-item-body>
-            <depot-item-details-history [states]="itemHistoryWithState$ | async"></depot-item-details-history>
+            <depot-item-details-history
+                [states]="itemHistoryWithState$ | async"
+                [noReports]="true"
+            ></depot-item-details-history>
         </nb-accordion-item-body>
     </nb-accordion-item>
     <nb-accordion-item>
