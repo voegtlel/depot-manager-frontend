@@ -1,11 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ApiService, AuthService, UpdateService, UsersService } from '../../../common-module/_services';
+import {
+    ApiService,
+    AuthService,
+    UpdateService,
+    User as SelfUser,
+    UsersService,
+} from '../../../common-module/_services';
 import { BehaviorSubject, Observable, of, Subject, combineLatest } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Reservation, ReservationType } from '../../../common-module/_models';
+import { Reservation, ReservationType, User as ApiUser } from '../../../common-module/_models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
-import { map, shareReplay, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { filter, map, shareReplay, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { ConfirmDialogComponent } from 'src/app/common-module/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
@@ -76,20 +82,30 @@ export class ReservationComponent implements OnInit, OnDestroy {
             map((user) => user.teams?.map((team) => ({ value: team, title: team })) ?? [])
         );*/
 
-        this.teams$ = this.authService.user$.pipe(
+        const selectedUser$ = this.authService.user$.pipe(
             switchMap((user) =>
                 user.roles.includes('admin')
                     ? this.form.controls.userId.valueChanges.pipe(
                           startWith(this.form.controls.userId.value),
                           switchMap((userId) => this.userService.getUser(userId)),
-                          tap((user) => console.log('Fetched selected user:', user)),
-                          map(
-                              (selectedUser) => selectedUser?.teams?.map((team) => ({ value: team, title: team })) ?? []
-                          )
+                          tap((u) => console.log('Fetched selected user:', u))
                       )
-                    : of(user.teams?.map((team) => ({ value: team, title: team })) ?? [])
+                    : of(user)
             ),
             shareReplay(1)
+        );
+        selectedUser$
+            .pipe(
+                filter((u) => !!u),
+                takeUntil(this.destroyed$)
+            )
+            .subscribe((user) => {
+                const phoneNumber = (user as SelfUser).phone_number || (user as ApiUser).phoneNumber;
+                this.form.controls.contact.setValue(`${user.name} (${user.email}, ${phoneNumber})`);
+            });
+
+        this.teams$ = selectedUser$.pipe(
+            map((user) => user?.teams?.map((team) => ({ value: team, title: team })) ?? [])
         );
 
         this.allUsers$ = this.authService.user$.pipe(
