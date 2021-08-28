@@ -53,6 +53,12 @@ export class PagesComponent implements OnDestroy {
             icon: 'cube',
         },
         {
+            title: 'Items Table',
+            link: '/items-table',
+            pathMatch: 'prefix',
+            icon: 'cube',
+        },
+        {
             title: 'Logout',
             link: '/logout',
             icon: 'log-out',
@@ -75,6 +81,12 @@ export class PagesComponent implements OnDestroy {
         {
             title: 'Items',
             link: '/items',
+            pathMatch: 'prefix',
+            icon: 'cube',
+        },
+        {
+            title: 'Items Table',
+            link: '/items-table',
             pathMatch: 'prefix',
             icon: 'cube',
         },

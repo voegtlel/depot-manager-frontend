@@ -79,6 +79,7 @@ import { UserNamePipe } from './_pipes/user-name.pipe';
 import { ReservationListItemComponent } from './components/reservation-list-item/reservation-list-item.component';
 import { MarkdownModule } from 'ngx-markdown';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { ItemDetailsHistoryComponent } from './components/item-details-history/item-details-history.component';
 
 @NgModule({
     entryComponents: [CalendarRangeDayCellComponent, CalendarRangeComponent],
@@ -93,6 +94,7 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
         CalendarRangeDayCellComponent,
         CalendarRangeComponent,
         DateRangePickerComponent,
+        ItemDetailsHistoryComponent,
 
         ItemFilterPipe,
         ItemGroupFilterPipe,
@@ -166,6 +168,8 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
     exports: [
         FormElementComponent,
         ReservationItemsComponent,
+        ReservationItemsTableComponent,
+        ReservationDetailsComponent,
         ItemBaysComponent,
 
         CalendarRangeDayCellComponent,

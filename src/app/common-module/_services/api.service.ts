@@ -171,6 +171,37 @@ export class ApiService {
         return this.http.get<ItemState[]>(`${this.env.apiUrl}/items/${itemId}/history${queryStr}`);
     }
 
+    getItemsHistories({
+        start,
+        end,
+        offset,
+        limit,
+    }: {
+        start?: string;
+        end?: string;
+        offset?: number;
+        limit?: number;
+    }): Observable<ItemState[]> {
+        const query = [];
+        if (start) {
+            query.push('start=' + start);
+        }
+        if (end) {
+            query.push('end=' + end);
+        }
+        if (offset) {
+            query.push('offset=' + offset);
+        }
+        if (limit) {
+            query.push('limit=' + limit);
+        }
+        let queryStr = '';
+        if (query.length > 0) {
+            queryStr = '?' + query.join('&');
+        }
+        return this.http.get<ItemState[]>(`${this.env.apiUrl}/items/histories${queryStr}`);
+    }
+
     getReservations({
         includeReturned,
         start,

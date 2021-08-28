@@ -9,8 +9,8 @@
     </a>
     <div class="item-text">
         <div class="item-name">
-            <span *ngIf="item.externalId" style="font-weight: bold">{{ item.externalId }}</span>
             {{ item.name }}
+            <span *ngIf="item.externalId" class="external-id" nbTooltip="Identifier">{{ item.externalId }}</span>
             <nb-icon
                 *ngIf="item.condition === 'ok'"
                 icon="alert-circle-outline"
@@ -24,7 +24,9 @@
                 [nbTooltip]="'Condition is bad' + (item.conditionComment ? ': ' + item.conditionComment : '')"
             ></nb-icon>
         </div>
-        <div class="item-description">{{ item.description }}</div>
+        <div class="item-description">
+            {{ item.description }}
+        </div>
         <div class="item-tags">
             <span *ngFor="let tag of item.tags" class="item-tag">{{ tag }}</span>
         </div>

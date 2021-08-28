@@ -70,6 +70,7 @@ import { ReportProfilesComponent } from './pages/report-profiles/report-profiles
 import { ReservationReturnComponent } from './pages/reservation-return/reservation-return.component';
 import { MarkdownModule } from 'ngx-markdown';
 import { CustomReuseStrategy } from './reuse-route';
+import { ItemsTableComponent } from './pages/items-table/items-table.component';
 
 @NgModule({
     declarations: [
@@ -86,6 +87,7 @@ import { CustomReuseStrategy } from './reuse-route';
         BaysComponent,
         BayComponent,
         ItemComponent,
+        ItemsTableComponent,
         ReportElementsComponent,
         ReportElementComponent,
         ReportProfileComponent,

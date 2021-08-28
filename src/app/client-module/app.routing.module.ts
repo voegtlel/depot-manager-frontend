@@ -5,6 +5,7 @@ import { AuthenticationComponent } from './pages/authentication/authentication.c
 import { BayComponent } from './pages/bay/bay.component';
 import { BaysComponent } from './pages/bays/bays.component';
 import { ItemComponent } from './pages/item/item.component';
+import { ItemsTableComponent } from './pages/items-table/items-table.component';
 import { ItemsComponent } from './pages/items/items.component';
 import { LogoutComponent } from './pages/logout/logout.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
@@ -54,6 +55,22 @@ const routes: Routes = [
                     {
                         path: '',
                         component: ItemsComponent,
+                        data: { reuseRoute: true },
+                    },
+                    {
+                        path: ':itemId',
+                        component: ItemComponent,
+                        data: { back: ['..'] },
+                    },
+                ],
+            },
+            {
+                path: 'items-table',
+                canActivate: [AuthGuard],
+                children: [
+                    {
+                        path: '',
+                        component: ItemsTableComponent,
                         data: { reuseRoute: true },
                     },
                     {

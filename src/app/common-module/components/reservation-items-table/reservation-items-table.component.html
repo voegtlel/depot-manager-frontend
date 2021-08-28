@@ -1,37 +1,70 @@
 <svg:svg class="content" [attr.width]="totalWidth$ | async" [attr.height]="totalHeight$ | async">
-    <ng-container *ngFor="let reservation of reservations$ | async">
-        <svg:rect
-            *ngFor="let item of reservation.itemsWithPosition"
-            [attr.x]="reservation.dateStartPosition"
-            [attr.width]="reservation.dateWidth"
-            [attr.y]="item.itemPosition"
-            [attr.height]="itemRowHeight"
-            [attr.fill]="reservation.color"
-            [class.clickable]="!reservation.isCurrent"
-            (click)="reservation.isCurrent ? null : showReservationDetails.emit(reservation)"
-            [nbTooltip]="
-                reservation.isCurrent ? 'Selected for reservation' : reservation.name + ' (' + reservation.contact + ')'
-            "
-        ></svg:rect>
-    </ng-container>
+    <svg:defs>
+        <svg:svg
+            id="_modificationIcon"
+            [attr.width]="itemRowHeight * 0.5"
+            [attr.height]="itemRowHeight * 0.5"
+            viewBox="0 0 24 24"
+            [innerHtml]="modificationIconHtml"
+            [class]="modificationIconClasses"
+        ></svg:svg>
+    </svg:defs>
+    <svg:g>
+        <ng-container *ngFor="let reservation of reservations$ | async">
+            <svg:rect
+                *ngFor="let item of reservation.itemsWithPosition"
+                [attr.x]="reservation.dateStartPosition"
+                [attr.width]="reservation.dateWidth"
+                [attr.y]="item.itemPosition"
+                [attr.height]="itemRowHeight"
+                [attr.fill]="reservation.color"
+                [class.clickable]="!reservation.isCurrent"
+                (click)="reservation.isCurrent ? null : showReservationDetails.emit(reservation)"
+                [nbTooltip]="
+                    reservation.isCurrent
+                        ? 'Selected for reservation'
+                        : reservation.name + ' (' + reservation.contact + ')'
+                "
+            ></svg:rect>
+        </ng-container>
+    </svg:g>
 
-    <svg:line
-        *ngFor="let date of dates$ | async; let idx = index"
-        class="line"
-        [attr.x1]="(idx + 1) * dateWidth - 1 + nameWidth"
-        [attr.y1]="0"
-        [attr.x2]="(idx + 1) * dateWidth - 1 + nameWidth"
-        [attr.y2]="totalHeight$ | async"
-    />
+    <svg:g>
+        <ng-container *ngFor="let itemState of itemsStates$ | async; let idx = index">
+            <svg:g
+                *ngFor="let state of itemState.states"
+                [attr.transform]="'translate(' + state.timestampPosition + ', ' + itemState.itemPosition + ')'"
+                class="clickable"
+                (click)="showStateDialog(itemStateInfoDialog, itemState, state)"
+                [nbTooltip]="state.tooltip"
+            >
+                <svg:rect [attr.width]="dateWidth * 0.5" [attr.height]="itemRowHeight" fill="#aaa"></svg:rect>
+                <use href="#_modificationIcon"></use>
+            </svg:g>
+        </ng-container>
+    </svg:g>
 
-    <svg:line
-        *ngFor="let item of items; let idx = index"
-        class="line"
-        [attr.x1]="0"
-        [attr.y1]="(idx + 1) * itemRowHeight - 1 + dateHeight"
-        [attr.x2]="totalWidth$ | async"
-        [attr.y2]="(idx + 1) * itemRowHeight - 1 + dateHeight"
-    />
+    <svg:g>
+        <svg:line
+            *ngFor="let date of dates$ | async; let idx = index"
+            class="line"
+            [attr.x1]="(idx + 1) * dateWidth - 1 + nameWidth"
+            [attr.y1]="0"
+            [attr.x2]="(idx + 1) * dateWidth - 1 + nameWidth"
+            [attr.y2]="totalHeight$ | async"
+        />
+    </svg:g>
+
+    <svg:g>
+        <svg:line
+            *ngFor="let item of items; let idx = index"
+            class="line"
+            [attr.x1]="0"
+            [attr.y1]="(idx + 1) * itemRowHeight - 1 + dateHeight"
+            [attr.x2]="totalWidth$ | async"
+            [attr.y2]="(idx + 1) * itemRowHeight - 1 + dateHeight"
+        />
+    </svg:g>
 </svg:svg>
 
 <div class="top" [style.width.px]="totalWidth$ | async">
@@ -66,24 +99,28 @@
         />
 
         <svg:g [attr.transform]="'translate(' + nameWidth + ',' + 0 + ')'">
-            <svg:line
-                *ngFor="let date of dates$ | async; let idx = index"
-                class="line"
-                [attr.x1]="(idx + 1) * dateWidth - 1"
-                [attr.y1]="0"
-                [attr.x2]="(idx + 1) * dateWidth - 1"
-                [attr.y2]="dateHeight"
-            />
-            <svg:text
-                *ngFor="let date of dates$ | async; let idx = index"
-                [attr.x]="idx * dateWidth + 7"
-                [attr.y]="5"
-                clip-path="dateClip"
-                [attr.transform]="'rotate(90, ' + (idx * dateWidth + 7) + ', 5)'"
-                [class.selected]="date.isSelected"
-            >
-                {{ date.date.toLocaleDateString() }}
-            </svg:text>
+            <svg:g>
+                <svg:line
+                    *ngFor="let date of dates$ | async; let idx = index"
+                    class="line"
+                    [attr.x1]="(idx + 1) * dateWidth - 1"
+                    [attr.y1]="0"
+                    [attr.x2]="(idx + 1) * dateWidth - 1"
+                    [attr.y2]="dateHeight"
+                />
+            </svg:g>
+            <svg:g>
+                <svg:text
+                    *ngFor="let date of dates$ | async; let idx = index"
+                    [attr.x]="idx * dateWidth + 7"
+                    [attr.y]="5"
+                    clip-path="dateClip"
+                    [attr.transform]="'rotate(90, ' + (idx * dateWidth + 7) + ', 5)'"
+                    [class.selected]="date.isSelected"
+                >
+                    {{ date.date.toLocaleDateString() }}
+                </svg:text>
+            </svg:g>
         </svg:g>
     </svg:svg>
 </div>
@@ -174,3 +211,15 @@
         />
     </svg:g>
 </svg:svg>
+
+<ng-template #itemStateInfoDialog let-data let-ref="dialogRef">
+    <nb-card class="scrollable-container">
+        <nb-card-header>History on {{ data.date | formatDate }} for {{ data.item.name }}</nb-card-header>
+        <nb-card-body class="no-padding">
+            <depot-item-details-history [states]="data.states"></depot-item-details-history>
+        </nb-card-body>
+        <nb-card-footer>
+            <button nbButton (click)="ref.close()">Close</button>
+        </nb-card-footer>
+    </nb-card>
+</ng-template>

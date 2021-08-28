@@ -39,8 +39,8 @@ export class ItemDetailsComponent implements OnInit, OnDestroy, OnChanges {
             switchMap(([item, reservationStart, reservationEnd]) => {
                 if (item && reservationStart && reservationEnd) {
                     return this.api.getItemHistory(item.id, {
-                        start: reservationStart,
-                        end: reservationEnd,
+                        start: reservationStart + 'T00:00:00',
+                        end: reservationEnd + 'T23:59:59',
                         limit: 10,
                         limitBeforeStart: 10,
                         limitAfterEnd: 0,
