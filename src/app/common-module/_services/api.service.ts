@@ -1,31 +1,40 @@
 import { HttpClient } from '@angular/common/http';
-
-import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { filter, switchMap, take, timeout } from 'rxjs/operators';
 import {
     AuthUserModel,
-    Item,
-    Reservation,
-    ItemInWrite,
-    Picture,
-    ItemState,
     Bay,
-    ReportItemInWrite,
+    Item,
+    ItemInWrite,
+    ItemState,
+    Picture,
     ReportElement,
     ReportElementInWrite,
+    ReportItemInWrite,
     ReportProfile,
     ReportProfileInWrite,
+    Reservation,
     ReservationReturnInWrite,
     User,
 } from '../_models';
+import { AuthService } from './auth.service';
 import { EnvService } from './env.service';
-import { OAuthService } from 'angular-oauth2-oidc';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ApiService {
-    constructor(private http: HttpClient, private env: EnvService, private oauthService: OAuthService) {}
+    constructor(private http: HttpClient, private env: EnvService, private authService: AuthService) {}
+
+    private authRequest<T>(request: Observable<T>): Observable<T> {
+        return this.authService.loggedIn$.pipe(
+            filter((x) => x),
+            timeout(10),
+            take(1),
+            switchMap(() => request)
+        );
+    }
 
     authByCardId(cardToken: string): Observable<{ token: string; user: AuthUserModel }> {
         return this.http.post<{ token: string; user: AuthUserModel }>(
@@ -38,93 +47,93 @@ export class ApiService {
     }
 
     getUser(userId: string): Observable<User> {
-        return this.http.get<User>(`${this.env.apiUrl}/users/${userId}`);
+        return this.authRequest(this.http.get<User>(`${this.env.apiUrl}/users/${userId}`));
         // return this.http.get<UserModel>(`${this.env.oicdIssuer}/profiles/${userId}`, {
         //     headers: { authorization: `Bearer ${this.oauthService.getAccessToken()}` },
         // });
     }
 
     getUsers(): Observable<User[]> {
-        return this.http.get<User[]>(`${this.env.apiUrl}/users`);
+        return this.authRequest(this.http.get<User[]>(`${this.env.apiUrl}/users`));
         // return this.http.get<UserModel[]>(`${this.env.oicdIssuer}/profiles`, {
         //     headers: { authorization: `Bearer ${this.oauthService.getAccessToken()}` },
         // });
     }
 
     getItems(allItems: boolean = false): Observable<Item[]> {
-        return this.http.get<Item[]>(`${this.env.apiUrl}/items${allItems ? '?all=true' : ''}`);
+        return this.authRequest(this.http.get<Item[]>(`${this.env.apiUrl}/items${allItems ? '?all=true' : ''}`));
     }
 
     createItem(item: ReportItemInWrite): Observable<Item> {
-        return this.http.post<Item>(`${this.env.apiUrl}/items`, item);
+        return this.authRequest(this.http.post<Item>(`${this.env.apiUrl}/items`, item));
     }
 
     getItem(itemId: string): Observable<Item> {
-        return this.http.get<Item>(`${this.env.apiUrl}/items/${itemId}`);
+        return this.authRequest(this.http.get<Item>(`${this.env.apiUrl}/items/${itemId}`));
     }
 
     saveItem(itemId: string, item: ItemInWrite): Observable<Item> {
-        return this.http.put<Item>(`${this.env.apiUrl}/items/${itemId}`, item);
+        return this.authRequest(this.http.put<Item>(`${this.env.apiUrl}/items/${itemId}`, item));
     }
 
     reportItem(itemId: string, item: ReportItemInWrite): Observable<Item> {
-        return this.http.put<Item>(`${this.env.apiUrl}/items/${itemId}/report`, item);
+        return this.authRequest(this.http.put<Item>(`${this.env.apiUrl}/items/${itemId}/report`, item));
     }
 
     getReportElements(): Observable<ReportElement[]> {
-        return this.http.get<ReportElement[]>(`${this.env.apiUrl}/report-elements`);
+        return this.authRequest(this.http.get<ReportElement[]>(`${this.env.apiUrl}/report-elements`));
     }
 
     createReportElement(element: ReportElementInWrite): Observable<ReportElement> {
-        return this.http.post<ReportElement>(`${this.env.apiUrl}/report-elements`, element);
+        return this.authRequest(this.http.post<ReportElement>(`${this.env.apiUrl}/report-elements`, element));
     }
 
     getReportElement(id: string): Observable<ReportElement> {
-        return this.http.get<ReportElement>(`${this.env.apiUrl}/report-elements/${id}`);
+        return this.authRequest(this.http.get<ReportElement>(`${this.env.apiUrl}/report-elements/${id}`));
     }
 
     saveReportElement(id: string, element: ReportElementInWrite): Observable<ReportElement> {
-        return this.http.put<ReportElement>(`${this.env.apiUrl}/report-elements/${id}`, element);
+        return this.authRequest(this.http.put<ReportElement>(`${this.env.apiUrl}/report-elements/${id}`, element));
     }
 
     deleteReportElement(id: string): Observable<void> {
-        return this.http.delete<void>(`${this.env.apiUrl}/report-elements/${id}`);
+        return this.authRequest(this.http.delete<void>(`${this.env.apiUrl}/report-elements/${id}`));
     }
 
     getReportProfiles(): Observable<ReportProfile[]> {
-        return this.http.get<ReportProfile[]>(`${this.env.apiUrl}/report-profiles`);
+        return this.authRequest(this.http.get<ReportProfile[]>(`${this.env.apiUrl}/report-profiles`));
     }
 
     createReportProfile(profile: ReportProfileInWrite): Observable<ReportProfile> {
-        return this.http.post<ReportProfile>(`${this.env.apiUrl}/report-profiles`, profile);
+        return this.authRequest(this.http.post<ReportProfile>(`${this.env.apiUrl}/report-profiles`, profile));
     }
 
     getReportProfile(id: string): Observable<ReportProfile> {
-        return this.http.get<ReportProfile>(`${this.env.apiUrl}/report-profiles/${id}`);
+        return this.authRequest(this.http.get<ReportProfile>(`${this.env.apiUrl}/report-profiles/${id}`));
     }
 
     saveReportProfile(id: string, profile: ReportProfileInWrite): Observable<ReportProfile> {
-        return this.http.put<ReportProfile>(`${this.env.apiUrl}/report-profiles/${id}`, profile);
+        return this.authRequest(this.http.put<ReportProfile>(`${this.env.apiUrl}/report-profiles/${id}`, profile));
     }
 
     deleteReportProfile(id: string): Observable<void> {
-        return this.http.delete<void>(`${this.env.apiUrl}/report-profiles/${id}`);
+        return this.authRequest(this.http.delete<void>(`${this.env.apiUrl}/report-profiles/${id}`));
     }
 
     getBays(): Observable<Bay[]> {
-        return this.http.get<Bay[]>(`${this.env.apiUrl}/bays`);
+        return this.authRequest(this.http.get<Bay[]>(`${this.env.apiUrl}/bays`));
     }
 
     createBay(bay: Bay): Observable<Bay> {
-        return this.http.post<Bay>(`${this.env.apiUrl}/bays`, bay);
+        return this.authRequest(this.http.post<Bay>(`${this.env.apiUrl}/bays`, bay));
     }
 
     getBay(bayId: string): Observable<Bay> {
-        return this.http.get<Bay>(`${this.env.apiUrl}/bays/${bayId}`);
+        return this.authRequest(this.http.get<Bay>(`${this.env.apiUrl}/bays/${bayId}`));
     }
 
     saveBay(bayId: string, bay: Bay): Observable<Bay> {
-        return this.http.put<Bay>(`${this.env.apiUrl}/bays/${bayId}`, bay);
+        return this.authRequest(this.http.put<Bay>(`${this.env.apiUrl}/bays/${bayId}`, bay));
     }
 
     getItemHistory(
@@ -168,7 +177,7 @@ export class ApiService {
         if (query.length > 0) {
             queryStr = '?' + query.join('&');
         }
-        return this.http.get<ItemState[]>(`${this.env.apiUrl}/items/${itemId}/history${queryStr}`);
+        return this.authRequest(this.http.get<ItemState[]>(`${this.env.apiUrl}/items/${itemId}/history${queryStr}`));
     }
 
     getItemsHistories({
@@ -199,7 +208,7 @@ export class ApiService {
         if (query.length > 0) {
             queryStr = '?' + query.join('&');
         }
-        return this.http.get<ItemState[]>(`${this.env.apiUrl}/items/histories${queryStr}`);
+        return this.authRequest(this.http.get<ItemState[]>(`${this.env.apiUrl}/items/histories${queryStr}`));
     }
 
     getReservations({
@@ -250,7 +259,7 @@ export class ApiService {
         if (query.length > 0) {
             queryStr = '?' + query.join('&');
         }
-        return this.http.get<Reservation[]>(`${this.env.apiUrl}/reservations${queryStr}`);
+        return this.authRequest(this.http.get<Reservation[]>(`${this.env.apiUrl}/reservations${queryStr}`));
     }
 
     getReservationItems(start: string, end: string, skipReservationId?: string): Observable<string[]> {
@@ -258,37 +267,41 @@ export class ApiService {
         if (skipReservationId) {
             query += '&skip_reservation_id=' + skipReservationId;
         }
-        return this.http.get<string[]>(`${this.env.apiUrl}/reservations/items${query}`);
+        return this.authRequest(this.http.get<string[]>(`${this.env.apiUrl}/reservations/items${query}`));
     }
 
     createReservation(reservation: Reservation): Observable<Reservation> {
-        return this.http.post<Reservation>(`${this.env.apiUrl}/reservations`, reservation);
+        return this.authRequest(this.http.post<Reservation>(`${this.env.apiUrl}/reservations`, reservation));
     }
 
     getReservation(reservationId: string): Observable<Reservation> {
-        return this.http.get<Reservation>(`${this.env.apiUrl}/reservations/${reservationId}`);
+        return this.authRequest(this.http.get<Reservation>(`${this.env.apiUrl}/reservations/${reservationId}`));
     }
 
     saveReservation(reservationId: string, reservation: Reservation): Observable<Reservation> {
-        return this.http.put<Reservation>(`${this.env.apiUrl}/reservations/${reservationId}`, reservation);
+        return this.authRequest(
+            this.http.put<Reservation>(`${this.env.apiUrl}/reservations/${reservationId}`, reservation)
+        );
     }
 
     deleteReservation(reservationId: string): Observable<Reservation> {
-        return this.http.delete<Reservation>(`${this.env.apiUrl}/reservations/${reservationId}`);
+        return this.authRequest(this.http.delete<Reservation>(`${this.env.apiUrl}/reservations/${reservationId}`));
     }
 
     returnReservation(reservationId: string, reservationReturn: ReservationReturnInWrite): Observable<void> {
-        return this.http.put<void>(`${this.env.apiUrl}/reservations/${reservationId}/return`, reservationReturn);
+        return this.authRequest(
+            this.http.put<void>(`${this.env.apiUrl}/reservations/${reservationId}/return`, reservationReturn)
+        );
     }
 
     getPictures(): Observable<Picture[]> {
-        return this.http.get<Picture[]>(`${this.env.apiUrl}/pictures`);
+        return this.authRequest(this.http.get<Picture[]>(`${this.env.apiUrl}/pictures`));
     }
 
     createPicture(data: Blob): Observable<string> {
         const formData = new FormData();
         formData.append('file', data);
-        return this.http.post<string>(`${this.env.apiUrl}/pictures`, formData);
+        return this.authRequest(this.http.post<string>(`${this.env.apiUrl}/pictures`, formData));
     }
 
     getPictureUrl(pictureId: string): string {
