@@ -5,8 +5,5 @@
 export const environment = {
     production: false,
     onDevice: true,
-    deviceApiUrl: 'http://localhost:8002',
-    userApiUrl: 'http://localhost:8000',
-    userCardConfig: '',
     appBaseHref: '/',
 };

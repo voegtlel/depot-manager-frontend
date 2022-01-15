@@ -28,11 +28,11 @@ export class ItemDetailsHistoryComponent implements OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         if (this.states) {
             if (this.noReports) {
-                this.displayStates = this.states.filter((state) => state.changesArray.length > 0);
+                this.displayStates = this.states.filter((state) => state.comment && state.changesArray.length > 0);
             } else if (this.onlyReports) {
-                this.displayStates = this.states.filter((state) => state.report != null);
+                this.displayStates = this.states.filter((state) => state.comment && state.report != null);
             } else {
-                this.displayStates = this.states;
+                this.displayStates = this.states.filter((state) => state.comment);
             }
         }
     }

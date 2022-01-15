@@ -30,7 +30,7 @@ export class ItemDetailsComponent implements OnInit, OnDestroy, OnChanges {
     @AsyncInput() reservationEnd$ = new BehaviorSubject<string>(toIsoDate(new Date(Date.now() + 60 * 60 * 24 * 1000)));
 
     itemHistoryWithState$: Observable<ItemStateWithArray[]>;
-    reservations$: Observable<Reservation[]>;
+    //reservations$: Observable<Reservation[]>;
     destroyed$ = new Subject<void>();
 
     constructor(private api: ApiService) {
@@ -60,12 +60,12 @@ export class ItemDetailsComponent implements OnInit, OnDestroy, OnChanges {
             takeUntil(this.destroyed$)
         );
 
-        this.reservations$ = combineLatest([this.item$, this.reservationStart$, this.reservationEnd$]).pipe(
+        /*this.reservations$ = combineLatest([this.item$, this.reservationStart$, this.reservationEnd$]).pipe(
             debounceTime(200),
             switchMap(([item, reservationStart, reservationEnd]) => {
                 if (item && reservationStart && reservationEnd) {
                     return this.api.getReservations({
-                        includeReturned: true,
+                        includeInactive: true,
                         start: reservationStart,
                         end: reservationEnd,
                         limitBeforeStart: 1,
@@ -77,7 +77,7 @@ export class ItemDetailsComponent implements OnInit, OnDestroy, OnChanges {
             }),
             shareReplay(1),
             takeUntil(this.destroyed$)
-        );
+        );*/
     }
 
     ngOnInit() {}

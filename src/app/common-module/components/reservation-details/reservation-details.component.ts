@@ -22,7 +22,9 @@ export class ReservationDetailsComponent implements OnInit, OnDestroy, OnChanges
     constructor(itemsService: ItemsService, private dialogService: NbDialogService) {
         this.reservedItems$ = this.reservation$.pipe(
             switchMap((reservation) =>
-                itemsService.itemsById$.pipe(map((itemsById) => reservation.items.map((item) => itemsById[item])))
+                itemsService.itemsById$.pipe(
+                    map((itemsById) => reservation.items.map((item) => itemsById[item.itemId]))
+                )
             )
         );
     }

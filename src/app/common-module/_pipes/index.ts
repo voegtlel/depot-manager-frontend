@@ -6,3 +6,4 @@ export * from './format-date.pipe';
 export * from './bay-name.pipe';
 export * from './report-element-title.pipe';
 export * from './report-profile.pipe';
+export * from './reservation-name.pipe';

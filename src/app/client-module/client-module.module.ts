@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 
 import { PagesComponent } from './pages/pages.component';
 import { ReservationComponent } from './pages/reservation/reservation.component';
@@ -30,6 +31,7 @@ import {
     NbContextMenuModule,
     NbDatepickerModule,
     NbDialogModule,
+    NbFormFieldModule,
     NbIconModule,
     NbInputModule,
     NbLayoutModule,
@@ -132,8 +134,10 @@ import { ItemsTableComponent } from './pages/items-table/items-table.component';
         NbBaseCalendarModule,
         NbIconModule,
         NbTreeGridModule,
+        NbFormFieldModule,
         ReactiveFormsModule,
         DragDropModule,
+        ClipboardModule,
         FormsModule,
         HttpClientModule,
         MarkdownModule.forRoot(),

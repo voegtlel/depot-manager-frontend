@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { tap } from 'rxjs/operators';
-import { AuthService } from '../common-module/_services';
+import { DeviceCodeService } from './_services/device-code.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
-    constructor(private router: Router, private authService: AuthService) {}
+    constructor(private router: Router, private codeService: DeviceCodeService) {}
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        return this.authService.loggedIn$.pipe(
+        return this.codeService.loggedIn$.pipe(
             tap((loggedIn) => {
                 if (!loggedIn) {
                     this.router.navigate(['/']);

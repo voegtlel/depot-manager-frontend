@@ -10,6 +10,13 @@
     </nb-card-header>
     <nb-card-body>
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <label [for]="codeEl" class="label">Reservation Code</label>
+            <nb-form-field>
+                <input type="text" nbInput [formControl]="code" #codeEl />
+                <button type="button" nbSuffix nbButton ghost [cdkCopyToClipboard]="code.value">
+                    <nb-icon icon="clipboard"></nb-icon>
+                </button>
+            </nb-form-field>
             <depot-form-element
                 [formControlRef]="form.controls.type"
                 [submitted]="submitted"

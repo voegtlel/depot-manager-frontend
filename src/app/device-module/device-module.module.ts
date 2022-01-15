@@ -1,72 +1,69 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { APP_BASE_HREF, CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { CommonModuleModule } from '../common-module/common-module.module';
-import { PagesComponent } from './pages/pages.component';
-import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { NbEvaIconsModule } from '@nebular/eva-icons';
 import {
-    NbThemeModule,
-    NbMenuModule,
-    NbToastrModule,
-    NbDialogModule,
-    NbDatepickerModule,
+    NbAccordionModule,
     NbActionsModule,
-    NbCardModule,
-    NbLayoutModule,
-    NbRouteTabsetModule,
-    NbSearchModule,
-    NbSidebarModule,
-    NbTabsetModule,
-    NbUserModule,
-    NbCheckboxModule,
-    NbPopoverModule,
-    NbContextMenuModule,
-    NbProgressBarModule,
+    NbAlertModule,
+    NbBaseCalendarModule,
+    NbButtonGroupModule,
+    NbButtonModule,
+    NbCalendarKitModule,
     NbCalendarModule,
     NbCalendarRangeModule,
-    NbStepperModule,
-    NbButtonModule,
-    NbInputModule,
-    NbAccordionModule,
-    NbWindowModule,
-    NbListModule,
-    NbAlertModule,
-    NbSpinnerModule,
-    NbRadioModule,
-    NbSelectModule,
+    NbCardModule,
     NbChatModule,
-    NbTooltipModule,
-    NbCalendarKitModule,
-    NbBaseCalendarModule,
+    NbCheckboxModule,
+    NbContextMenuModule,
+    NbDatepickerModule,
+    NbDialogModule,
     NbIconModule,
+    NbInputModule,
+    NbLayoutModule,
+    NbListModule,
+    NbMenuModule,
+    NbPopoverModule,
+    NbProgressBarModule,
+    NbRadioModule,
+    NbRouteTabsetModule,
+    NbSearchModule,
+    NbSelectModule,
+    NbSidebarModule,
+    NbSpinnerModule,
+    NbStepperModule,
+    NbTabsetModule,
+    NbToastrModule,
+    NbTooltipModule,
     NbTreeGridModule,
+    NbUserModule,
+    NbWindowModule,
 } from '@nebular/theme';
-import { NbEvaIconsModule } from '@nebular/eva-icons';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { LoginByCardComponent } from './pages/login-by-card/login-by-card.component';
-import { HomeComponent } from './pages/home/home.component';
-import { ReservationsComponent } from './pages/reservations/reservations.component';
-import { ReservationComponent } from './pages/reservation/reservation.component';
+import { MarkdownModule } from 'ngx-markdown';
+import { environment } from 'src/environments/environment.device';
+import { CommonModuleModule } from '../common-module/common-module.module';
+import { AuthGuard } from './auth.guard';
 import { BayComponent } from './pages/bay/bay.component';
-import { AuthComponent } from './pages/auth/auth.component';
-import { LoginComponent } from './pages/login/login.component';
+import { LoginByCardComponent } from './pages/login-by-card/login-by-card.component';
+import { LoginCodeComponent } from './pages/login-code/login-code.component';
 import { LogoutComponent } from './pages/logout/logout.component';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { PagesComponent } from './pages/pages.component';
+import { ReservationComponent } from './pages/reservation/reservation.component';
 
 @NgModule({
     declarations: [
         PagesComponent,
         NotFoundComponent,
         LoginByCardComponent,
-        HomeComponent,
-        ReservationsComponent,
+        LoginCodeComponent,
         ReservationComponent,
         BayComponent,
-        AuthComponent,
-        LoginComponent,
         LogoutComponent,
     ],
-    exports: [PagesComponent],
     imports: [
         CommonModule,
         CommonModuleModule,
@@ -91,6 +88,7 @@ import { LogoutComponent } from './pages/logout/logout.component';
         NbCalendarRangeModule,
         NbStepperModule,
         NbButtonModule,
+        NbButtonGroupModule,
         NbInputModule,
         NbAccordionModule,
         NbWindowModule,
@@ -107,8 +105,12 @@ import { LogoutComponent } from './pages/logout/logout.component';
         NbIconModule,
         NbTreeGridModule,
         ReactiveFormsModule,
+        DragDropModule,
         FormsModule,
         HttpClientModule,
+        MarkdownModule.forRoot(),
     ],
+    exports: [PagesComponent],
+    providers: [{ provide: APP_BASE_HREF, useValue: environment.appBaseHref }, AuthGuard],
 })
 export class DeviceModuleModule {}

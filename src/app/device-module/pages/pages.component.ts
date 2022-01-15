@@ -1,72 +1,57 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AuthService, ApiService } from '../../common-module/_services';
-import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
-import { takeUntil, map, switchMap, filter } from 'rxjs/operators';
-import { Subject, combineLatest } from 'rxjs';
+import { Component, OnDestroy } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { Observable, Subject } from 'rxjs';
+import { filter, map, startWith, switchMap, take, tap } from 'rxjs/operators';
+import { DeviceCodeService } from '../_services/device-code.service';
 
 @Component({
     selector: 'depot-pages',
     templateUrl: './pages.component.html',
     styleUrls: ['./pages.component.scss'],
 })
-export class PagesComponent implements OnInit, OnDestroy {
-    private destroyed$ = new Subject<void>();
+export class PagesComponent implements OnDestroy {
+    destroyed$: Subject<void> = new Subject();
+    loggedIn$: Observable<boolean>;
+    name$: Observable<string>;
 
-    backDisabled: boolean;
-    absolutePath: string[];
+    back$: Observable<any>;
+    lastRoute$: Observable<ActivatedRoute>;
 
-    constructor(
-        public authService: AuthService,
-        public api: ApiService,
-        private router: Router,
-        route: ActivatedRoute
-    ) {
-        this.router.events
-            .pipe(
-                takeUntil(this.destroyed$),
-                filter((event) => event instanceof NavigationEnd),
-                switchMap(() => {
-                    let innerChild = route.firstChild;
-                    while (innerChild.firstChild) {
-                        innerChild = innerChild.firstChild;
-                    }
-                    return combineLatest([innerChild.data, innerChild.params]).pipe(
-                        map(([{ backref }, params]) => ({ backref, params }))
-                    );
-                }),
-                takeUntil(this.destroyed$)
-            )
-            .subscribe(({ backref, params }: { backref?: string[]; params: Record<string, string> }) => {
-                if (backref) {
-                    this.backDisabled = false;
-                    const path = [];
-                    for (const part of backref) {
-                        if (part === '..') {
-                            path.pop();
-                        } else if (part.startsWith(':')) {
-                            path.push(params[part.substr(1)]);
-                        } else {
-                            path.push(part);
-                        }
-                    }
-                    this.absolutePath = path;
-                } else {
-                    this.backDisabled = true;
+    constructor(private deviceCode: DeviceCodeService, public router: Router, public activatedRoute: ActivatedRoute) {
+        this.loggedIn$ = deviceCode.loggedIn$;
+        this.lastRoute$ = this.router.events.pipe(
+            tap((e) => console.log('RouterEvent', e)),
+            filter((routerEvent) => routerEvent instanceof NavigationEnd),
+            tap(() => console.log('NavigationEnd')),
+            map(() => this.activatedRoute.root),
+            startWith(this.activatedRoute.root),
+            map((node) => {
+                while (node.firstChild) {
+                    node = node.firstChild;
                 }
-            });
+                return node;
+            })
+        );
+        this.back$ = this.lastRoute$.pipe(
+            switchMap((route) => route.data),
+            map((data) => data?.back)
+        );
     }
 
-    ngOnInit() {}
+    async back() {
+        const back = await this.lastRoute$.pipe(take(1)).toPromise();
+        const data = await back.data.pipe(take(1)).toPromise();
+        if (back && data?.back) {
+            this.router.navigate(data.back, { relativeTo: back });
+        }
+    }
 
     ngOnDestroy() {
         this.destroyed$.next();
     }
 
-    back() {
-        this.router.navigate(this.absolutePath);
-    }
-
     logout() {
-        this.authService.logout();
+        this.deviceCode.logout();
+        this.router.navigate(['/']);
     }
 }

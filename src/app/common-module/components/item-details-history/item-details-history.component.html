@@ -85,6 +85,13 @@
                                 ><span class="tag" *ngFor="let tag of field.value">{{ tag }}</span></span
                             >
                         </p>
+                        <p *ngSwitchCase="'reservationId'">
+                            <ng-container *ngIf="field.value == null; else noReservationId">
+                                <span class="key">Pick up by reservation </span
+                                ><span class="value">{{ field.value | reservationName | async }}</span>
+                            </ng-container>
+                            <ng-template #noReservationId> </ng-template>
+                        </p>
                         <p *ngSwitchDefault>
                             <span class="key">{{ field.key }}: </span><span class="value">{{ field.value }}</span>
                         </p>

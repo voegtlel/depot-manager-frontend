@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Item } from '../_models';
+import { Item, ReservationItem } from '../_models';
 
 export interface Filterable extends Item {
     filterLookup: string;
@@ -9,11 +9,11 @@ export interface Filterable extends Item {
 export class ItemFilterPipe implements PipeTransform {
     transform<ItemType extends Filterable>(
         items: ItemType[],
-        filter: { filter?: string; onlyShowIds?: string[] }
+        filter: { filter?: string; onlyShowIds?: ReservationItem[] }
     ): ItemType[] {
         if (filter?.onlyShowIds) {
             const idsByKey = filter.onlyShowIds.reduce((o, i) => {
-                o[i] = true;
+                o[i.itemId] = true;
                 return o;
             }, Object.create(null));
             items = items.filter((item) => idsByKey[item.id]);

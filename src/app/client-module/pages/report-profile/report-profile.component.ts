@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { parseHttpError } from 'src/app/common-module/_helpers';
 
 @Component({
     selector: 'depot-report-profile',
@@ -126,7 +127,7 @@ export class ReportProfileComponent implements OnInit, OnDestroy {
             },
             (error) => {
                 console.log(error);
-                this.toastrService.danger(error, 'Failed');
+                this.toastrService.danger(parseHttpError(error), 'Failed');
             }
         );
     }

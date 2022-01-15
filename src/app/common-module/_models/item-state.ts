@@ -67,7 +67,7 @@ export interface ItemStateChanges {
 
     bayId?: IdChange;
 
-    changeComment?: StrChange;
+    reservationId?: IdChange;
 }
 
 export interface ItemReport {
@@ -87,5 +87,5 @@ export interface ItemState {
 
     userId: string;
 
-    comment: string;
+    comment?: string;
 }

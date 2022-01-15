@@ -1,23 +1,23 @@
 <nb-layout>
-    <nb-layout-header fixed>
+    <nb-layout-header fixed *ngIf="loggedIn$ | async">
         <div class="section left">
             <nb-actions size="medium">
-                <nb-action (click)="back()" icon="arrow-back" [disabled]="backDisabled"></nb-action>
+                <nb-action (click)="back()" icon="arrow-back" [disabled]="!(back$ | async)" title="Back"></nb-action>
             </nb-actions>
-            Depot Management
+            Depot Manager
         </div>
         <div class="section right">
             <nb-actions size="medium">
-                <nb-action link="/logout" icon="log-out"></nb-action>
+                <nb-action (click)="logout()" icon="log-out" title="Log Out"></nb-action>
             </nb-actions>
         </div>
     </nb-layout-header>
     <nb-layout-column class="no-padding"><router-outlet></router-outlet></nb-layout-column>
     <nb-layout-footer>
-        <span>
-            Powered by <a href="https://angular.io/">Angular</a>, <a href="https://akveo.github.io/nebular">Nebular</a>,
-            <a href="https://fastapi.tiangolo.com/">FastAPI</a> and
-            <a href="https://docs.authlib.org/en/latest/">Authlib</a>. Version 1.0.0 &copy; 2020 Lukas Vögtle
+        <span class="footer">
+            Powered by <a href="https://angular.io/">Angular</a>,
+            <a href="https://akveo.github.io/nebular">Nebular</a> and
+            <a href="https://fastapi.tiangolo.com/">FastAPI</a>. &copy; 2021 Lukas Vögtle
         </span>
     </nb-layout-footer>
 </nb-layout>

@@ -5,7 +5,7 @@ import { AsyncInput } from '@ng-reactive/async-input';
 import { BehaviorSubject, combineLatest, EMPTY, Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { fromIsoDate } from '../../_helpers';
-import { Item, ItemState, Reservation } from '../../_models';
+import { Item, ItemState, Reservation, ReservationState } from '../../_models';
 import { Filterable } from '../../_pipes';
 import { ApiService } from '../../_services';
 
@@ -178,7 +178,7 @@ export class ReservationItemsTableComponent implements OnChanges, OnDestroy, OnI
             switchMap(([start, end]) =>
                 combineLatest([
                     api.getReservations({
-                        includeReturned: true,
+                        includeInactive: true,
                         start: start.toISOString().substr(0, 10),
                         end: end.toISOString().substr(0, 10),
                     }),
@@ -204,6 +204,7 @@ export class ReservationItemsTableComponent implements OnChanges, OnDestroy, OnI
                           id: reservationId,
                           start: rangeStart,
                           end: rangeEnd,
+                          state: ReservationState.Reserved,
                           items: selectedIds,
                           contact: null,
                           name: null,
@@ -331,8 +332,8 @@ export class ReservationItemsTableComponent implements OnChanges, OnDestroy, OnI
                                     : this.colorPalette[resIdx % this.colorPalette.length],
                             isCurrent: reservation.id === currentReservation?.id,
                             itemsWithPosition: reservation.items
-                                .map((itemId) => {
-                                    const item = itemsById[itemId];
+                                .map((resItem) => {
+                                    const item = itemsById[resItem.itemId];
                                     if (item == null) {
                                         return null;
                                     }

@@ -63,6 +63,7 @@ import {
     BayNamePipe,
     ReportProfilePipe,
     ItemNamePipe,
+    ReservationNamePipe,
 } from './_pipes';
 import { PictureListComponent } from './components/picture-list/picture-list.component';
 import { ItemDetailsComponent } from './components/item-details/item-details.component';
@@ -111,6 +112,7 @@ import { ItemDetailsHistoryComponent } from './components/item-details-history/i
         ConfirmDialogComponent,
         ReportElementPipe,
         ReportProfilePipe,
+        ReservationNamePipe,
         UserNamePipe,
         ItemNamePipe,
     ],
@@ -169,6 +171,7 @@ import { ItemDetailsHistoryComponent } from './components/item-details-history/i
         FormElementComponent,
         ReservationItemsComponent,
         ReservationItemsTableComponent,
+        ReservationListItemComponent,
         ReservationDetailsComponent,
         ItemBaysComponent,
 
@@ -191,6 +194,7 @@ import { ItemDetailsHistoryComponent } from './components/item-details-history/i
         ItemGroupNamePipe,
         ReportElementPipe,
         ReportProfilePipe,
+        ReservationNamePipe,
         ItemNamePipe,
     ],
 })

@@ -3,59 +3,61 @@ import { TotalReportState } from './report-profile';
 
 export interface Item {
     id: string;
-    externalId: string;
+    externalId?: string;
 
-    manufacturer: string;
-    model: string;
-    serialNumber: string;
-    manufactureDate: string;
-    purchaseDate: string;
-    firstUseDate: string;
+    manufacturer?: string;
+    model?: string;
+    serialNumber?: string;
+    manufactureDate?: string;
+    purchaseDate?: string;
+    firstUseDate?: string;
 
     name: string;
-    description: string;
+    description?: string;
 
-    reportProfileId: string;
+    reportProfileId?: string;
 
-    totalReportState: TotalReportState;
+    totalReportState?: TotalReportState;
     condition: ItemCondition;
-    conditionComment: string;
+    conditionComment?: string;
 
-    lastService: string;
+    lastService?: string;
 
-    pictureId: string;
+    pictureId?: string;
 
-    groupId: string;
-
-    bayId: string;
+    groupId?: string;
 
     tags: string[];
+
+    bayId?: string;
+
+    reservationId?: string;
 }
 
 export interface ItemInWrite {
-    externalId: string;
+    externalId?: string;
 
-    manufacturer: string;
-    model: string;
-    serialNumber: string;
-    manufactureDate: string;
-    purchaseDate: string;
-    firstUseDate: string;
+    manufacturer?: string;
+    model?: string;
+    serialNumber?: string;
+    manufactureDate?: string;
+    purchaseDate?: string;
+    firstUseDate?: string;
 
     name: string;
-    description: string;
+    description?: string;
 
-    reportProfileId: string;
+    reportProfileId?: string;
 
     totalReportState: TotalReportState;
     condition: ItemCondition;
-    conditionComment: string;
+    conditionComment?: string;
 
-    pictureId: string;
+    pictureId?: string;
 
-    groupId: string;
+    groupId?: string;
 
-    bayId: string;
+    bayId?: string;
 
     tags: string[];
 
@@ -63,7 +65,7 @@ export interface ItemInWrite {
 }
 
 export interface ReportItemInWrite extends ItemInWrite {
-    lastService: string;
+    lastService?: string;
     totalReportState: TotalReportState;
     report: ItemReport[];
 }

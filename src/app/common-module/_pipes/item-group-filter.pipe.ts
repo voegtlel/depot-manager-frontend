@@ -1,11 +1,12 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { ReservationItem } from '../_models';
 import { Filterable } from './item-filter.pipe';
 
 @Pipe({ name: 'itemGroupFilter' })
 export class ItemGroupFilterPipe implements PipeTransform {
     transform<ItemType extends Filterable>(
         items: ItemType[][],
-        filter: { filter?: string; onlyShowIds?: string[] }
+        filter: { filter?: string; onlyShowIds?: ReservationItem[] }
     ): ItemType[][] {
         if (filter?.filter) {
             const filters = filter.filter
@@ -17,7 +18,7 @@ export class ItemGroupFilterPipe implements PipeTransform {
         }
         if (filter?.onlyShowIds) {
             const idsByKey = filter.onlyShowIds.reduce((o, i) => {
-                o[i] = true;
+                o[i.itemId] = true;
                 return o;
             }, Object.create(null));
             items = items.filter((item) => item.some((ite) => idsByKey[ite.id]));

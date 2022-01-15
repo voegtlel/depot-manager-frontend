@@ -6,6 +6,7 @@ import { Reservation } from '../../../common-module/_models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NbToastrService } from '@nebular/theme';
 import { map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
+import { parseHttpError } from 'src/app/common-module/_helpers';
 
 @Component({
     selector: 'depot-reservation-return',
@@ -73,7 +74,7 @@ export class ReservationReturnComponent implements OnInit, OnDestroy {
         }
         const formValue = this.form.getRawValue();
         console.log('Submit:', formValue);
-        this.api.returnReservation(this.reservationId, formValue).subscribe(
+        this.api.reservationAction(this.reservationId, formValue).subscribe(
             () => {
                 console.log('Saved');
                 this.updateService.updateReservations$.next();
@@ -82,7 +83,7 @@ export class ReservationReturnComponent implements OnInit, OnDestroy {
             },
             (error) => {
                 console.log(error);
-                this.toastrService.danger(error, 'Failed');
+                this.toastrService.danger(parseHttpError(error), 'Failed');
             }
         );
     }

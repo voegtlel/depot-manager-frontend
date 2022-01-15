@@ -6,6 +6,7 @@ import { ReportElement } from '../../../common-module/_models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NbToastrService } from '@nebular/theme';
 import { map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
+import { parseHttpError } from 'src/app/common-module/_helpers';
 
 @Component({
     selector: 'depot-report-element',
@@ -110,7 +111,7 @@ export class ReportElementComponent implements OnInit, OnDestroy {
             },
             (error) => {
                 console.log(error);
-                this.toastrService.danger(error, 'Failed');
+                this.toastrService.danger(parseHttpError(error), 'Failed');
             }
         );
     }

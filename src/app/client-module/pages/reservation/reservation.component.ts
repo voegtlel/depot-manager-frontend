@@ -13,6 +13,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { filter, map, shareReplay, startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { ConfirmDialogComponent } from 'src/app/common-module/components/confirm-dialog/confirm-dialog.component';
+import { parseHttpError } from 'src/app/common-module/_helpers';
 
 @Component({
     selector: 'depot-reservation',
@@ -44,6 +45,7 @@ export class ReservationComponent implements OnInit, OnDestroy {
     });
     readonly userName = new FormControl({ value: '', disabled: true });
     userIdRaw$ = new BehaviorSubject<string>(null);
+    readonly code = new FormControl({ value: null, disabled: true });
 
     reservationChoices = [
         { value: ReservationType.Private, title: 'Private' },
@@ -121,6 +123,7 @@ export class ReservationComponent implements OnInit, OnDestroy {
                     this.isNew = false;
                     this.userName.reset(reservation.userId);
                     this.userIdRaw$.next(reservation.userId);
+                    this.code.reset(reservation.code);
                     this.form.reset(reservation);
 
                     if (
@@ -137,6 +140,7 @@ export class ReservationComponent implements OnInit, OnDestroy {
                     this.isNew = true;
                     this.userName.reset(user.sub);
                     this.userIdRaw$.next(user.sub);
+                    this.code.reset(null);
                     this.form.reset({
                         id: null,
                         type: null,
@@ -208,7 +212,7 @@ export class ReservationComponent implements OnInit, OnDestroy {
                     },
                     (error) => {
                         console.log(error);
-                        this.toastrService.danger(error, 'Failed');
+                        this.toastrService.danger(parseHttpError(error), 'Failed');
                     }
                 );
             }
@@ -226,6 +230,7 @@ export class ReservationComponent implements OnInit, OnDestroy {
             formValue.userId = this.userIdRaw$.value;
         }
         console.log('Submit:', formValue);
+        formValue.items = formValue.items.map((item) => item.itemId);
         if (this.isNew) {
             apiCall = this.api.createReservation(formValue);
         } else {
@@ -246,7 +251,7 @@ export class ReservationComponent implements OnInit, OnDestroy {
             },
             (error) => {
                 console.log(error);
-                this.toastrService.danger(error, 'Failed');
+                this.toastrService.danger(parseHttpError(error), 'Failed');
             }
         );
     }

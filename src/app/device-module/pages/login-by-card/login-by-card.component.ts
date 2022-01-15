@@ -1,12 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { DeviceAuthService } from '../../_services/device-auth.service';
-import { takeUntil } from 'rxjs/operators';
-import { Subject, Observable } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/common-module/_services';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { DeviceAuthService } from '../../_services/device-auth.service';
 
 @Component({
-    selector: 'depot-login-by-card',
     templateUrl: './login-by-card.component.html',
     styleUrls: ['./login-by-card.component.scss'],
 })

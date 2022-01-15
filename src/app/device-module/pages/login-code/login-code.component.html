@@ -1,0 +1,155 @@
+<nb-card *ngIf="mustCloseBays$ | async; let doors; else: loginTmpl">
+    <nb-alert class="row" status="danger">Close door(s) {{ doors }}!</nb-alert>
+</nb-card>
+
+<ng-template #loginTmpl>
+    <nb-card [nbSpinner]="loading$ | async">
+        <div class="row">
+            <div class="output">{{ code }}</div>
+            <button
+                nbButton
+                outline
+                shape="rectangle"
+                size="large"
+                status="basic"
+                (click)="onUndo()"
+                [disabled]="isEmpty"
+            >
+                <nb-icon icon="backspace"></nb-icon>
+            </button>
+        </div>
+
+        <div class="row">
+            <button
+                nbButton
+                outline
+                shape="rectangle"
+                size="large"
+                status="basic"
+                (click)="onClick(1)"
+                [disabled]="isFull"
+            >
+                1
+            </button>
+            <button
+                nbButton
+                outline
+                shape="rectangle"
+                size="large"
+                status="basic"
+                (click)="onClick(2)"
+                [disabled]="isFull"
+            >
+                2
+            </button>
+            <button
+                nbButton
+                outline
+                shape="rectangle"
+                size="large"
+                status="basic"
+                (click)="onClick(3)"
+                [disabled]="isFull"
+            >
+                3
+            </button>
+        </div>
+        <div class="row">
+            <button
+                nbButton
+                outline
+                shape="rectangle"
+                size="large"
+                status="basic"
+                (click)="onClick(4)"
+                [disabled]="isFull"
+            >
+                4
+            </button>
+            <button
+                nbButton
+                outline
+                shape="rectangle"
+                size="large"
+                status="basic"
+                (click)="onClick(5)"
+                [disabled]="isFull"
+            >
+                5
+            </button>
+            <button
+                nbButton
+                outline
+                shape="rectangle"
+                size="large"
+                status="basic"
+                (click)="onClick(6)"
+                [disabled]="isFull"
+            >
+                6
+            </button>
+        </div>
+        <div class="row">
+            <button
+                nbButton
+                outline
+                shape="rectangle"
+                size="large"
+                status="basic"
+                (click)="onClick(7)"
+                [disabled]="isFull"
+            >
+                7
+            </button>
+            <button
+                nbButton
+                outline
+                shape="rectangle"
+                size="large"
+                status="basic"
+                (click)="onClick(8)"
+                [disabled]="isFull"
+            >
+                8
+            </button>
+            <button
+                nbButton
+                outline
+                shape="rectangle"
+                size="large"
+                status="basic"
+                (click)="onClick(9)"
+                [disabled]="isFull"
+            >
+                9
+            </button>
+        </div>
+        <div class="row">
+            <button
+                nbButton
+                outline
+                shape="rectangle"
+                size="large"
+                status="danger"
+                (click)="onClear()"
+                [disabled]="isEmpty"
+            >
+                <nb-icon icon="trash-2"></nb-icon>
+            </button>
+            <button nbButton outline shape="rectangle" size="large" (click)="onClick(0)" [disabled]="isFull">0</button>
+            <button
+                nbButton
+                outline
+                shape="rectangle"
+                size="large"
+                status="success"
+                (click)="onLogin()"
+                [disabled]="needMore"
+            >
+                <nb-icon icon="log-in"></nb-icon>
+            </button>
+        </div>
+    </nb-card>
+
+    <nb-alert class="row" status="danger" *ngIf="error$ | async; let error">{{ error }}</nb-alert>
+</ng-template>

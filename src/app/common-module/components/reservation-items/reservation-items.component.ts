@@ -2,7 +2,7 @@ import { Component, forwardRef, Input, OnDestroy, OnInit, TemplateRef, OnChanges
 import { ApiService, ItemsService } from '../../_services';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Item } from '../../_models';
+import { Item, ReservationItem, ReservationState } from '../../_models';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { map, shareReplay, switchMap, takeUntil, tap, skip, debounceTime, delay, catchError } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
@@ -27,9 +27,9 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
     items$: Observable<ItemWithAvailability[]>;
     itemGroups$: Observable<ItemWithAvailability[][]>;
 
-    selected: string[] = [];
+    selected: ReservationItem[] = [];
     selectedLookup: Record<string, boolean> = Object.create(null);
-    selected$ = new BehaviorSubject<string[]>(this.selected);
+    selected$ = new BehaviorSubject<ReservationItem[]>(this.selected);
     selectedLookup$ = new BehaviorSubject<Record<string, boolean>>(this.selectedLookup);
 
     disabled = false;
@@ -135,32 +135,42 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
                 obj[item.id] = item;
                 return obj;
             }, Object.create(null));
-            const foundItems = this.selected.filter((selectedId) => Object.hasOwnProperty.call(itemsById, selectedId));
+            const foundItems = this.selected.filter((selected) =>
+                Object.hasOwnProperty.call(itemsById, selected.itemId)
+            );
             if (foundItems.length !== this.selected.length) {
                 this.toastRemovedItems(
-                    this.selected.filter((selectedId) => !Object.hasOwnProperty.call(itemsById, selectedId))
+                    this.selected
+                        .filter(
+                            (selected) =>
+                                !Object.hasOwnProperty.call(itemsById, selected.itemId) &&
+                                selected.state === ReservationState.Reserved
+                        )
+                        .map((selected) => selected.itemId)
                 );
             }
-            const availableItems = foundItems.filter((selectedId) => itemsById[selectedId].available);
+            const availableItems = foundItems.filter((selected) => itemsById[selected.itemId].available);
             if (availableItems.length !== foundItems.length) {
                 const removedItems = foundItems
-                    .filter((selectedId) => !itemsById[selectedId].available)
-                    .map((itemId) => itemsById[itemId])
+                    .filter((selected) => !itemsById[selected.itemId].available)
+                    .map((selected) => itemsById[selected.itemId])
                     .map((item) => `${item.name} (${item.externalId})`)
                     .join('\n• ');
-                this.toastrService.danger(
-                    `${
-                        foundItems.length - availableItems.length
-                    } items were removed from your reservation, because they are not available:\n• ${removedItems}`,
-                    'Items Removed',
-                    { destroyByClick: true, duration: null, toastClass: 'pre' }
-                );
+                if (removedItems.length > 0) {
+                    this.toastrService.danger(
+                        `${
+                            foundItems.length - availableItems.length
+                        } items were removed from your reservation, because they are not available:\n• ${removedItems}`,
+                        'Items Removed',
+                        { destroyByClick: true, duration: null, toastClass: 'pre' }
+                    );
+                }
             }
 
             if (this.selected.length !== availableItems.length) {
                 this.selected = availableItems;
-                this.selectedLookup = availableItems.reduce((obj, item) => {
-                    obj[item] = true;
+                this.selectedLookup = availableItems.reduce((obj, selected) => {
+                    obj[selected.itemId] = true;
                     return obj;
                 }, {});
                 this.propagateChange(this.selected);
@@ -201,27 +211,27 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
 
     ngOnChanges(): void {}
 
-    select(id: string) {
+    select(itemId: string) {
         if (this.disabled) {
             return;
         }
-        this.selected.push(id);
-        this.selectedLookup[id] = true;
-        console.log('select', id);
+        this.selected.push({ itemId, state: ReservationState.Reserved });
+        this.selectedLookup[itemId] = true;
+        console.log('select', itemId);
         this.propagateChange(this.selected);
         this.selected$.next(this.selected);
         this.selectedLookup$.next(this.selectedLookup);
     }
 
-    deselect(id: string) {
+    deselect(itemId: string) {
         if (this.disabled) {
             return;
         }
-        console.log('deselect', id);
-        const idx = this.selected.indexOf(id);
+        console.log('deselect', itemId);
+        const idx = this.selected.findIndex((selected) => selected.itemId === itemId);
         if (~idx) {
             this.selected.splice(idx, 1);
-            delete this.selectedLookup[id];
+            delete this.selectedLookup[itemId];
         }
         this.propagateChange(this.selected);
         this.selected$.next(this.selected);
@@ -250,16 +260,16 @@ export class ReservationItemsComponent implements OnInit, OnDestroy, OnChanges, 
                 throw Error('Invalid value for reservation items');
             }
             this.selected = value;
-            this.selectedLookup = value.reduce((obj, item) => {
-                obj[item] = true;
+            this.selectedLookup = this.selected.reduce((obj, item) => {
+                obj[item.itemId] = true;
                 return obj;
-            }, {});
+            }, Object.create(null));
             this.selected$.next(this.selected);
             this.selectedLookup$.next(this.selectedLookup);
             console.log('selected', this.selected);
         } else {
             this.selected = [];
-            this.selectedLookup = {};
+            this.selectedLookup = Object.create(null);
             this.selected$.next(this.selected);
             this.selectedLookup$.next(this.selectedLookup);
         }

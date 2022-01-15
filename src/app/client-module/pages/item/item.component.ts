@@ -19,6 +19,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NbToastrService, NbDialogService, NbDialogRef } from '@nebular/theme';
 import { distinctUntilChanged, filter, map, shareReplay, startWith, switchMap, take, takeUntil } from 'rxjs/operators';
 import { Choice } from '../../../common-module/components/form-element/form-element.component';
+import { parseHttpError } from 'src/app/common-module/_helpers';
 
 class ReportElementFormGroup extends FormGroup {
     constructor(public readonly reportElement: ReportElement) {
@@ -344,7 +345,7 @@ export class ItemComponent implements OnInit, OnDestroy {
             },
             (error) => {
                 console.log(error);
-                this.toastrService.danger(error, 'Failed');
+                this.toastrService.danger(parseHttpError(error), 'Failed');
             }
         );
     }

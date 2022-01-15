@@ -1,8 +1,114 @@
-<div *ngIf="reservation$ | async; let reservation">
-    <p><b>Name:</b> {{ reservation.name }}</p>
-    <p><b>Start:</b> {{ reservation.start | formatDate }}</p>
-    <p><b>End:</b> {{ reservation.end | formatDate }}</p>
-</div>
-<p>{{ reservation$ | async | json }}</p>
+<nb-card *ngIf="hasNothing; else decideTakeReturnEl">
+    <nb-card-header>Already finished</nb-card-header>
+    <nb-card-body>
+        <button nbButton type="button" (click)="exit()">Exit</button>
+    </nb-card-body>
+</nb-card>
 
-<depot-item-bays [reservation]="reservation$ | async"></depot-item-bays>
+<ng-template #decideTakeReturnEl>
+    <nb-card *ngIf="decideReturnTake$ | async; else takeReturnEl">
+        <nb-card-header>Take or return?</nb-card-header>
+        <nb-card-body>
+            <button nbButton type="button" (click)="startTake()">Take</button>
+            <button nbButton type="button" (click)="startReturn()">Return</button>
+        </nb-card-body>
+    </nb-card>
+</ng-template>
+
+<ng-template #takeReturnEl>
+    <nb-card *ngIf="reservation$ | async; let reservation">
+        <nb-card-header>{{ actionText }}:</nb-card-header>
+        <nb-card-body>
+            <p><b>Name:</b> {{ reservation.name }}</p>
+            <p><b>Start:</b> {{ reservation.start | formatDate }}</p>
+            <p><b>End:</b> {{ reservation.end | formatDate }}</p>
+
+            <div *ngIf="step$ | async; let step">
+                <p><b>Opened:</b> {{ step.name }}</p>
+                <p>{{ step.description }}</p>
+            </div>
+        </nb-card-body>
+    </nb-card>
+    <ng-container *ngIf="step$ | async; let step">
+        <nb-card>
+            <nb-card-header>{{ actionText }}:</nb-card-header>
+            <nb-card-body>
+                <nb-list>
+                    <nb-list-item *ngFor="let item of step.items">
+                        <depot-reservation-list-item [item]="item"></depot-reservation-list-item>
+                        <nb-button-group *ngIf="item.state === sourceState; else noActionEl">
+                            <button
+                                nbButtonToggle
+                                type="button"
+                                [pressed]="item.action === targetAction"
+                                (click)="toggleState(item, targetAction)"
+                            >
+                                {{ actionPastText }}
+                            </button>
+                            <button
+                                nbButtonToggle
+                                type="button"
+                                [pressed]="item.action === ReservationAction.NoAction"
+                                (click)="toggleState(item, ReservationAction.NoAction)"
+                            >
+                                Not {{ actionPastText }}
+                            </button>
+                            <button
+                                *ngIf="targetState === 'taken'"
+                                nbButtonToggle
+                                type="button"
+                                [pressed]="item.action === ReservationAction.Remove"
+                                (click)="toggleState(item, ReservationAction.Remove)"
+                            >
+                                Remove
+                            </button>
+                            <button
+                                nbButtonToggle
+                                type="button"
+                                [pressed]="item.action === ReservationAction.Missing"
+                                (click)="toggleState(item, ReservationAction.Missing)"
+                            >
+                                Missing
+                            </button>
+                            <button
+                                nbButtonToggle
+                                type="button"
+                                [pressed]="item.action === ReservationAction.Broken"
+                                (click)="toggleState(item, ReservationAction.Broken)"
+                            >
+                                Broken
+                            </button>
+                        </nb-button-group>
+                        <div
+                            class="form-control-group"
+                            *ngIf="
+                                item.action === ReservationAction.Missing || item.action === ReservationAction.Broken
+                            "
+                        >
+                            <label class="label" [for]="commentEl">Comment</label>
+                            <input
+                                nbInput
+                                placeholder="Comment"
+                                fullWidth
+                                fieldSize="medium"
+                                status="danger"
+                                [(ngModel)]="item.comment"
+                                #commentEl
+                            />
+                        </div>
+                        <ng-template #noActionEl>(item is {{ stateMap[item.state] }})</ng-template>
+                    </nb-list-item>
+                </nb-list>
+                <nb-alert *ngIf="isOpen$ | async; else bayClosedTmpl" class="row" status="warning"
+                    >Close door to continue!</nb-alert
+                >
+                <ng-template #bayClosedTmpl>
+                    <button nbButton type="button" *ngIf="step.externalId" (click)="reOpen()">Re-Open</button>
+                    <button nbButton type="button" (click)="nextStep()" [disabled]="!(isValid$ | async)">
+                        Continue
+                    </button>
+                </ng-template>
+            </nb-card-body>
+        </nb-card>
+    </ng-container>
+</ng-template>

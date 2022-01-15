@@ -15,7 +15,7 @@ import {
     ReportProfile,
     ReportProfileInWrite,
     Reservation,
-    ReservationReturnInWrite,
+    ReservationActionInWrite,
     User,
 } from '../_models';
 import { AuthService } from './auth.service';
@@ -212,23 +212,21 @@ export class ApiService {
     }
 
     getReservations({
-        includeReturned,
+        includeInactive,
         start,
         end,
         offset,
         limit,
         limitBeforeStart,
         limitAfterEnd,
-        itemId,
     }: {
-        includeReturned?: boolean;
+        includeInactive?: boolean;
         start?: string;
         end?: string;
         offset?: number;
         limit?: number;
         limitBeforeStart?: number;
         limitAfterEnd?: number;
-        itemId?: string;
     }): Observable<Reservation[]> {
         const query = [];
         if (start) {
@@ -237,8 +235,8 @@ export class ApiService {
         if (end) {
             query.push('end=' + end);
         }
-        if (includeReturned) {
-            query.push('include_returned=true');
+        if (includeInactive) {
+            query.push('include_inactive=true');
         }
         if (offset) {
             query.push('offset=' + offset);
@@ -251,9 +249,6 @@ export class ApiService {
         }
         if (limitAfterEnd) {
             query.push('limit_after_end=' + limitAfterEnd);
-        }
-        if (itemId) {
-            query.push('item_id=' + itemId);
         }
         let queryStr = '';
         if (query.length > 0) {
@@ -288,10 +283,8 @@ export class ApiService {
         return this.authRequest(this.http.delete<Reservation>(`${this.env.apiUrl}/reservations/${reservationId}`));
     }
 
-    returnReservation(reservationId: string, reservationReturn: ReservationReturnInWrite): Observable<void> {
-        return this.authRequest(
-            this.http.put<void>(`${this.env.apiUrl}/reservations/${reservationId}/return`, reservationReturn)
-        );
+    reservationAction(reservationId: string, action: ReservationActionInWrite): Observable<void> {
+        return this.authRequest(this.http.put<void>(`${this.env.apiUrl}/reservations/${reservationId}/action`, action));
     }
 
     getPictures(): Observable<Picture[]> {
