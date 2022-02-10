@@ -219,6 +219,7 @@ export class ApiService {
         limit,
         limitBeforeStart,
         limitAfterEnd,
+        includeItems,
     }: {
         includeInactive?: boolean;
         start?: string;
@@ -227,6 +228,7 @@ export class ApiService {
         limit?: number;
         limitBeforeStart?: number;
         limitAfterEnd?: number;
+        includeItems?: boolean;
     }): Observable<Reservation[]> {
         const query = [];
         if (start) {
@@ -249,6 +251,9 @@ export class ApiService {
         }
         if (limitAfterEnd) {
             query.push('limit_after_end=' + limitAfterEnd);
+        }
+        if (includeItems) {
+            query.push('include_items=true');
         }
         let queryStr = '';
         if (query.length > 0) {

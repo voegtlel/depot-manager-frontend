@@ -83,7 +83,6 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
 import { ItemDetailsHistoryComponent } from './components/item-details-history/item-details-history.component';
 
 @NgModule({
-    entryComponents: [CalendarRangeDayCellComponent, CalendarRangeComponent],
     declarations: [
         FormElementComponent,
         ReservationItemsComponent,
@@ -91,12 +90,10 @@ import { ItemDetailsHistoryComponent } from './components/item-details-history/i
         ReservationDetailsComponent,
         ReservationListItemComponent,
         ItemBaysComponent,
-
         CalendarRangeDayCellComponent,
         CalendarRangeComponent,
         DateRangePickerComponent,
         ItemDetailsHistoryComponent,
-
         ItemFilterPipe,
         ItemGroupFilterPipe,
         BayNamePipe,
@@ -174,14 +171,11 @@ import { ItemDetailsHistoryComponent } from './components/item-details-history/i
         ReservationListItemComponent,
         ReservationDetailsComponent,
         ItemBaysComponent,
-
         CalendarRangeDayCellComponent,
         CalendarRangeComponent,
         DateRangePickerComponent,
-
         ReportElementListComponent,
         ConfirmDialogComponent,
-
         ItemFilterPipe,
         ItemGroupFilterPipe,
         BayNamePipe,
@@ -196,6 +190,6 @@ import { ItemDetailsHistoryComponent } from './components/item-details-history/i
         ReportProfilePipe,
         ReservationNamePipe,
         ItemNamePipe,
-    ],
+    ]
 })
 export class CommonModuleModule {}

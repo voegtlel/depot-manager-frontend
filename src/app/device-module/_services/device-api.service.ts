@@ -28,13 +28,13 @@ export class DeviceApiService {
         return this.http.post<void>(`${this.env.deviceApiUrl}/device/bays/${bayId}/open`, null);
     }
 
-    getCard(): Observable<{ redirectUri: string }> {
-        return this.http.get<{ redirectUri: string }>(`${this.env.deviceApiUrl}/auth/card`);
-    }
-
-    registerCard(): Observable<{ cardId: string }> {
+    getCard(): Observable<{ cardId: string }> {
         return this.http.get<{ cardId: string }>(`${this.env.deviceApiUrl}/auth/card`);
     }
+
+    /*registerCard(): Observable<{ cardId: string }> {
+        return this.http.get<{ cardId: string }>(`${this.env.deviceApiUrl}/auth/card`);
+    }*/
 
     getReservation(code: string): Observable<CodeReservationData> {
         return this.http.get<CodeReservationData>(`${this.env.deviceApiUrl}/depot/device/reservation`, {

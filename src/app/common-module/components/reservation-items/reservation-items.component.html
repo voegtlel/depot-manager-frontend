@@ -109,7 +109,7 @@
                     [items]="
                         items$ | async | itemFilter: { filter: filter, onlyShowIds: onlySelected ? selected : null }
                     "
-                    [selectedIds$]="selected$"
+                    [selectedItems$]="selected$"
                     [selectedLookup]="selectedLookup"
                     [rangeStart]="reservationsStart"
                     [rangeEnd]="reservationsEnd"

@@ -16,7 +16,7 @@
             ><span class="value">{{ reservation?.start | formatDate }} - {{ reservation?.end | formatDate }}</span>
         </p>
         <p>
-            <span class="key">User: </span><span class="value">{{ reservation?.userId | userName }}</span>
+            <span class="key">User: </span><span class="value">{{ reservation?.userId | userName | async }}</span>
         </p>
         <p *ngIf="reservation?.type == 'team'">
             <span class="key">Team: </span><span class="value">{{ reservation?.teamId }}</span>

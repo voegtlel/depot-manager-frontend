@@ -1,8 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { ItemsService } from '../_services';
-import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { Item } from '../_models';
+import { map } from 'rxjs/operators';
+import { ItemsService } from '../_services';
 
 @Pipe({
     name: 'itemName',

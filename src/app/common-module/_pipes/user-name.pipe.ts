@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { UsersService } from '../_services';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 @Pipe({
@@ -13,6 +13,9 @@ export class UserNamePipe implements PipeTransform {
         if (!value) {
             return null;
         }
-        return this.usersService.getUser(value).pipe(map((user) => user.name));
+        return this.usersService.getUser(value).pipe(
+            tap((user) => console.log('GetUser(', value, user)),
+            map((user) => user.name)
+        );
     }
 }

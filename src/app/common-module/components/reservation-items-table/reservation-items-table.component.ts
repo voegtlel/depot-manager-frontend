@@ -5,7 +5,7 @@ import { AsyncInput } from '@ng-reactive/async-input';
 import { BehaviorSubject, combineLatest, EMPTY, Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { fromIsoDate } from '../../_helpers';
-import { Item, ItemState, Reservation, ReservationState } from '../../_models';
+import { Item, ItemState, Reservation, ReservationItem, ReservationState } from '../../_models';
 import { Filterable } from '../../_pipes';
 import { ApiService } from '../../_services';
 
@@ -55,7 +55,7 @@ export class ReservationItemsTableComponent implements OnChanges, OnDestroy, OnI
     @Input() items: ItemWithAvailability[];
     @Input() rangeStart: string | Date;
     @Input() rangeEnd: string | Date;
-    @Input() selectedIds$: Observable<string[]>;
+    @Input() selectedItems$: Observable<ReservationItem[]>;
     @Input() selectedLookup: Record<string, any>;
     @Input() showItemHistory = false;
 
@@ -63,7 +63,7 @@ export class ReservationItemsTableComponent implements OnChanges, OnDestroy, OnI
     @AsyncInput() items$ = new BehaviorSubject<ItemWithAvailability[]>(null);
     @AsyncInput() rangeStart$ = new BehaviorSubject<string | Date>(null);
     @AsyncInput() rangeEnd$ = new BehaviorSubject<string | Date>(null);
-    @AsyncInput() selectedIds$$ = new BehaviorSubject<Observable<string[]>>(null);
+    @AsyncInput() selectedItems$$ = new BehaviorSubject<Observable<ReservationItem[]>>(null);
     @AsyncInput() showItemHistory$ = new BehaviorSubject<boolean>(null);
 
     @Output() selectItem = new EventEmitter<string>();
@@ -181,6 +181,7 @@ export class ReservationItemsTableComponent implements OnChanges, OnDestroy, OnI
                         includeInactive: true,
                         start: start.toISOString().substr(0, 10),
                         end: end.toISOString().substr(0, 10),
+                        includeItems: true,
                     }),
                     this.reservationId$,
                 ])
@@ -195,17 +196,19 @@ export class ReservationItemsTableComponent implements OnChanges, OnDestroy, OnI
         const currentReservation$: Observable<Reservation | null> = combineLatest([
             this.dateRange$.pipe(filter(([x, y]) => !!x && !!y)),
             this.reservationId$,
-            this.selectedIds$$.pipe(switchMap((selectedIds$) => (selectedIds$ == null ? of(null) : selectedIds$))),
+            this.selectedItems$$.pipe(
+                switchMap((selectedItems$) => (selectedItems$ == null ? of(null) : selectedItems$))
+            ),
         ]).pipe(
-            map(([[rangeStart, rangeEnd], reservationId, selectedIds]) =>
-                selectedIds == null
+            map(([[rangeStart, rangeEnd], reservationId, selectedItems]) =>
+                selectedItems == null
                     ? null
                     : {
                           id: reservationId,
                           start: rangeStart,
                           end: rangeEnd,
                           state: ReservationState.Reserved,
-                          items: selectedIds,
+                          items: selectedItems,
                           contact: null,
                           name: null,
                           teamId: null,
