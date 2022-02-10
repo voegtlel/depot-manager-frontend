@@ -16,3 +16,9 @@ td > .table-fill {
     height: 100%;
     width: 100%;
 }
+
+table {
+    // This will ensure every column is properly visible, also on mobile
+    min-width: 1200px;
+    max-width: none;
+}
